@@ -1,0 +1,339 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+
+header {
+  
+    display: flex;
+    justify-content: space-between;  
+    align-items: center;
+    background-color: rgb(247, 244, 244);
+  padding: 20px;
+  text-align: right;
+  box-sizing: border-box;
+}
+
+
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0px 0 0 0;
+  margin-right: 17px;
+
+}
+
+nav li {
+  display: inline;
+  margin-right: 20px;
+        font-family: 'Arial', sans-serif;
+
+}
+
+.textonormal a{
+  text-decoration: none;
+  color: black;
+}
+
+.cadastro a{
+  color: white;
+  text-decoration: none;
+}
+
+.textonormal{
+  text-decoration: none;
+  color: black;
+  border: none;
+  font-weight: 600;  
+}
+
+.cadastro {
+  border: none;
+  padding: 10px;       
+  border-radius: 10px;     
+  text-decoration: none;   
+  color: none; 
+  background-color: #ff3131; 
+  font-weight: 600;
+  color: white;   
+}
+
+img{
+  margin-right: 0%;
+}
+.texto1{
+  margin-left: 50px;
+  margin-top: 50px;
+  font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+}
+
+
+
+h1{
+  font-size: 25px;
+}
+h2{
+  font-size: 24px;
+}
+
+p1{
+  font-size: 18px;
+}
+
+.imghero{
+  position: relative;
+  display: inline-block;
+
+}
+
+.botaocta{
+  position:absolute;
+  top: 43%;
+  left: 8.5%;
+  border-radius: 100px;
+  font-weight: 600;
+  padding: 10px;
+  width: 150px;
+  background-color: #ff3131;
+  color: white;
+  border: none;
+}
+
+.texto1{
+  text-align: left;
+  top: 100%;
+  margin-left: 300px;
+}
+
+.missao{
+  margin: 100px;
+  display: flex;
+  gap: 100px;
+  align-items: center;
+  justify-content: center;
+}
+
+.titulo{
+  font-weight: 700;
+  color: #ff3131;
+  margin-bottom: 15px;
+}
+
+.paragrafo{
+  text-align: left;
+  max-width: 500px;
+  font-weight: 400;
+}
+
+.botaocadastro{
+  border-radius: 10px;
+  border:none;
+  color: white;
+  background-color: #ff3131;
+  font-weight: 600;
+  padding: 10px;
+  text-decoration: none;
+}
+
+.botaohpc{
+  margin: 20px 0 0 0;
+}
+
+
+
+
+
+
+
+
+
+.homeoffice{
+  margin: 80px auto;
+  display: flex;
+  gap: 0px;
+  align-items: center;
+  justify-content: center;
+}
+
+.texto2{
+  text-align: right;
+  top: 100%;
+  margin-left: 300px;
+}
+
+.titulo2{
+  text-align: right;
+  font-weight: 700;
+  color: #ff3131;
+  margin-bottom: 15px;
+}
+
+.paragrafo2{
+  text-align: right;
+  max-width: 500px;
+  font-weight: 400;
+}
+
+.botaocadastro2{
+  border-radius: 10px;
+  border:none;
+  color: white;
+  background-color: #ff3131;
+  font-weight: 600;
+  padding: 10px;
+  text-decoration: none;
+  margin-left: 35%;
+}
+
+.botaohpc2{
+  margin: 20px 0 0 0;
+}
+
+.futuro{
+  height: auto;
+  margin: 0;
+  margin-right: -150px;
+}
+
+
+.servicos{
+  background-color: rgb(240, 240, 240);
+  gap: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 60px;
+}
+
+
+.card{
+  background: white;
+  max-width: 500px;
+  padding: 30px;
+  border-radius: 10px;
+  margin: 20px;
+  text-align: center;
+  box-shadow: 2px 2px rgba(0, 0, 0, 0.05);
+}
+
+
+.card img{
+    width: 400px;  
+  height: 300px;    
+  object-fit: cover; 
+  
+}
+
+.card h1{
+  color: #ff3131;
+  margin-bottom: 15px;
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.card p{
+  margin-bottom: 15px;
+  font-weight: 400;
+  font-size: 15px;
+}
+
+
+footer{
+  background-color: rgb(75, 2, 2);
+  padding: 40px 20px 20px 20px;
+}
+
+footer p{
+  color: white;
+}
+
+
+.contato-section {
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 50px;
+    font-family: "Montserrat", sans-serif;
+}
+
+.contato-info h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.contato-info p {
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+.contato-form {
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+}
+
+.contato-form h3 {
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.contato-form input,
+.contato-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.contato-form input:focus,
+.contato-form textarea:focus {
+    border-color: #ff3b3b;
+}
+
+.contato-form button {
+    padding: 12px;
+    background-color: #ff3b3b;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.contato-form button:hover {
+    background-color: #d00000;
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+    .contato-section {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+
+    .contato-form {
+        width: 100%;
+        max-width: 350px;
+    }
+}

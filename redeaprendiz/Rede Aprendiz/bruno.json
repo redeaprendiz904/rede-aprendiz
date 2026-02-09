@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Rede Aprendiz",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
