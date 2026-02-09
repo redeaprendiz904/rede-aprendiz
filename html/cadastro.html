@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Login </title>
+    <link rel="stylesheet" href="../css/cadastro.css">
+    <script src="../js/index.js" defer></script>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>REDE APRENDIZ</h2>
+
+        <form action="/login" method="post">
+
+            <div class="input-group">
+                <label for="Nome"> Nome </label>
+                <input type="text" id="Nome" name="Nome" maxlength="80" pattern="[A-Za-zÀ-ÖØ-öø-ÿ ]+" title="Use apenas letras e espaços." required>
+            </div>
+
+            <div class="input-group">
+                <label for="email"> Email </label>
+                <input type="text" id="email" name="email" maxlength="50" name="email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$" title="Digite um e-mail válido." required>
+            </div>
+
+            <div class="input-group">
+                <label for="Numero"> Numero </label>
+                <input type="text" id="Numero" name="Numero" maxlength="11" pattern="^[0-9]{11}$" required>
+            </div>
+            <div class="linha">
+            <div class="input-group">
+                <label for="dianascimento"> Dia </label>
+                <select id="dianascimento" name="dianascimento" required>
+                    <option>1</option><option>2</option><option>3</option>
+                    <option>4</option><option>5</option><option>6</option>
+                    <option>7</option><option>8</option><option>9</option>
+                    <option>10</option><option>11</option><option>12</option>
+                    <option>13</option><option>14</option><option>15</option>
+                    <option>16</option><option>17</option><option>18</option>
+                    <option>19</option><option>20</option><option>21</option>
+                    <option>22</option><option>23</option><option>24</option>
+                    <option>25</option><option>26</option><option>27</option>
+                    <option>28</option><option>29</option><option>30</option>
+                    <option>31</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="mesnascimento"> Mês </label>
+                <select id="mesnascimento" name="mesnascimento" required>
+                    <option value="jan">Janeiro</option>
+                    <option value="fev">Fevereiro</option>
+                    <option value="mar">Março</option>
+                    <option value="abr">Abril</option>
+                    <option value="mai">Maio</option>
+                    <option value="jun">Junho</option>
+                    <option value="jul">Julho</option>
+                    <option value="ago">Agosto</option>
+                    <option value="set">Setembro</option>
+                    <option value="out">Outubro</option>
+                    <option value="nov">Novembro</option>
+                    <option value="dez">Dezembro</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="anonascimento"> Ano </label>
+                <select id="anonascimento" name="anonascimento" maxlength="4" required></select>
+
+                </div>
+
+            </div>
+
+                                <p id="erroIdade" style="display:none; color:red; margin-top:1px; margin-bottom: 3px;">
+                    Você precisa ter pelo menos 14 anos.
+                </p>
+
+            <div class="input-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" pattern="[A-Za-z0-9]{6,16}" title="A senha deve ter entre 6 e 16 caracteres e conter apenas letras e números." required>
+            </div>
+
+            <button type="submit">Cadastre-se</button>
+
+        </form>
+        <p1>Já tem uma conta? <a href="./login.html">Login</a></p1> 
+    </div>
+
+    <div class="bg-credit">Foto: Criado por FreePik</div>
+</body>
+</html>
