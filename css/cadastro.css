@@ -20,6 +20,27 @@ body{
   background-color: rgb(247, 244, 244);
 }
 
+.btn-voltar{
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: #ff3131;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 999;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+
+.btn-voltar:hover{
+  background-color: #a09b9b;
+}
+
+
 .login-container {
  background-color: #fff;
   display: flex;
