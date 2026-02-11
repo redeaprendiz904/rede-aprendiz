@@ -17,7 +17,7 @@ if ($result->num_rows === 1) {
         $_SESSION['id'] = $user['id'];
         $_SESSION['nome'] = $user['nome'];
 
-        header("Location: painel.php");
+        header("Location: painel.html");
         exit;
     }
 }
