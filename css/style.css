@@ -16,13 +16,13 @@ header {
   
   display: flex;
   justify-content: space-between;  
-  align-items: center;
+  
   background-color: rgb(247, 244, 244);
   padding: 20px;
   text-align: right;
   box-sizing: border-box;
-  flex-direction: row;
-  gap: 10px;
+  flex-flow: row nowrap;
+  gap: 8px;
   
     
 }
@@ -74,7 +74,8 @@ nav li {
   color: none; 
   background-color: #ff3131; 
   font-weight: 600;
-  color: white;   
+  color: white; 
+    
 }
 
 img{
@@ -95,8 +96,8 @@ h2{
   font-size: 24px;
 }
 
-p1{
-  font-size: 18px;
+p{
+  font-size: 1.1em;
 }
 
 .imghero{
@@ -122,13 +123,13 @@ p1{
 .texto1{
   text-align: left;
   top: 100%;
-  margin-left: 300px;
+
 }
 
 .missao{
   margin: 100px;
   display: flex;
-  gap: 100px;
+  gap: 50px;
   align-items: center;
   justify-content: center;
 }
@@ -158,13 +159,6 @@ p1{
 .botaohpc{
   margin: 20px 0 0 0;
 }
-
-
-
-
-
-
-
 
 
 .homeoffice{
@@ -206,7 +200,10 @@ p1{
 }
 
 .botaohpc2{
-  margin: 20px 0 0 0;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px
+ 
 }
 
 .futuro{
@@ -335,7 +332,7 @@ footer p{
 }
 
 /* Responsivo */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
     .contato-section {
         flex-direction: column;
         text-align: center;
@@ -346,4 +343,40 @@ footer p{
         width: 100%;
         max-width: 350px;
     }
+
+    body{
+      background-color: #d00000;
+    }
+  }
+
+
+@media (max-width: 889px) {
+
+  header{
+    flex-flow: row wrap;
+  }
+
+  nav ul{
+    align-items: flex-end;
+  }
+
+  .cadastro{
+    padding: 5px;
+    border-radius: 5px;
+    margin: -5px;
+  }
+
+  .botaohpc2{
+    padding: 0px;
+    height: 60px;
+    
+  }
+  .botaohpc2 a{
+    font-size: 12px;
+  }
+
+  .texto1{
+    margin-left: 250px;
+  }
+
 }
