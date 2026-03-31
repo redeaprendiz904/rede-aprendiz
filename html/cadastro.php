@@ -3,7 +3,7 @@ require "conexao.php";
 
 $nome   = $_POST['Nome'];
 $email  = $_POST['email'];
-$numero = $_POST['Numero'];
+$Telefone = $_POST['Telefone'];
 $dia    = $_POST['dianascimento'];
 $mes    = $_POST['mesnascimento'];
 $ano    = $_POST['anonascimento'];
@@ -33,11 +33,11 @@ if ($check->num_rows > 0) {
 
 // Insere usuário
 $sql = $conn->prepare(
-    "INSERT INTO usuarios (nome, email, numero, data_nascimento, senha)
+    "INSERT INTO usuarios (nome, email, Telefone, data_nascimento, senha)
      VALUES (?, ?, ?, ?, ?)"
 );
 
-$sql->bind_param("sssss", $nome, $email, $numero, $data_nascimento, $senha_hash);
+$sql->bind_param("sssss", $nome, $email, $Telefone, $data_nascimento, $senha_hash);
 
 if ($sql->execute()) {
     header("Location: login.html");
