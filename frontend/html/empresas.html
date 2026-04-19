@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empresas</title>
+<link rel="stylesheet" href="../css/empresa.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Rede Aprendiz</h2>
+    <a href="#">🏠 Dashboard</a>
+    <a href="#">👩‍🎓 Estudantes</a>
+    <a href="#">📊 Perfil</a>
+    <a href="#">📄 Relatórios</a>
+    <a href="sidebar.html">❌ Sair</a>
+</div>
+
+<div class="main-content">
+    <h1>Empresas Disponíveis</h1>
+    <div class="result-count" id="resultCount">Total: 3 empresas</div>
+
+    <div class="controls">
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="ti">TI</button>
+            <button class="filter-btn" data-filter="marketing">Marketing</button>
+            <button class="filter-btn" data-filter="atendimento">Atendimento</button>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Pesquisar empresas...">
+        </div>
+    </div>
+
+    <div class="company-cards" id="cardsContainer">
+        <div class="card" data-category="ti">
+            <h3>Empresa A</h3>
+            <p>Desenvolvimento remoto de software e apps.</p>
+            <button>Ver Vagas</button>
+        </div>
+        <div class="card" data-category="marketing">
+            <h3>Empresa B</h3>
+            <p>Marketing digital e conteúdo para redes sociais.</p>
+            <button>Ver Vagas</button>
+        </div>
+        <div class="card" data-category="atendimento">
+            <h3>Empresa C</h3>
+            <p>Atendimento remoto ao cliente e suporte técnico.</p>
+            <button>Ver Vagas</button>
+        </div>
+        <!-- Continue adicionando os demais cards até 16 -->
+        <div class="no-results">Nenhuma empresa encontrada</div>
+    </div>
+</div>
+
+<script src="../js/empresa.js"></script>
+</body>
+</html>
