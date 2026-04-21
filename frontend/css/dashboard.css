@@ -1,0 +1,101 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial;
+}
+
+body {
+    background: #f4f4f4;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.mensagens {
+    background: #eee;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.mensagens span {
+    color: red;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: linear-gradient(to right, #eee, #c0392b);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.card h1 {
+    color: red;
+}
+
+.barra {
+    height: 10px;
+    background: #ddd;
+}
+
+.progresso {
+    height: 100%;
+    width: 70%;
+    background: red;
+}
+
+.baixo {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.grafico, .empresas {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.empresa {
+    background: linear-gradient(to right, #eee, #c0392b);
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* 🔥 RESPONSIVO */
+@media (max-width: 1024px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .baixo {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .top {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
