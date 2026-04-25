@@ -1,6 +1,8 @@
 async function carregarUsuario() {
     try {
-        const resposta = await fetch("http://localhost:3000/usuario");
+        const resposta = await fetch("http://localhost:3000/usuario", {
+            credentials: "include"
+        });
 
         if (resposta.ok) {
             const usuario = await resposta.json();

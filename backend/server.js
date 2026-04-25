@@ -6,7 +6,10 @@ const session = require("express-session");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}));
 app.use(express.json());
 
 app.use(session({
@@ -92,6 +95,15 @@ app.get("/dashboard", (req, res) => {
         return res.redirect("/html/login.html");
     }
 
+    res.sendFile(path.join(__dirname, "../frontend/html/dashboard.html"));
+});
+
+// SIDEBAR PROTEGIDA
+app.get("/sidebar", (req, res) => {
+    if (!req.session.usuario) {
+        return res.redirect("/html/login.html");
+    }
+
     res.sendFile(path.join(__dirname, "../frontend/html/sidebar.html"));
 });
 
@@ -101,6 +113,67 @@ app.get("/logout", (req, res) => {
     res.redirect("/html/login.html");
 });
 
+// LISTAR VAGAS
+app.get("/vagas", (req, res) => {
+
+    const sql = "SELECT * FROM vagas";
+
+    db.query(sql, (err, result) => {
+        if (err) return res.status(500).send(err);
+
+        res.json(result);
+    });
+});
+
+// CRIAR PERFIL
+app.post("/perfil", (req, res) => {
+
+    if (!req.session.usuario) {
+        return res.status(401).send("Não autorizado");
+    }
+
+    const { nome, idade, turno, horario } = req.body;
+    const usuario_id = req.session.usuario.id;
+
+    const sql = `
+        INSERT INTO perfil (usuario_id, nome, idade, turno, horario)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+
+    db.query(sql, [usuario_id, nome, idade, turno, horario], (err) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Erro ao salvar perfil");
+        }
+
+        res.sendStatus(200);
+    });
+});
+
+// CANDIDATAR-SE
+app.post("/candidatar", (req, res) => {
+
+    if (!req.session.usuario) {
+        return res.status(401).send("Não autorizado");
+    }
+
+    const { vaga_id } = req.body;
+    const usuario_id = req.session.usuario.id;
+
+    const sql = `
+        INSERT INTO candidaturas (usuario_id, vaga_id)
+        VALUES (?, ?)
+    `;
+
+    db.query(sql, [usuario_id, vaga_id], (err) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Erro ao candidatar");
+        }
+
+        res.sendStatus(200);
+    });
+});
 // inicia o servidor
 app.listen(3000, () => {
     console.log("Servidor rodando em http://localhost:3000");

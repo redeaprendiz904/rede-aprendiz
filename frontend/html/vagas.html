@@ -4,50 +4,27 @@
   <meta charset="UTF-8">
   <title>Área do Estudante</title>
   <link rel="stylesheet" href="../css/vagas.css">
+
+  
 </head>
+
 <body>
 
 <header>
-   <img src="../img/logop.png" alt="logoredeaprendiz"></a>
-
+  <img src="../img/logop.png" alt="logo">
 </header>
 
 <section class="hero">
 <div class="container">
 
   <div class="section">
-    <h2> Vagas disponíveis</h2>
-    <div class="cards">
+    <h2>Vagas disponíveis</h2>
 
-      <div class="card">
-        <h3>Atendente (Meio período)</h3>
-        <p>📍 Empresa local</p>
-        <p>⏰ Tarde</p>
-        <p>✔ Compatível com escola</p>
-        <a href="#" class="btn">Candidatar-se</a>
-      </div>
-
-      <div class="card">
-        <h3>Jovem Aprendiz Administrativo</h3>
-        <p>📍 Escritório</p>
-        <p>⏰ Manhã</p>
-        <p>✔ Sem experiência</p>
-        <a href="#" class="btn">Candidatar-se</a>
-      </div>
-
-      <div class="card">
-        <h3>Auxiliar de Loja</h3>
-        <p>📍 Comércio</p>
-        <p>⏰ Flexível</p>
-        <p>✔ Ideal para estudantes</p>
-        <a href="#" class="btn">Candidatar-se</a>
-      </div>
-
-    </div>
+    <div class="cards" id="listaVagas"></div>
   </div>
 
   <div class="section">
-    <h2> Dicas para conciliar</h2>
+    <h2>Dicas para conciliar</h2>
     <div class="cards">
 
       <div class="card">
@@ -67,61 +44,43 @@
 
     </div>
   </div>
-  <div class="section">
-    <h2> Orientação profissional</h2>
-    <div class="cards">
-
-      <div class="card">
-        <p><strong>Currículo</strong></p>
-        <p>Aprenda a montar mesmo sem experiência.</p>
-      </div>
-
-      <div class="card">
-        <p><strong>Entrevista</strong></p>
-        <p>Seja confiante e educado.</p>
-      </div>
-
-      <div class="card">
-        <p><strong>Carreira</strong></p>
-        <p>Pense no seu futuro profissional.</p>
-      </div>
-
-    </div>
-  </div>
 
   <div class="section">
-    <h2> Criar perfil</h2>
+    <h2>Criar perfil</h2>
 
     <div class="card">
-      <div class="form">
-        <input type="text" placeholder="Nome">
-      </div>
 
-      <div class="form">
-        <input type="number" placeholder="Idade">
-      </div>
+     <input type="text" id="nome" placeholder="Nome">
 
-      <div class="form">
-        <select>
-          <option>Turno que estuda</option>
-          <option>Manhã</option>
-          <option>Tarde</option>
-          <option>Noite</option>
-        </select>
-      </div>
+<input type="number" id="idade" placeholder="Idade">
 
-      <div class="form-group">
-        <input type="text" placeholder="Horário disponível">
-      </div>
+<select id="turno">
+  <option>Turno que estuda</option>
+  <option>Manhã</option>
+  <option>Tarde</option>
+  <option>Noite</option>
+</select>
 
-      <a href="#" class="btn">Criar perfil</a>
+<select id="hr-disponivel">
+  <option value="" disabled selected>Horário Disponível</option>
+  <option>Manhã</option>
+  <option>Tarde</option>
+  <option>Noite</option>
+</select>
+
+<button id="btnPerfil">Criar perfil</button>
+
     </div>
   </div>
 
 </div>
+</section>
 
 <footer>
   © 2026 - Rede Aprendiz
 </footer>
+
+  <script src="../js/vagas.js"></script>
+<script src="../js/perfil.js"></script>
 </body>
 </html>
