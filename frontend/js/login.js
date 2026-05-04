@@ -16,7 +16,7 @@ document.querySelector("form").addEventListener("submit", async (e) => {
 });
 
     if (resposta.ok) {
-        window.location.href = "/sidebar";
+        window.location.href = "/dashboard";
     } else {
         alert("Email ou senha inválidos");
     }

@@ -3,28 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <title>Área do Estudante</title>
-  <link rel="stylesheet" href="../css/vagas.css">
+  <link rel="stylesheet" href="../css/perfil.css">
 
   
 </head>
 
 <body>
 
-<header>
-  <img src="../img/logop.png" alt="logo">
-</header>
+<div class="sidebar">
+    <h2>Rede Aprendiz</h2>
+    <a href="/perfil">Perfil</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/empresas">Empresas</a>
+    <a href="/logout">Sair</a>
+</div>
+
+
+</div>
 
 <section class="hero">
 <div class="container">
 
   <div class="section">
-    <h2>Vagas disponíveis</h2>
+    <h2>Perfil</h2>
 
     <div class="cards" id="listaVagas"></div>
   </div>
 
   <div class="section">
-    <h2>Dicas para conciliar</h2>
+    <h2>Dicas</h2>
     <div class="cards">
 
       <div class="card">
@@ -46,16 +53,35 @@
   </div>
 
   <div class="section">
-    <h2>Criar perfil</h2>
+    <h2>Resumo do seu perfil</h2>
+
+    <div class="cardperfil">
+      <img src="../img/fotoperfil.jpg" class="fotoperfil">
+    
+    <div class="infoperfil">
+      <h3>Jhonatan Campos</h3>
+      <p>Gênero: Masculino</p>
+      <p>Data de Nascimento: 17/09/2008</h3>
+      <p>CPF: 400.289.220-00</p>
+      <p>Telefone: (98) 94002-8922</p>
+      
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Concluir perfil</h2>
 
     <div class="card">
+      
+ <div class="card">
 
      <input type="text" id="nome" placeholder="Nome">
 
 <input type="number" id="idade" placeholder="Idade">
 
 <select id="turno">
-  <option>Turno que estuda</option>
+  <option value="" disabled selected>Turno que Estuda</option>
   <option>Manhã</option>
   <option>Tarde</option>
   <option>Noite</option>
@@ -68,13 +94,14 @@
   <option>Noite</option>
 </select>
 
-<button id="btnPerfil">Criar perfil</button>
+<button id="btnPerfil">Concluir perfil</button>
 
     </div>
   </div>
 
 </div>
 </section>
+
 
 <footer>
   © 2026 - Rede Aprendiz

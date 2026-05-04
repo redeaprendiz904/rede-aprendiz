@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -7,14 +9,51 @@
 
 body {
     background: #f4f4f4;
-    padding: 20px;
 }
 
+/* SIDEBAR */
+.sidebar {
+  width: 250px;
+  background-color: #800000;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 20px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+}
+
+.sidebar h2 {
+  color: #FF0000;
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 1.8rem;
+}
+
+.sidebar a {
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 15px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+.sidebar a:hover {
+  background-color: #FF0000;
+  transform: translateX(5px);
+}
+
+
+/* CONTEÚDO */
 .container {
+    margin-left: 270px; /* compensar sidebar */
+    padding: 20px;
     max-width: 1200px;
-    margin: auto;
 }
 
+/* TOPO */
 .top {
     display: flex;
     justify-content: space-between;
@@ -31,9 +70,10 @@ body {
     color: red;
 }
 
+/* CARDS */
 .cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 15px;
     margin-bottom: 20px;
 }
@@ -48,9 +88,12 @@ body {
     color: red;
 }
 
+/* BARRA */
 .barra {
     height: 10px;
     background: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .progresso {
@@ -59,13 +102,15 @@ body {
     background: red;
 }
 
+/* PARTE DE BAIXO */
 .baixo {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 20px;
 }
 
-.grafico, .empresas {
+.grafico, 
+.empresas {
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -79,9 +124,22 @@ body {
 }
 
 /* 🔥 RESPONSIVO */
+
+/* Tablet */
 @media (max-width: 1024px) {
-    .cards {
-        grid-template-columns: repeat(2, 1fr);
+    .container {
+        margin-left: 0;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    .sidebar h2 {
+        display: none;
     }
 
     .baixo {
@@ -89,13 +147,21 @@ body {
     }
 }
 
+/* Celular */
 @media (max-width: 600px) {
-    .cards {
-        grid-template-columns: 1fr;
-    }
-
     .top {
         flex-direction: column;
         gap: 10px;
+    }
+
+    .sidebar {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .sidebar a {
+        flex: 1 1 45%;
+        text-align: center;
     }
 }
