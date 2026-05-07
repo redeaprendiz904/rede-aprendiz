@@ -6,7 +6,6 @@ const session = require("express-session");
 
 const app = express();
 
-// MIDDLEWARES
 app.use(cors({
     origin: "http://localhost:3000",
     credentials: true
@@ -36,9 +35,6 @@ const db = mysql.createConnection({
     database: "rede_aprendiz"
 });
 
-// =====================
-// 🔐 AUTENTICAÇÃO
-// =====================
 
 // CADASTRO
 app.post("/cadastro", (req, res) => {
@@ -98,9 +94,7 @@ app.get("/logout", (req, res) => {
     res.redirect("/html/login.html");
 });
 
-// =====================
-// 📄 ROTAS PROTEGIDAS
-// =====================
+// 
 
 function verificarLogin(req, res, next) {
     if (!req.session.usuario) {
@@ -120,10 +114,6 @@ app.get("/empresas", verificarLogin, (req, res) => {
 app.get("/perfil", verificarLogin, (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/html/perfil.html"));
 });
-
-// =====================
-// 📊 DADOS
-// =====================
 
 // LISTAR VAGAS
 app.get("/vagas", (req, res) => {
