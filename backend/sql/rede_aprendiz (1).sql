@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 27/04/2026 às 15:41
+-- Tempo de geração: 23/05/2026 às 16:55
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -39,7 +39,10 @@ CREATE TABLE `candidaturas` (
 --
 
 INSERT INTO `candidaturas` (`id`, `usuario_id`, `vaga_id`, `data`) VALUES
-(1, 1, 1, '2026-04-25 17:26:49');
+(1, 1, 1, '2026-04-25 17:26:49'),
+(5, 1, 1, '2026-05-04 19:20:45'),
+(6, 1, 1, '2026-05-04 19:39:57'),
+(7, 1, 1, '2026-05-07 13:57:01');
 
 -- --------------------------------------------------------
 
@@ -53,15 +56,21 @@ CREATE TABLE `perfil` (
   `nome` varchar(100) DEFAULT NULL,
   `idade` int(11) DEFAULT NULL,
   `turno` varchar(20) DEFAULT NULL,
-  `horario` varchar(50) DEFAULT NULL
+  `horario` varchar(50) DEFAULT NULL,
+  `escola` varchar(100) DEFAULT NULL,
+  `serie` varchar(30) DEFAULT NULL,
+  `area_interesse` varchar(100) DEFAULT NULL,
+  `habilidades` text DEFAULT NULL,
+  `sobre_mim` text DEFAULT NULL,
+  `telefone` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `perfil`
 --
 
-INSERT INTO `perfil` (`id`, `usuario_id`, `nome`, `idade`, `turno`, `horario`) VALUES
-(1, 1, 'gerson felipe', 17, 'Manhã', 'Tarde');
+INSERT INTO `perfil` (`id`, `usuario_id`, `nome`, `idade`, `turno`, `horario`, `escola`, `serie`, `area_interesse`, `habilidades`, `sobre_mim`, `telefone`) VALUES
+(1, 1, 'gerson felipe', 17, 'Manhã', 'Tarde', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -103,9 +112,7 @@ CREATE TABLE `vagas` (
 --
 
 INSERT INTO `vagas` (`id`, `titulo`, `empresa`, `turno`, `descricao`) VALUES
-(1, 'Atendente (Meio período)', 'Empresa local', 'Tarde', 'Compatível com escola'),
-(2, 'Jovem Aprendiz Administrativo', 'Escritório', 'Manhã', 'Sem experiência'),
-(3, 'Auxiliar de Loja', 'Comércio', 'Flexível', 'Ideal para estudantes');
+(1, 'Atendente (Meio período)', 'Empresa local', 'Tarde', 'Compatível com escola');
 
 --
 -- Índices para tabelas despejadas
@@ -146,13 +153,13 @@ ALTER TABLE `vagas`
 -- AUTO_INCREMENT de tabela `candidaturas`
 --
 ALTER TABLE `candidaturas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de tabela `perfil`
 --
 ALTER TABLE `perfil`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`

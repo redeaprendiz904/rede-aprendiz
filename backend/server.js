@@ -127,26 +127,66 @@ app.get("/vagas", (req, res) => {
 
 // CRIAR PERFIL
 app.post("/perfil", (req, res) => {
+
     if (!req.session.usuario) {
         return res.status(401).send("Não autorizado");
     }
 
-    const { nome, idade, turno, horario } = req.body;
+    const {
+        nome,
+        idade,
+        telefone,
+        escola,
+        serie,
+        turno,
+        horario,
+        area_interesse,
+        habilidades,
+        sobre_mim
+    } = req.body;
+
     const usuario_id = req.session.usuario.id;
 
     const sql = `
-        INSERT INTO perfil (usuario_id, nome, idade, turno, horario)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO perfil (
+            usuario_id,
+            nome,
+            idade,
+            telefone,
+            escola,
+            serie,
+            turno,
+            horario,
+            area_interesse,
+            habilidades,
+            sobre_mim
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    db.query(sql, [usuario_id, nome, idade, turno, horario], (err) => {
+    db.query(sql, [
+        usuario_id,
+        nome,
+        idade,
+        telefone,
+        escola,
+        serie,
+        turno,
+        horario,
+        area_interesse,
+        habilidades,
+        sobre_mim
+    ], (err) => {
+
         if (err) {
             console.log(err);
             return res.status(500).send("Erro ao salvar perfil");
         }
 
         res.sendStatus(200);
+
     });
+
 });
 
 // CANDIDATAR-SE
