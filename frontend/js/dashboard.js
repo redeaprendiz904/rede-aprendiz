@@ -17,3 +17,29 @@ async function carregarUsuario() {
 }
 
 carregarUsuario();
+
+
+                    
+//Grafico DashBoard
+const ctx = document.getElementById('meuGrafico')
+new Chart(ctx, {
+type: 'line',
+data: {
+    labels: ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'],
+    datasets: [{
+        label: 'Performance',
+        data: [12, 19, 8, 15, 22],
+        borderWidth: 1,
+        backgroundColor: 'red'
+    }]
+},
+options: {
+    responsive: true,
+    scales: {
+        y: {
+            beginAtZero: true
+        }
+    }
+}
+})
+         
