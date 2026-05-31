@@ -142,7 +142,9 @@ app.post("/perfil", (req, res) => {
         horario,
         area_interesse,
         habilidades,
-        sobre_mim
+        sobre_mim,
+        cursos_concluidos,
+        horas_estudo
     } = req.body;
 
     const usuario_id = req.session.usuario.id;
@@ -159,9 +161,11 @@ app.post("/perfil", (req, res) => {
             horario,
             area_interesse,
             habilidades,
-            sobre_mim
+            sobre_mim,
+            cursos_concluidos,
+            horas_estudo
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(sql, [
@@ -175,7 +179,9 @@ app.post("/perfil", (req, res) => {
         horario,
         area_interesse,
         habilidades,
-        sobre_mim
+        sobre_mim,
+        cursos_concluidos,
+        horas_estudo
     ], (err) => {
 
         if (err) {
@@ -211,6 +217,33 @@ app.post("/candidatar", (req, res) => {
 
         res.sendStatus(200);
     });
+});
+
+// GRAFICO DE PERFORMANCE
+app.get("/dashboard/dados", (req, res) => {
+
+    if (!req.session.usuario) {
+        return res.status(401).send("Não autorizado");
+    }
+
+    const sql = `
+        SELECT cursos_concluidos, horas_estudo
+        FROM perfil
+        WHERE usuario_id = ?
+        ORDER BY id DESC
+        LIMIT 1
+    `;
+
+    db.query(sql, [req.session.usuario.id], (err, resultado) => {
+
+        if (err) {
+            return res.status(500).send(err);
+        }
+
+        res.json(resultado[0]);
+
+    });
+
 });
 
 // INICIAR SERVIDOR

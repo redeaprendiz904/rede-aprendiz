@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 23/05/2026 às 16:55
+-- Tempo de geração: 31/05/2026 às 20:33
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -62,15 +62,18 @@ CREATE TABLE `perfil` (
   `area_interesse` varchar(100) DEFAULT NULL,
   `habilidades` text DEFAULT NULL,
   `sobre_mim` text DEFAULT NULL,
-  `telefone` varchar(20) DEFAULT NULL
+  `telefone` varchar(20) DEFAULT NULL,
+  `cursos_concluidos` int(11) DEFAULT 0,
+  `horas_estudo` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `perfil`
 --
 
-INSERT INTO `perfil` (`id`, `usuario_id`, `nome`, `idade`, `turno`, `horario`, `escola`, `serie`, `area_interesse`, `habilidades`, `sobre_mim`, `telefone`) VALUES
-(1, 1, 'gerson felipe', 17, 'Manhã', 'Tarde', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `perfil` (`id`, `usuario_id`, `nome`, `idade`, `turno`, `horario`, `escola`, `serie`, `area_interesse`, `habilidades`, `sobre_mim`, `telefone`, `cursos_concluidos`, `horas_estudo`) VALUES
+(1, 1, 'gerson felipe', 17, 'Manhã', 'Tarde', NULL, NULL, NULL, NULL, NULL, NULL, 0, 0),
+(11, 1, 'Gerson', 18, 'Manhã', 'Tarde', 'ifma', '2º Ano', 'TI', 'x', 'xx', '98988642696', 3, 4);
 
 -- --------------------------------------------------------
 
@@ -159,7 +162,7 @@ ALTER TABLE `candidaturas`
 -- AUTO_INCREMENT de tabela `perfil`
 --
 ALTER TABLE `perfil`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`

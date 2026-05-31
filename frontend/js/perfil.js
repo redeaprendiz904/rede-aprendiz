@@ -10,6 +10,8 @@ document.getElementById("btnPerfil").addEventListener("click", async () => {
     const area_interesse = document.getElementById("area_interesse").value;
     const habilidades = document.getElementById("habilidades").value;
     const sobre_mim = document.getElementById("sobre_mim").value;
+    const cursos_concluidos = document.getElementById("cursos_concluidos").value;
+    const horas_estudo = document.getElementById("horas_estudo").value;
 
     if (
         !nome ||
@@ -21,7 +23,9 @@ document.getElementById("btnPerfil").addEventListener("click", async () => {
         !horario ||
         !area_interesse ||
         !habilidades ||
-        !sobre_mim
+        !sobre_mim ||
+        !cursos_concluidos ||
+        !horas_estudo
     ) {
         alert("Preencha todos os campos!");
         return;
@@ -37,7 +41,9 @@ document.getElementById("btnPerfil").addEventListener("click", async () => {
         horario,
         area_interesse,
         habilidades,
-        sobre_mim
+        sobre_mim,
+        cursos_concluidos,
+        horas_estudo
     };
 
     try {
@@ -65,6 +71,8 @@ document.getElementById("btnPerfil").addEventListener("click", async () => {
             document.getElementById("area_interesse").value = "";
             document.getElementById("habilidades").value = "";
             document.getElementById("sobre_mim").value = "";
+            document.getElementById("cursos_concluidos").value = "";
+            document.getElementById("horas_estudo").value = "";
 
         } else {
 
@@ -75,6 +83,7 @@ document.getElementById("btnPerfil").addEventListener("click", async () => {
 
     } catch (erro) {
 
+        console.error(erro);
         alert("Erro ao conectar ao servidor");
 
     }

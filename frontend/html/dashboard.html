@@ -13,15 +13,10 @@
 
 <div class="sidebar">
     <h2>Rede Aprendiz</h2>
-    <a href="/dashboard">Dashboard</a>
     <a href="/empresas">Empresas</a>
     <a href="/perfil">Perfil</a>
     <a href="/logout">Sair</a>
 </div>
-
-
-
-
 
 <div class="container">
 
@@ -33,6 +28,7 @@
     <h2>Bem vindo, <span id="nomeUsuario">...</span>!</h2>
 
     <div class="cards">
+
         <div class="card">
             <h3>Novas vagas</h3>
             <h1>+116 vagas</h1>
@@ -53,22 +49,39 @@
 
         <div class="card">
             <h3>Cursos</h3>
-            <h1>+3 Cursos</h1>
+            <h1><span id="cursos">0</span> Cursos</h1>
         </div>
+
     </div>
 
     <div class="baixo">
+
         <div class="grafico">
+
             <h3>Performance</h3>
-            <p>3 cursos | +20h</p>
-             <canvas id="meuGrafico"></canvas>
-    </div>
+
+            <p>
+                <span id="cursosGrafico">0</span> cursos |
+                <span id="horas">0</span>h
+            </p>
+
+            <canvas id="meuGrafico"></canvas>
+
+        </div>
 
         <div class="empresas">
             <h3>Empresas contratando</h3>
-            <div class="empresa">🏢 VALE abriu vagas</div>
-            <div class="empresa">🏢 VALE abriu vagas</div>
+
+            <div class="empresa">
+                🏢 VALE abriu vagas
+            </div>
+
+            <div class="empresa">
+                🏢 VALE abriu vagas
+            </div>
+
         </div>
+
     </div>
 
 </div>
