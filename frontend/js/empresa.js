@@ -38,3 +38,78 @@ filterButtons.forEach(btn => {
 });
 
 searchInput.addEventListener('input', filterAndSearch);
+
+
+
+
+const filterBtns = document.querySelectorAll(".filter-btn");
+
+function atualizarContador() {
+    const visiveis = document.querySelectorAll(".card:not(.add-card):not([style*='display: none'])").length;
+    resultCount.innerText = "Total: " + visiveis + " empresas";
+}
+
+// Busca
+searchInput.addEventListener("input", () => {
+    const value = searchInput.value.toLowerCase();
+
+    document.querySelectorAll(".card").forEach(card => {
+        if (card.classList.contains("add-card")) return;
+
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(value) ? "block" : "none";
+    });
+
+    atualizarContador();
+});
+
+// Filtro
+filterBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelector(".active").classList.remove("active");
+        btn.classList.add("active");
+
+        const filtro = btn.dataset.filter;
+
+        document.querySelectorAll(".card").forEach(card => {
+            if (card.classList.contains("add-card")) return;
+
+            if (filtro === "all" || card.dataset.category === filtro) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        atualizarContador();
+    });
+});
+
+// Modal
+function abrirModal() {
+    document.getElementById("modal").style.display = "flex";
+}
+
+// Adicionar empresa
+function adicionarEmpresa() {
+    const nome = document.getElementById("nome").value;
+    const desc = document.getElementById("desc").value;
+    const categoria = document.getElementById("categoria").value;
+
+    if (!nome || !desc) return alert("Preencha tudo");
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.dataset.category = categoria;
+
+    card.innerHTML = `
+        <h3>${nome}</h3>
+        <p>${desc}</p>
+    `;
+
+    cardsContainer.insertBefore(card, document.querySelector(".add-card"));
+
+    document.getElementById("modal").style.display = "none";
+
+    atualizarContador();
+}
