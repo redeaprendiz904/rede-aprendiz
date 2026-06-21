@@ -13,17 +13,20 @@
 
 
 header {
-  
-    display: flex;
-    justify-content: space-between;  
-    align-items: center;
-    background-color: rgb(247, 244, 244);
+  display: flex;
+  justify-content: space-between;  
+  align-items: center;
+  background-color: rgb(247, 244, 244);
   padding: 20px;
   text-align: right;
   box-sizing: border-box;
 }
 
-
+header img {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+}
 
 nav ul {
   list-style: none;
