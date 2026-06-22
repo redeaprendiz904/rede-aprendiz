@@ -17,65 +17,115 @@
 </div>
 
 <div class="main-content">
+
     <h1>Empresas Disponíveis</h1>
-    <div class="result-count" id="resultCount">Total: 3 empresas</div>
+
+    <div class="result-count" id="resultCount">
+        Total: 0 empresas
+    </div>
 
     <div class="controls">
+
         <div class="filters">
-            <button class="filter-btn active" data-filter="all">Todos</button>
-            <button class="filter-btn" data-filter="ti">TI</button>
-            <button class="filter-btn" data-filter="marketing">Marketing</button>
-            <button class="filter-btn" data-filter="atendimento">Atendimento</button>
-            <button class="filter-btn" data-filter="mais">Mais</button>
+            <button class="filter-btn active" data-filter="all">
+                Todos
+            </button>
+
+            <button class="filter-btn" data-filter="ti">
+                TI
+            </button>
+
+            <button class="filter-btn" data-filter="marketing">
+                Marketing
+            </button>
+
+            <button class="filter-btn" data-filter="atendimento">
+                Atendimento
+            </button>
+
+            <button class="filter-btn" data-filter="mais">
+                Mais
+            </button>
         </div>
+
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Pesquisar empresas...">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Pesquisar empresas..."
+            >
         </div>
+
     </div>
 
     <div class="company-cards" id="cardsContainer">
-        <div class="card" data-category="ti">
-            <h3>Empresa A</h3>
-            <p>Desenvolvimento remoto de software e apps.</p>
-            <button>Ver Vagas</button>
-        </div>
-        <div class="card" data-category="marketing">
-            <h3>Empresa B</h3>
-            <p>Marketing digital e conteúdo para redes sociais.</p>
-            <button>Ver Vagas</button>
-        </div>
-        <div class="card" data-category="atendimento">
-            <h3>Empresa C</h3>
-            <p>Atendimento remoto ao cliente e suporte técnico.</p>
-            <button>Ver Vagas</button>
-        </div>
-       <div class="card add-card">
-            <h3>Adicionar</h3>
-            <p>Cadastre sua empresa no catálogo de empresas!</p>
-            <button onclick="abrirModal()">Cadastrar</button>
-        </div>
-        </div>
-        <!-- Continue adicionando os demais cards até 16 -->
-        <div class="no-results">Nenhuma empresa encontrada</div>
+
     </div>
+
+    <div class="no-results" id="noResults" style="display:none;">
+        Nenhuma empresa encontrada
+    </div>
+
 </div>
+
 <div class="modal" id="modal">
+
     <div class="modal-content">
+
         <h2>Nova Empresa</h2>
 
-        <input type="text" id="nome" placeholder="Nome">
-        <textarea id="desc" placeholder="Descrição"></textarea>
+        <input
+            type="text"
+            id="nome"
+            placeholder="Nome da Empresa"
+        >
+
+        <textarea
+            id="desc"
+            placeholder="Descrição da Empresa"
+        ></textarea>
 
         <select id="categoria">
-            <option value="ti">TI</option>
-            <option value="marketing">Marketing</option>
-            <option value="atendimento">Atendimento</option>
+
+            <option value="ti">
+                TI
+            </option>
+
+            <option value="marketing">
+                Marketing
+            </option>
+
+            <option value="atendimento">
+                Atendimento
+            </option>
+
+            <option value="mais">
+                Mais
+            </option>
+
         </select>
 
-        <button onclick="adicionarEmpresa()">Salvar</button>
+        <button onclick="adicionarEmpresa()">
+            Salvar
+        </button>
+
+    </div>
+
+</div>
+
+<div class="modal" id="modalVagas" style="display:none;">
+    <div class="modal-content">
+        <h2>Vagas da Empresa</h2>
+
+        <div id="listaVagasEmpresa"></div>
+
+        <button onclick="fecharModalVagas()">
+            Fechar
+        </button>
     </div>
 </div>
 
 <script src="../js/empresa.js"></script>
+
 </body>
 </html>

@@ -246,6 +246,76 @@ app.get("/dashboard/dados", (req, res) => {
 
 });
 
+// CADASTRAR EMPRESA
+app.post("/empresas", (req, res) => {
+
+    const { nome, descricao, categoria } = req.body;
+
+    const sql = `
+        INSERT INTO empresas
+        (nome, descricao, categoria)
+        VALUES (?, ?, ?)
+    `;
+
+    db.query(sql, [nome, descricao, categoria], (err) => {
+
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Erro ao cadastrar empresa");
+        }
+
+        res.sendStatus(200);
+
+    });
+
+});
+
+// LISTAR EMPRESAS
+app.get("/empresas/listar", (req, res) => {
+
+    const sql = `
+        SELECT *
+        FROM empresas
+        ORDER BY data_cadastro DESC
+    `;
+
+    db.query(sql, (err, resultado) => {
+
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Erro ao listar empresas");
+        }
+
+        res.json(resultado);
+
+    });
+
+});
+
+// LISTART VAGAS DE UMA EMPRESA
+app.get("/empresas/:id/vagas", (req, res) => {
+
+    const empresa_id = req.params.id;
+
+    const sql = `
+        SELECT *
+        FROM vagas
+        WHERE empresa_id = ?
+    `;
+
+    db.query(sql, [empresa_id], (err, resultado) => {
+
+        if (err) {
+            console.log(err);
+            return res.status(500).send(err);
+        }
+
+        res.json(resultado);
+
+    });
+
+});
+
 // INICIAR SERVIDOR
 app.listen(3000, () => {
     console.log("Servidor rodando em http://localhost:3000");

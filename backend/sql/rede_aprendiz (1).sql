@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 31/05/2026 às 20:33
+-- Tempo de geração: 22/06/2026 às 03:34
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -43,6 +43,31 @@ INSERT INTO `candidaturas` (`id`, `usuario_id`, `vaga_id`, `data`) VALUES
 (5, 1, 1, '2026-05-04 19:20:45'),
 (6, 1, 1, '2026-05-04 19:39:57'),
 (7, 1, 1, '2026-05-07 13:57:01');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `empresas`
+--
+
+CREATE TABLE `empresas` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `descricao` text NOT NULL,
+  `categoria` varchar(50) NOT NULL,
+  `data_cadastro` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `empresas`
+--
+
+INSERT INTO `empresas` (`id`, `nome`, `descricao`, `categoria`, `data_cadastro`) VALUES
+(2, 'Vale', 'Programa Jovem Aprendiz para estudantes do ensino médio', 'atendimento', '2026-06-22 01:05:46'),
+(3, 'Alumar', 'Vagas para suporte e tecnologia', 'ti', '2026-06-22 01:05:46'),
+(4, 'Mateus', 'Atendimento ao cliente e reposição', 'atendimento', '2026-06-22 01:05:46'),
+(5, 'Google', 'Desenvolvimento de software e aplicativos', 'ti', '2026-06-22 01:05:46'),
+(6, 'Agência Criativa', 'Marketing digital e redes sociais', 'marketing', '2026-06-22 01:05:46');
 
 -- --------------------------------------------------------
 
@@ -107,15 +132,19 @@ CREATE TABLE `vagas` (
   `titulo` varchar(100) DEFAULT NULL,
   `empresa` varchar(100) DEFAULT NULL,
   `turno` varchar(50) DEFAULT NULL,
-  `descricao` varchar(150) DEFAULT NULL
+  `descricao` varchar(150) DEFAULT NULL,
+  `empresa_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `vagas`
 --
 
-INSERT INTO `vagas` (`id`, `titulo`, `empresa`, `turno`, `descricao`) VALUES
-(1, 'Atendente (Meio período)', 'Empresa local', 'Tarde', 'Compatível com escola');
+INSERT INTO `vagas` (`id`, `titulo`, `empresa`, `turno`, `descricao`, `empresa_id`) VALUES
+(1, 'Atendente (Meio período)', 'Empresa local', 'Tarde', 'Compatível com escola', 0),
+(4, 'Auxiliar Administrativo', NULL, 'Manhã', 'Organização de documentos', 1),
+(5, 'Suporte de TI', NULL, 'Tarde', 'Atendimento técnico', 2),
+(6, 'Atendente', NULL, 'Noite', 'Atendimento ao cliente', 3);
 
 --
 -- Índices para tabelas despejadas
@@ -128,6 +157,12 @@ ALTER TABLE `candidaturas`
   ADD PRIMARY KEY (`id`),
   ADD KEY `usuario_id` (`usuario_id`),
   ADD KEY `vaga_id` (`vaga_id`);
+
+--
+-- Índices de tabela `empresas`
+--
+ALTER TABLE `empresas`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `perfil`
@@ -159,6 +194,12 @@ ALTER TABLE `candidaturas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
+-- AUTO_INCREMENT de tabela `empresas`
+--
+ALTER TABLE `empresas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT de tabela `perfil`
 --
 ALTER TABLE `perfil`
@@ -174,7 +215,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `vagas`
 --
 ALTER TABLE `vagas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Restrições para tabelas despejadas
