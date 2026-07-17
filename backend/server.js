@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const mysql = require("mysql2");
 const path = require("path");
 const session = require("express-session");
 
@@ -28,13 +27,7 @@ app.get("/", (req, res) => {
 });
 
 // CONEXÃO COM BANCO
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "rede_aprendiz"
-});
-
+const db = require("./config/db");
 
 // CADASTRO
 app.post("/cadastro", (req, res) => {

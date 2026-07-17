@@ -1,38 +1,34 @@
 # Rede Aprendiz
 
-Projeto Escolar - Rede Aprendiz
-
 ## Requisitos
-- XAMPP instalado
-- Node.js instalado
 
-## Instalação
+- Node.js
+- MySQL Community Server
+- MySQL Workbench (opcional)
 
-1. Copie a pasta do projeto para:
+## Como executar
 
-C:\xampp\htdocs\
+1. Clone ou extraia o projeto.
 
-2. Abra o XAMPP e inicie:
-- Apache
-- MySQL
+2. Abra o MySQL Workbench ou outro programa de interface.
 
-3. Importe o banco de dados:
-- Acesse http://localhost/phpmyadmin
-- Crie um banco chamado: rede_aprendiz
-- Importe o arquivo rede_aprendiz.sql
+3. Importe o arquivo sql:
 
-4. Abra o terminal na pasta raiz do projeto:
+backend/sql/rede_aprendiz.sql
 
-C:\xampp\htdocs\rede-aprendiz
+4. Acesse a senha do banco em:
 
-5. Instale as dependências:
+backend/config/db.js
 
+
+5. No terminal:
+
+```bash
+cd backend
 npm install
-
-6. Inicie o servidor:
-
 npm start
+```
 
-7. Abra o navegador:
+6. Abra:
 
 http://localhost:3000

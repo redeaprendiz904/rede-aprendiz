@@ -27,6 +27,10 @@ SET time_zone = "+00:00";
 -- Estrutura para tabela `candidaturas`
 --
 
+CREATE DATABASE IF NOT EXISTS rede_aprendiz;
+
+USE rede_aprendiz;
+
 CREATE TABLE `candidaturas` (
   `id` int(11) NOT NULL,
   `usuario_id` int(11) DEFAULT NULL,
