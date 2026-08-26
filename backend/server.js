@@ -134,8 +134,6 @@ app.post("/perfil", (req, res) => {
         turno,
         horario,
         area_interesse,
-        habilidades,
-        sobre_mim,
         cursos_concluidos,
         horas_estudo
     } = req.body;
@@ -153,12 +151,10 @@ app.post("/perfil", (req, res) => {
             turno,
             horario,
             area_interesse,
-            habilidades,
-            sobre_mim,
             cursos_concluidos,
             horas_estudo
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     db.query(sql, [
@@ -171,8 +167,6 @@ app.post("/perfil", (req, res) => {
         turno,
         horario,
         area_interesse,
-        habilidades,
-        sobre_mim,
         cursos_concluidos,
         horas_estudo
     ], (err) => {
