@@ -163,8 +163,10 @@ filterButtons.forEach(botao => {
     });
 });
 
+
 async function verVagas(empresaId) {
     const container = document.getElementById("listaVagasEmpresa");
+
     container.replaceChildren(
         criarElemento("p", "Carregando vagas...")
     );
@@ -178,49 +180,57 @@ async function verVagas(empresaId) {
 
         container.replaceChildren();
 
-        if (!vagas.length) {
+        if (!Array.isArray(vagas) || vagas.length === 0) {
             container.append(
                 criarElemento("p", "Nenhuma vaga disponível para esta empresa.")
             );
             return;
         }
 
-        
-vagas.forEach(vaga => {
-    const card = criarElemento("div", "", "card");
+        vagas.forEach(vaga => {
+            const card = criarElemento("div", "", "card");
 
-    const titulo = criarElemento("h3", vaga.titulo || "Vaga");
-    const descricao = criarElemento(
-        "p",
-        vaga.descricao || "Sem descrição"
-    );
-    const turno = criarElemento(
-        "p",
-        `Turno: ${vaga.turno || "Não informado"}`
-    );
+            const titulo = criarElemento("h3", vaga.titulo || "Vaga");
 
-    const jaCandidatou = Number(vaga.ja_candidatou) === 1;
+            const descricao = criarElemento(
+                "p",
+                vaga.descricao || "Sem descrição"
+            );
 
-    const botao = criarElemento(
-        "button",
-        jaCandidatou ? "Já se candidatou" : "Candidatar-se"
-    );
+            const turno = criarElemento(
+                "p",
+                `Turno: ${vaga.turno || "Não informado"}`
+            );
 
-    botao.type = "button";
-    botao.disabled = jaCandidatou;
+            const jaCandidatou = Number(vaga.ja_candidatou) === 1;
 
-    if (jaCandidatou) {
-        botao.classList.add("btn-candidatado");
-    } else {
-        botao.addEventListener("click", () => {
-            candidatar(vaga.id, botao);
+            const botao = criarElemento(
+                "button",
+                jaCandidatou ? "Já se candidatou" : "Candidatar-se"
+            );
+
+            botao.type = "button";
+            botao.disabled = jaCandidatou;
+
+            if (jaCandidatou) {
+                botao.classList.add("btn-candidatado");
+            } else {
+                botao.addEventListener("click", () => {
+                    candidatar(vaga.id, botao);
+                });
+            }
+
+            card.append(titulo, descricao, turno, botao);
+            container.append(card);
         });
+    } catch (erro) {
+        console.error("Erro ao carregar vagas:", erro);
+
+        container.replaceChildren(
+            criarElemento("p", "Não foi possível carregar as vagas.")
+        );
     }
-
-    card.append(titulo, descricao, turno, botao);
-    container.append(card);
-});
-
+}
 
 async function candidatar(vagaId, botao) {
     if (botao.disabled) return;
@@ -238,13 +248,18 @@ async function candidatar(vagaId, botao) {
         botao.textContent = "Já se candidatou";
         botao.classList.add("btn-candidatado");
 
-        alert(resultado.mensagem);
+        alert(resultado?.mensagem || "Candidatura realizada com sucesso!");
     } catch (erro) {
-        console.error(erro);
+        console.error("Erro ao se candidatar:", erro);
+
         botao.textContent = "Candidatar-se";
         botao.disabled = false;
-        alert(erro.message || "Não foi possível realizar a candidatura.");
+
+        alert(
+            erro.message || "Não foi possível realizar a candidatura."
+        );
     }
 }
 
 carregarEmpresas();
+
