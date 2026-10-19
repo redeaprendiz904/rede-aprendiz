@@ -195,19 +195,3 @@ footer {
     height: 120px;
   }
 }
-
-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.75;
-}
-
-button.btn-candidatado {
-    background-color: #287A45;
-    color: #fff;
-    opacity: 1;
-    cursor: default;
-}
-
-button.btn-candidatado:hover {
-    opacity: 1;
-}

@@ -11,6 +11,7 @@ body {
     background: #f4f4f4;
 }
 
+/* SIDEBAR */
 .sidebar {
   width: 250px;
   background-color: #800000;
@@ -44,6 +45,8 @@ body {
   transform: translateX(5px);
 }
 
+
+/* CONTEÚDO */
 .container {
     margin-left: 270px; /* compensar sidebar */
     padding: 20px;
@@ -67,6 +70,7 @@ body {
     color: red;
 }
 
+/* CARDS */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -84,6 +88,7 @@ body {
     color: red;
 }
 
+/* BARRA */
 .barra {
     height: 10px;
     background: #ddd;
@@ -97,6 +102,7 @@ body {
     background: red;
 }
 
+/* PARTE DE BAIXO */
 .baixo {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -117,6 +123,7 @@ body {
     border-radius: 10px;
 }
 
+/* 🔥 RESPONSIVO */
 
 /* Tablet */
 @media (max-width: 1024px) {
@@ -158,79 +165,3 @@ body {
         text-align: center;
     }
 }
-
-/* Indicadores dinâmicos */
-#mensagemDashboard,
-#mensagemEstudos {
-    margin: 12px 0;
-    color: #800000;
-}
-
-#barraPerfil {
-    width: 0;
-    transition: width 0.3s ease;
-}
-
-.chart-container {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    margin: 20px 0;
-}
-
-#formEstudos {
-    display: grid;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-#formEstudos label {
-    font-weight: 600;
-}
-
-#formEstudos input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-}
-
-#formEstudos button {
-    padding: 12px;
-    background: #800000;
-    color: white;
-    border: 0;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-#formEstudos button:hover {
-    background: #a00000;
-}
-
-#listaEmpresas {
-    display: grid;
-    gap: 12px;
-}
-
-#listaEmpresas .empresa {
-    overflow-wrap: anywhere;
-}
-
-#listaEmpresas h4 {
-    margin-bottom: 8px;
-}
-
-    .container {
-        padding: 15px;
-    }
-
-    .chart-container {
-        height: 240px;
-    }
-
-    .cards {
-        grid-template-columns: 1fr;
-    }
-
