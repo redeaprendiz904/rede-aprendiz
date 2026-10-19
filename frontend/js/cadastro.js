@@ -1,4 +1,3 @@
-
 const selectAno = document.getElementById("anonascimento");
 const erro = document.getElementById("erroIdade");
 

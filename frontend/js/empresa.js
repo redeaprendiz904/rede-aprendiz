@@ -6,231 +6,245 @@ const filterButtons = document.querySelectorAll(".filter-btn");
 let empresas = [];
 let filtroAtual = "all";
 
-// Modal
+function criarElemento(tag, texto, classe) {
+    const elemento = document.createElement(tag);
+    elemento.textContent = texto ?? "";
+
+    if (classe) elemento.className = classe;
+
+    return elemento;
+}
+
+async function requisicao(url, opcoes = {}) {
+    const resposta = await fetch(url, {
+        credentials: "same-origin",
+        ...opcoes
+    });
+
+    if (!resposta.ok) {
+        const mensagem = await resposta.text();
+        throw new Error(mensagem || "Não foi possível concluir a operação.");
+    }
+
+    const tipo = resposta.headers.get("content-type") || "";
+
+    return tipo.includes("application/json")
+        ? resposta.json()
+        : null;
+}
+
 function abrirModal() {
     document.getElementById("modal").style.display = "flex";
 }
 
-// Fechar modal clicando fora
-window.addEventListener("click", (e) => {
-    const modal = document.getElementById("modal");
+function fecharModal() {
+    document.getElementById("modal").style.display = "none";
+}
 
-    if (e.target === modal) {
-        modal.style.display = "none";
-    }
+function fecharModalVagas() {
+    document.getElementById("modalVagas").style.display = "none";
+}
+
+window.addEventListener("click", evento => {
+    if (evento.target.id === "modal") fecharModal();
+    if (evento.target.id === "modalVagas") fecharModalVagas();
 });
 
-// Cadastrar empresa
 async function adicionarEmpresa() {
-
-    const nome = document.getElementById("nome").value;
-    const descricao = document.getElementById("desc").value;
+    const nome = document.getElementById("nome").value.trim();
+    const descricao = document.getElementById("desc").value.trim();
     const categoria = document.getElementById("categoria").value;
 
     if (!nome || !descricao) {
-        alert("Preencha todos os campos!");
+        alert("Preencha o nome e a descrição da empresa.");
         return;
     }
 
     try {
+        await requisicao("/empresas", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome, descricao, categoria })
+        });
 
-        const resposta = await fetch(
-            "http://localhost:3000/empresas",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    nome,
-                    descricao,
-                    categoria
-                })
-            }
-        );
+        alert("Empresa cadastrada com sucesso!");
 
-        if (resposta.ok) {
+        document.getElementById("nome").value = "";
+        document.getElementById("desc").value = "";
+        document.getElementById("categoria").selectedIndex = 0;
 
-            alert("Empresa cadastrada com sucesso!");
-
-            document.getElementById("nome").value = "";
-            document.getElementById("desc").value = "";
-            document.getElementById("categoria").selectedIndex = 0;
-
-            document.getElementById("modal").style.display = "none";
-
-            carregarEmpresas();
-
-        } else {
-
-            alert("Erro ao cadastrar empresa");
-
-        }
-
+        fecharModal();
+        await carregarEmpresas();
     } catch (erro) {
-
         console.error(erro);
-        alert("Erro no servidor");
-
+        alert(erro.message || "Erro ao cadastrar empresa.");
     }
-
 }
 
-// Carregar empresas do banco
 async function carregarEmpresas() {
+    cardsContainer.replaceChildren();
+    cardsContainer.append(
+        criarElemento("p", "Carregando empresas...")
+    );
 
     try {
-
-        const resposta = await fetch(
-            "http://localhost:3000/empresas/listar"
-        );
-
-        empresas = await resposta.json();
-
+        empresas = await requisicao("/empresas/listar");
         renderizarEmpresas();
-
     } catch (erro) {
-
         console.error(erro);
-
+        cardsContainer.replaceChildren();
+        cardsContainer.append(
+            criarElemento("p", "Não foi possível carregar as empresas.")
+        );
     }
-
 }
 
-// Mostrar empresas na tela
 function renderizarEmpresas() {
-
-    const busca = searchInput.value.toLowerCase();
-
-    cardsContainer.innerHTML = "";
+    const busca = searchInput.value.trim().toLowerCase();
 
     const filtradas = empresas.filter(empresa => {
-
         const categoriaOk =
-            filtroAtual === "all" ||
-            empresa.categoria === filtroAtual;
+            filtroAtual === "all" || empresa.categoria === filtroAtual;
 
         const buscaOk =
-            empresa.nome.toLowerCase().includes(busca);
+            String(empresa.nome || "").toLowerCase().includes(busca) ||
+            String(empresa.descricao || "").toLowerCase().includes(busca);
 
         return categoriaOk && buscaOk;
-
     });
 
-    filtradas.forEach(empresa => {
-
-        cardsContainer.innerHTML += `
-            <div class="card"
-                 data-category="${empresa.categoria}">
-
-                <h3>${empresa.nome}</h3>
-
-                <p>${empresa.descricao}</p>
-
-                <button onclick="verVagas(${empresa.id})">
-                    Ver Vagas
-                </button>
-
-            </div>
-        `;
-
-    });
-
-    cardsContainer.innerHTML += `
-        <div class="card add-card">
-            <h3>Adicionar</h3>
-            <p>Cadastre sua empresa no catálogo de empresas!</p>
-            <button onclick="abrirModal()">Cadastrar</button>
-        </div>
-    `;
+    cardsContainer.replaceChildren();
 
     resultCount.textContent =
-        `Total: ${filtradas.length} empresas`;
+        `Exibindo ${filtradas.length} de ${empresas.length} empresas`;
 
-}
+    const noResults = document.getElementById("noResults");
+    noResults.style.display = filtradas.length ? "none" : "block";
 
-// Pesquisa
-searchInput.addEventListener("input", () => {
-
-    renderizarEmpresas();
-
-});
-
-// Filtros
-filterButtons.forEach(btn => {
-
-    btn.addEventListener("click", () => {
-
-        filterButtons.forEach(b =>
-            b.classList.remove("active")
+    filtradas.forEach(empresa => {
+        const card = criarElemento("div", "", "card");
+        const titulo = criarElemento("h3", empresa.nome);
+        const descricao = criarElemento("p", empresa.descricao);
+        const categoria = criarElemento(
+            "p",
+            `Categoria: ${empresa.categoria}`
         );
+        const botao = criarElemento("button", "Ver vagas");
+        botao.type = "button";
+        botao.addEventListener("click", () => verVagas(empresa.id));
 
-        btn.classList.add("active");
-
-        filtroAtual = btn.dataset.filter;
-
-        renderizarEmpresas();
-
+        card.append(titulo, descricao, categoria, botao);
+        cardsContainer.append(card);
     });
 
+    const addCard = criarElemento("div", "", "card add-card");
+    addCard.append(
+        criarElemento("h3", "Adicionar empresa"),
+        criarElemento("p", "Cadastre uma empresa no catálogo.")
+    );
+
+    const botaoAdicionar = criarElemento("button", "Cadastrar");
+    botaoAdicionar.type = "button";
+    botaoAdicionar.addEventListener("click", abrirModal);
+
+    addCard.append(botaoAdicionar);
+    cardsContainer.append(addCard);
+}
+
+searchInput.addEventListener("input", renderizarEmpresas);
+
+filterButtons.forEach(botao => {
+    botao.addEventListener("click", () => {
+        filterButtons.forEach(item => item.classList.remove("active"));
+        botao.classList.add("active");
+
+        filtroAtual = botao.dataset.filter;
+        renderizarEmpresas();
+    });
 });
 
-carregarEmpresas();
-
 async function verVagas(empresaId) {
+    const container = document.getElementById("listaVagasEmpresa");
+    container.replaceChildren(
+        criarElemento("p", "Carregando vagas...")
+    );
+
+    document.getElementById("modalVagas").style.display = "flex";
 
     try {
-
-        const resposta = await fetch(
-            `http://localhost:3000/empresas/${empresaId}/vagas`
+        const vagas = await requisicao(
+            `/empresas/${encodeURIComponent(empresaId)}/vagas`
         );
 
-        const vagas = await resposta.json();
+        container.replaceChildren();
 
-        const container =
-            document.getElementById("listaVagasEmpresa");
-
-        container.innerHTML = "";
-
-        if (vagas.length === 0) {
-
-            container.innerHTML =
-                "<p>Nenhuma vaga disponível.</p>";
-
-        } else {
-
-            vagas.forEach(vaga => {
-
-                container.innerHTML += `
-                    <div class="card">
-                        <h3>${vaga.titulo}</h3>
-                        <p>${vaga.descricao}</p>
-                        <p><strong>Turno:</strong> ${vaga.turno}</p>
-
-                        <button onclick="candidatar(${vaga.id})">
-                            Candidatar-se
-                        </button>
-                    </div>
-                `;
-
-            });
-
+        if (!vagas.length) {
+            container.append(
+                criarElemento("p", "Nenhuma vaga disponível para esta empresa.")
+            );
+            return;
         }
 
-        document.getElementById("modalVagas")
-            .style.display = "flex";
+        
+vagas.forEach(vaga => {
+    const card = criarElemento("div", "", "card");
 
-    } catch (erro) {
+    const titulo = criarElemento("h3", vaga.titulo || "Vaga");
+    const descricao = criarElemento(
+        "p",
+        vaga.descricao || "Sem descrição"
+    );
+    const turno = criarElemento(
+        "p",
+        `Turno: ${vaga.turno || "Não informado"}`
+    );
 
-        console.error(erro);
+    const jaCandidatou = Number(vaga.ja_candidatou) === 1;
 
+    const botao = criarElemento(
+        "button",
+        jaCandidatou ? "Já se candidatou" : "Candidatar-se"
+    );
+
+    botao.type = "button";
+    botao.disabled = jaCandidatou;
+
+    if (jaCandidatou) {
+        botao.classList.add("btn-candidatado");
+    } else {
+        botao.addEventListener("click", () => {
+            candidatar(vaga.id, botao);
+        });
     }
 
+    card.append(titulo, descricao, turno, botao);
+    container.append(card);
+});
+
+
+async function candidatar(vagaId, botao) {
+    if (botao.disabled) return;
+
+    botao.disabled = true;
+    botao.textContent = "Enviando...";
+
+    try {
+        const resultado = await requisicao("/candidatar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ vaga_id: vagaId })
+        });
+
+        botao.textContent = "Já se candidatou";
+        botao.classList.add("btn-candidatado");
+
+        alert(resultado.mensagem);
+    } catch (erro) {
+        console.error(erro);
+        botao.textContent = "Candidatar-se";
+        botao.disabled = false;
+        alert(erro.message || "Não foi possível realizar a candidatura.");
+    }
 }
 
-function fecharModalVagas() {
-
-    document.getElementById("modalVagas")
-        .style.display = "none";
-
-}
+carregarEmpresas();
