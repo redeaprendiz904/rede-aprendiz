@@ -1,51 +1,123 @@
 async function carregarVagas() {
+    const container = document.getElementById("listaVagas");
+    if (!container) return;
+
+    container.textContent = "Carregando vagas...";
 
     try {
-        const resposta = await fetch("http://localhost:3000/vagas");
-        const vagas = await resposta.json();
+        const [respostaVagas, respostaCandidaturas] = await Promise.all([
+            fetch("/vagas", { credentials: "include" }),
+            fetch("/minhas-candidaturas", { credentials: "include" })
+        ]);
 
-        const container = document.getElementById("listaVagas");
-        container.innerHTML = "";
+        if (respostaVagas.status === 401 ||
+            respostaCandidaturas.status === 401) {
+            window.location.href = "/html/login.html";
+            return;
+        }
+
+        if (!respostaVagas.ok || !respostaCandidaturas.ok) {
+            throw new Error("Não foi possível carregar as vagas.");
+        }
+
+        const vagas = await respostaVagas.json();
+        const candidaturas = await respostaCandidaturas.json();
+
+        const idsCandidatados = new Set(
+            candidaturas.map(item => Number(item.vaga_id))
+        );
+
+        container.replaceChildren();
+
+        if (!vagas.length) {
+            container.textContent = "Nenhuma vaga disponível no momento.";
+            return;
+        }
 
         vagas.forEach(vaga => {
-            container.innerHTML += `
-                <div class="card">
-                    <h3>${vaga.titulo}</h3>
-                    <p>📍 ${vaga.empresa}</p>
-                    <p>⏰ ${vaga.turno}</p>
-                    <p>✔ ${vaga.descricao}</p>
-                    <button onclick="candidatar(${vaga.id})">
-                        Candidatar-se
-                    </button>
-                </div>
-            `;
-        });
+            const jaCandidatou = idsCandidatados.has(Number(vaga.id));
 
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const titulo = document.createElement("h3");
+            titulo.textContent = vaga.titulo ?? "Vaga sem título";
+
+            const empresa = document.createElement("p");
+            empresa.textContent = `📍 ${vaga.empresa ?? "Empresa não informada"}`;
+
+            const turno = document.createElement("p");
+            turno.textContent = `⏰ ${vaga.turno ?? "Turno não informado"}`;
+
+            const descricao = document.createElement("p");
+            descricao.textContent = `✔ ${vaga.descricao ?? ""}`;
+
+            const botao = document.createElement("button");
+            botao.type = "button";
+
+            if (jaCandidatou) {
+                botao.textContent = "✓ Candidatura realizada";
+                botao.disabled = true;
+                botao.classList.add("candidatado");
+                botao.setAttribute("aria-label",
+                    `Você já se candidatou à vaga ${vaga.titulo}`);
+            } else {
+                botao.textContent = "Candidatar-se";
+                botao.addEventListener("click", () => candidatar(vaga.id, botao));
+            }
+
+            card.append(titulo, empresa, turno, descricao, botao);
+            container.appendChild(card);
+        });
     } catch (erro) {
-        alert("Erro ao carregar vagas");
+        console.error(erro);
+        container.textContent =
+            "Erro ao carregar as vagas. Atualize a página e tente novamente.";
     }
 }
 
-async function candidatar(vaga_id) {
+async function candidatar(vagaId, botao) {
+    const textoOriginal = botao.textContent;
+    botao.disabled = true;
+    botao.textContent = "Enviando candidatura...";
 
     try {
-        const resposta = await fetch("http://localhost:3000/candidatar", {
+        const resposta = await fetch("/candidatar", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             credentials: "include",
-            body: JSON.stringify({ vaga_id })
+            body: JSON.stringify({ vaga_id: vagaId })
         });
 
-        if (resposta.ok) {
-            alert("Candidatura realizada!");
-        } else {
-            alert("Erro ao candidatar");
+        const resultado = await resposta.json().catch(() => ({}));
+
+        if (resposta.ok || resposta.status === 409) {
+            botao.textContent = "✓ Candidatura realizada";
+            botao.classList.add("candidatado");
+            botao.disabled = true;
+
+            if (resposta.ok) {
+                alert("Candidatura realizada com sucesso!");
+            } else {
+                alert("Você já se candidatou a esta vaga.");
+            }
+
+            return;
         }
 
-    } catch (err) {
-        alert("Erro no servidor");
+        if (resposta.status === 401) {
+            window.location.href = "/html/login.html";
+            return;
+        }
+
+        throw new Error(resultado.erro || "Erro ao realizar candidatura.");
+    } catch (erro) {
+        console.error(erro);
+        alert(erro.message || "Erro ao conectar ao servidor.");
+        botao.disabled = false;
+        botao.textContent = textoOriginal;
     }
 }
 

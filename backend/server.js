@@ -120,9 +120,10 @@ app.get("/vagas", (req, res) => {
 
 // CRIAR PERFIL
 app.post("/perfil", (req, res) => {
-
     if (!req.session.usuario) {
-        return res.status(401).send("Não autorizado");
+        return res.status(401).json({
+            erro: "Você precisa estar logado."
+        });
     }
 
     const {
@@ -140,9 +141,119 @@ app.post("/perfil", (req, res) => {
 
     const usuario_id = req.session.usuario.id;
 
+    const dados = [
+        nome || null,
+        idade || null,
+        telefone || null,
+        escola || null,
+        serie || null,
+        turno || null,
+        horario || null,
+        area_interesse || null,
+        cursos_concluidos ?? 0,
+        horas_estudo ?? 0
+    ];
+
+    const sqlBuscar = `
+        SELECT id
+        FROM perfil
+        WHERE usuario_id = ?
+        ORDER BY id DESC
+        LIMIT 1
+    `;
+
+    db.query(sqlBuscar, [usuario_id], (err, resultado) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({
+                erro: "Erro ao consultar perfil."
+            });
+        }
+
+        if (resultado.length > 0) {
+            // O perfil já existe: atualiza os dados.
+            const perfil_id = resultado[0].id;
+
+            const sqlAtualizar = `
+                UPDATE perfil
+                SET nome = ?,
+                    idade = ?,
+                    telefone = ?,
+                    escola = ?,
+                    serie = ?,
+                    turno = ?,
+                    horario = ?,
+                    area_interesse = ?,
+                    cursos_concluidos = ?,
+                    horas_estudo = ?
+                WHERE id = ? AND usuario_id = ?
+            `;
+
+            db.query(
+                sqlAtualizar,
+                [...dados, perfil_id, usuario_id],
+                (err) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({
+                            erro: "Erro ao atualizar perfil."
+                        });
+                    }
+
+                    res.json({
+                        mensagem: "Perfil atualizado com sucesso!"
+                    });
+                }
+            );
+        } else {
+            // O perfil ainda não existe: cria um novo.
+            const sqlInserir = `
+                INSERT INTO perfil (
+                    usuario_id,
+                    nome,
+                    idade,
+                    telefone,
+                    escola,
+                    serie,
+                    turno,
+                    horario,
+                    area_interesse,
+                    cursos_concluidos,
+                    horas_estudo
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+
+            db.query(
+                sqlInserir,
+                [usuario_id, ...dados],
+                (err) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({
+                            erro: "Erro ao salvar perfil."
+                        });
+                    }
+
+                    res.json({
+                        mensagem: "Perfil salvo com sucesso!"
+                    });
+                }
+            );
+        }
+    });
+});
+
+
+app.get("/perfil/dados", (req, res) => {
+    if (!req.session.usuario) {
+        return res.status(401).json({
+            erro: "Você precisa estar logado."
+        });
+    }
+
     const sql = `
-        INSERT INTO perfil (
-            usuario_id,
+        SELECT
             nome,
             idade,
             telefone,
@@ -152,35 +263,29 @@ app.post("/perfil", (req, res) => {
             horario,
             area_interesse,
             cursos_concluidos,
-            horas_estudo
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            horas_estudo,
+            habilidades,
+            sobre_mim
+        FROM perfil
+        WHERE usuario_id = ?
+        ORDER BY id DESC
+        LIMIT 1
     `;
 
-    db.query(sql, [
-        usuario_id,
-        nome,
-        idade,
-        telefone,
-        escola,
-        serie,
-        turno,
-        horario,
-        area_interesse,
-        cursos_concluidos,
-        horas_estudo
-    ], (err) => {
-
+    db.query(sql, [req.session.usuario.id], (err, resultado) => {
         if (err) {
-            console.log(err);
-            return res.status(500).send("Erro ao salvar perfil");
+            console.error(err);
+            return res.status(500).json({
+                erro: "Erro ao carregar perfil."
+            });
         }
 
-        res.sendStatus(200);
-
+        res.json({
+            perfil: resultado.length > 0 ? resultado[0] : null
+        });
     });
-
 });
+
 
 // CANDIDATAR-SE
 app.post("/candidatar", (req, res) => {
@@ -207,10 +312,12 @@ app.post("/candidatar", (req, res) => {
 });
 
 // GRAFICO DE PERFORMANCE
-app.get("/dashboard/dados", (req, res) => {
 
+app.get("/dashboard/dados", (req, res) => {
     if (!req.session.usuario) {
-        return res.status(401).send("Não autorizado");
+        return res.status(401).json({
+            erro: "Não autorizado"
+        });
     }
 
     const sql = `
@@ -222,16 +329,74 @@ app.get("/dashboard/dados", (req, res) => {
     `;
 
     db.query(sql, [req.session.usuario.id], (err, resultado) => {
-
         if (err) {
-            return res.status(500).send(err);
+            console.error(err);
+            return res.status(500).json({
+                erro: "Erro ao carregar dados do dashboard."
+            });
         }
 
-        res.json(resultado[0]);
-
+        res.json(resultado.length > 0 ? resultado[0] : {
+            cursos_concluidos: 0,
+            horas_estudo: 0
+        });
     });
-
 });
+
+
+app.get("/dashboard/resumo", (req, res) => {
+    if (!req.session.usuario) {
+        return res.status(401).json({
+            erro: "Você precisa estar logado."
+        });
+    }
+
+    const usuarioId = req.session.usuario.id;
+
+    const sql = `
+        SELECT
+            (SELECT COUNT(*)
+             FROM vagas) AS total_vagas,
+
+            (SELECT COUNT(*)
+             FROM candidaturas
+             WHERE usuario_id = ?) AS total_inscricoes,
+
+            (SELECT COUNT(DISTINCT v.empresa_id)
+             FROM vagas v
+             INNER JOIN empresas e ON e.id = v.empresa_id)
+             AS empresas_com_vagas,
+
+            (SELECT cursos_concluidos
+             FROM perfil
+             WHERE usuario_id = ?
+             ORDER BY id DESC
+             LIMIT 1) AS cursos_concluidos,
+
+            (SELECT horas_estudo
+             FROM perfil
+             WHERE usuario_id = ?
+             ORDER BY id DESC
+             LIMIT 1) AS horas_estudo
+    `;
+
+    db.query(sql, [usuarioId, usuarioId, usuarioId], (err, resultado) => {
+        if (err) {
+            console.error("Erro no resumo do dashboard:", err);
+
+            return res.status(500).json({
+                erro: "Não foi possível carregar o dashboard."
+            });
+        }
+
+        res.json({
+            ...resultado[0],
+            cursos_concluidos: resultado[0].cursos_concluidos ?? 0,
+            horas_estudo: resultado[0].horas_estudo ?? 0
+        });
+    });
+});
+
 
 // CADASTRAR EMPRESA
 app.post("/empresas", (req, res) => {

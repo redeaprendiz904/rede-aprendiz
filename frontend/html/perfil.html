@@ -2,125 +2,131 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Área do Estudante</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área do Estudante | Rede Aprendiz</title>
   <link rel="stylesheet" href="../css/perfil.css">
-
-  
 </head>
-
 <body>
 
-<div class="sidebar">
+  <div class="sidebar">
     <h2>Rede Aprendiz</h2>
     <a href="/perfil">Perfil</a>
     <a href="/dashboard">Dashboard</a>
     <a href="/empresas">Empresas</a>
     <a href="/logout">Sair</a>
-</div>
-
-
-</div>
-
-<section class="hero">
-<div class="container">
-
-  <div class="section">
-    <h2>Perfil</h2>
-
-    <div class="cards" id="listaVagas"></div>
   </div>
 
-  <div class="section">
-    <h2>Dicas</h2>
-    <div class="cards">
+  <section class="hero">
+    <div class="container">
 
-      <div class="card">
-        <p><strong>Organize seu tempo</strong></p>
-        <p>Tenha horários para estudar, trabalhar e descansar.</p>
+      <div class="section">
+        <h2>Vagas disponíveis</h2>
+        <div class="cards" id="listaVagas"></div>
       </div>
 
-      <div class="card">
-        <p><strong>Priorize a escola</strong></p>
-        <p>A educação deve sempre vir em primeiro lugar.</p>
+      <div class="section">
+        <h2>Dicas</h2>
+        <div class="cards">
+          <div class="card">
+            <p><strong>Organize seu tempo</strong></p>
+            <p>Tenha horários para estudar, trabalhar e descansar.</p>
+          </div>
+
+          <div class="card">
+            <p><strong>Priorize a escola</strong></p>
+            <p>A educação deve sempre vir em primeiro lugar.</p>
+          </div>
+
+          <div class="card">
+            <p><strong>Converse no trabalho</strong></p>
+            <p>Avise sobre provas e atividades importantes.</p>
+          </div>
+        </div>
       </div>
 
-      <div class="card">
-        <p><strong>Converse no trabalho</strong></p>
-        <p>Avise sobre provas e atividades importantes.</p>
+      <div class="section">
+        <h2>Resumo do seu perfil</h2>
+
+        <div class="cardperfil">
+          <img src="../img/fotoperfil.jpg"
+               alt="Foto do estudante"
+               class="fotoperfil">
+
+          <div class="infoperfil">
+            <h3 id="resumoNome">Carregando perfil...</h3>
+            <p>Idade: <span id="resumoIdade">—</span></p>
+            <p>Telefone: <span id="resumoTelefone">—</span></p>
+            <p>Escola: <span id="resumoEscola">—</span></p>
+            <p>Série: <span id="resumoSerie">—</span></p>
+            <p>Turno de estudo: <span id="resumoTurno">—</span></p>
+            <p>Disponibilidade: <span id="resumoHorario">—</span></p>
+            <p>Área de interesse: <span id="resumoArea">—</span></p>
+            <p>Cursos concluídos: <span id="resumoCursos">—</span></p>
+            <p>Horas de estudo por semana: <span id="resumoHoras">—</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="secaoFormulario">
+        <h2 id="tituloFormulario">Concluir perfil</h2>
+
+        <form class="card" id="formPerfil">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" required maxlength="150">
+
+          <label for="idade">Idade</label>
+          <input type="number" id="idade" required min="14" max="100">
+
+          <label for="telefone">Telefone</label>
+          <input type="tel" id="telefone" required maxlength="20">
+
+          <label for="escola">Nome da escola</label>
+          <input type="text" id="escola" required maxlength="150">
+
+          <label for="serie">Série</label>
+          <select id="serie" required>
+            <option value="">Selecione a série</option>
+            <option value="1º Ano">1º Ano</option>
+            <option value="2º Ano">2º Ano</option>
+            <option value="3º Ano">3º Ano</option>
+          </select>
+
+          <label for="turno">Turno em que estuda</label>
+          <select id="turno" required>
+            <option value="">Selecione o turno</option>
+            <option value="Manhã">Manhã</option>
+            <option value="Tarde">Tarde</option>
+            <option value="Noite">Noite</option>
+          </select>
+
+          <label for="hr-disponivel">Horário disponível para trabalhar</label>
+          <select id="hr-disponivel" required>
+            <option value="">Selecione a disponibilidade</option>
+            <option value="Manhã">Manhã</option>
+            <option value="Tarde">Tarde</option>
+            <option value="Noite">Noite</option>
+          </select>
+
+          <label for="area_interesse">Área de interesse</label>
+          <input type="text" id="area_interesse" required maxlength="150">
+
+          <label for="cursos_concluidos">Cursos concluídos</label>
+          <input type="number" id="cursos_concluidos" required min="0" max="999">
+
+          <label for="horas_estudo">Horas de estudo por semana</label>
+          <input type="number" id="horas_estudo" required min="0" max="168">
+
+          <button type="submit" id="btnPerfil">Salvar perfil</button>
+          <p id="mensagemPerfil" role="status" aria-live="polite"></p>
+        </form>
       </div>
 
     </div>
-  </div>
+  </section>
 
-  <div class="section">
-    <h2>Resumo do seu perfil</h2>
-
-    <div class="cardperfil">
-      <img src="../img/fotoperfil.jpg" class="fotoperfil">
-    
-    <div class="infoperfil">
-      <h3>Jhonatan Campos</h3>
-      <p>Gênero: Masculino</p>
-      <p>Data de Nascimento: 17/09/2008</h3>
-      <p>CPF: 400.289.220-00</p>
-      <p>Telefone: (98) 94002-8922</p>
-      
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-  <h2>Concluir perfil</h2>
-
-  <div class="card">
-
-    <input type="text" id="nome" placeholder="Nome">
-
-    <input type="number" id="idade" placeholder="Idade">
-
-    <input type="text" id="telefone" placeholder="Telefone">
-
-    <input type="text" id="escola" placeholder="Nome da Escola">
-
-    <select id="serie">
-      <option value="" disabled selected>Série</option>
-      <option>1º Ano</option>
-      <option>2º Ano</option>
-      <option>3º Ano</option>
-    </select>
-
-    <select id="turno">
-      <option value="" disabled selected>Turno que Estuda</option>
-      <option>Manhã</option>
-      <option>Tarde</option>
-      <option>Noite</option>
-    </select>
-
-    <select id="hr-disponivel">
-      <option value="" disabled selected>Horário Disponível</option>
-      <option>Manhã</option>
-      <option>Tarde</option>
-      <option>Noite</option>
-    </select>
-
-    <input type="text" id="area_interesse" placeholder="Área de Interesse">
-
-    <input type="number" id="cursos_concluidos" placeholder="Cursos Concluídos">
-
-    <input type="number" id="horas_estudo" placeholder="Horas de Estudo por Semana">
-
-    <button id="btnPerfil">Concluir perfil</button>
-
-  </div>
-</div>
-</section>
-
-
-<footer>
-  © 2026 - Rede Aprendiz
-</footer>
+  <footer>© 2026 - Rede Aprendiz</footer>
 
   <script src="../js/vagas.js"></script>
-<script src="../js/perfil.js"></script>
+  <script src="../js/perfil.js"></script>
 </body>
 </html>

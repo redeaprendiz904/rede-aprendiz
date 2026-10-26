@@ -195,3 +195,39 @@ footer {
     height: 120px;
   }
 }
+
+#formPerfil {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#formPerfil label {
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+#formPerfil input,
+#formPerfil select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #b2b2b2;
+    border-radius: 6px;
+    font: inherit;
+}
+
+#btnPerfil:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+/* Indicação de candidatura já realizada */
+button.candidatado,
+button.candidatado:disabled {
+    background-color: #e1f5e7;
+    color: #176b35;
+    border: 1px solid #8bc99e;
+    cursor: not-allowed;
+    opacity: 1;
+}
