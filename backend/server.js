@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const session = require("express-session");
+const multer = require("multer");
+const fs = require("fs");
 
 const app = express();
 
@@ -28,6 +30,49 @@ app.get("/", (req, res) => {
 
 // CONEXÃO COM BANCO
 const db = require("./config/db");
+
+const pastaFotos = path.join(__dirname, "uploads", "perfis");
+
+fs.mkdirSync(pastaFotos, { recursive: true });
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+const armazenamentoFotos = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, pastaFotos);
+    },
+    filename: (req, file, cb) => {
+        const extensoesPermitidas = {
+            "image/jpeg": ".jpg",
+            "image/png": ".png",
+            "image/webp": ".webp"
+        };
+
+        const extensao = extensoesPermitidas[file.mimetype];
+
+        cb(null, `usuario-${req.session.usuario.id}-${Date.now()}${extensao}`);
+    }
+});
+
+const uploadFoto = multer({
+    storage: armazenamentoFotos,
+    limits: {
+        fileSize: 2 * 1024 * 1024
+    },
+    fileFilter: (req, file, cb) => {
+        const tiposPermitidos = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (tiposPermitidos.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error("Envie uma foto JPG, PNG ou WEBP."));
+        }
+    }
+});
 
 // CADASTRO
 app.post("/cadastro", (req, res) => {
@@ -108,6 +153,12 @@ app.get("/perfil", verificarLogin, (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/html/perfil.html"));
 });
 
+app.get("/oportunidades", verificarLogin, (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "../frontend/html/vagas.html")
+    );
+});
+
 // LISTAR VAGAS
 app.get("/vagas", (req, res) => {
     const sql = "SELECT * FROM vagas";
@@ -115,6 +166,33 @@ app.get("/vagas", (req, res) => {
     db.query(sql, (err, result) => {
         if (err) return res.status(500).send(err);
         res.json(result);
+    });
+});
+
+// LISTAR CANDIDATURAS DO USUÁRIO LOGADO
+app.get("/minhas-candidaturas", (req, res) => {
+    if (!req.session.usuario) {
+        return res.status(401).json({
+            erro: "Você precisa estar logado."
+        });
+    }
+
+    const sql = `
+        SELECT vaga_id
+        FROM candidaturas
+        WHERE usuario_id = ?
+    `;
+
+    db.query(sql, [req.session.usuario.id], (err, resultados) => {
+        if (err) {
+            console.error("Erro ao buscar candidaturas:", err);
+
+            return res.status(500).json({
+                erro: "Não foi possível carregar as candidaturas."
+            });
+        }
+
+        res.json(resultados);
     });
 });
 
@@ -244,6 +322,65 @@ app.post("/perfil", (req, res) => {
     });
 });
 
+// Rota para enviar e salvar a foto do perfil.
+app.post("/perfil/foto", (req, res) => {
+    // Verifica se o usuário está autenticado.
+    if (!req.session.usuario) {
+        return res.status(401).json({
+            erro: "Você precisa estar logado para alterar a foto."
+        });
+    }
+
+    // Recebe o arquivo enviado pelo formulário.
+    uploadFoto.single("foto")(req, res, async (erro) => {
+        if (erro) {
+            return res.status(400).json({
+                erro: erro.message || "Não foi possível enviar a foto."
+            });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({
+                erro: "Selecione uma foto antes de enviar."
+            });
+        }
+
+        const usuarioId = req.session.usuario.id;
+        const caminhoFoto = `/uploads/perfis/${req.file.filename}`;
+
+        try {
+            // Atualiza a foto do perfil do usuário conectado.
+            const [resultado] = await db.promise().execute(
+                `UPDATE perfil
+                 SET foto_perfil = ?
+                 WHERE usuario_id = ?`,
+                [caminhoFoto, usuarioId]
+            );
+
+            // Se o usuário ainda não tiver um perfil, remove o arquivo enviado.
+            if (resultado.affectedRows === 0) {
+                fs.unlink(req.file.path, () => {});
+
+                return res.status(404).json({
+                    erro: "Perfil não encontrado. Salve seus dados antes de alterar a foto."
+                });
+            }
+
+            return res.json({
+                mensagem: "Foto atualizada com sucesso!",
+                foto_perfil: caminhoFoto
+            });
+        } catch (erroBanco) {
+            console.error("Erro ao salvar foto:", erroBanco);
+
+            fs.unlink(req.file.path, () => {});
+
+            return res.status(500).json({
+                erro: "Erro ao salvar a foto no banco de dados."
+            });
+        }
+    });
+});
 
 app.get("/perfil/dados", (req, res) => {
     if (!req.session.usuario) {
@@ -253,24 +390,12 @@ app.get("/perfil/dados", (req, res) => {
     }
 
     const sql = `
-        SELECT
-            nome,
-            idade,
-            telefone,
-            escola,
-            serie,
-            turno,
-            horario,
-            area_interesse,
-            cursos_concluidos,
-            horas_estudo,
-            habilidades,
-            sobre_mim
-        FROM perfil
-        WHERE usuario_id = ?
-        ORDER BY id DESC
-        LIMIT 1
-    `;
+        SELECT  nome, idade, telefone, escola, serie, turno,
+                horario, area_interesse, cursos_concluidos,
+                horas_estudo, habilidades, sobre_mim, foto_perfil
+        FROM perfil WHERE usuario_id = ?
+                    ORDER BY id DESC
+                    LIMIT 1`;
 
     db.query(sql, [req.session.usuario.id], (err, resultado) => {
         if (err) {
@@ -287,29 +412,87 @@ app.get("/perfil/dados", (req, res) => {
 });
 
 
-// CANDIDATAR-SE
+
+ // CANDIDATAR-SE
 app.post("/candidatar", (req, res) => {
     if (!req.session.usuario) {
-        return res.status(401).send("Não autorizado");
+        return res.status(401).json({
+            erro: "Você precisa estar logado."
+        });
     }
 
-    const { vaga_id } = req.body;
-    const usuario_id = req.session.usuario.id;
+    const vagaId = Number(req.body.vaga_id);
+    const usuarioId = req.session.usuario.id;
 
-    const sql = `
-        INSERT INTO candidaturas (usuario_id, vaga_id)
-        VALUES (?, ?)
-    `;
+    if (!Number.isInteger(vagaId) || vagaId <= 0) {
+        return res.status(400).json({
+            erro: "ID da vaga inválido."
+        });
+    }
 
-    db.query(sql, [usuario_id, vaga_id], (err) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).send("Erro ao candidatar");
+    // Confere se a vaga existe.
+    db.query(
+        "SELECT id FROM vagas WHERE id = ?",
+        [vagaId],
+        (err, vagas) => {
+            if (err) {
+                console.error("Erro ao verificar vaga:", err);
+                return res.status(500).json({
+                    erro: "Erro ao verificar a vaga."
+                });
+            }
+
+            if (vagas.length === 0) {
+                return res.status(404).json({
+                    erro: "Essa vaga não existe."
+                });
+            }
+
+            // Confere se o estudante já se candidatou.
+            db.query(
+                `SELECT id
+                 FROM candidaturas
+                 WHERE usuario_id = ? AND vaga_id = ?
+                 LIMIT 1`,
+                [usuarioId, vagaId],
+                (err, candidaturas) => {
+                    if (err) {
+                        console.error("Erro ao verificar candidatura:", err);
+                        return res.status(500).json({
+                            erro: "Erro ao verificar sua candidatura."
+                        });
+                    }
+
+                    if (candidaturas.length > 0) {
+                        return res.status(409).json({
+                            erro: "Você já se candidatou a esta vaga."
+                        });
+                    }
+
+                    // Registra a candidatura.
+                    db.query(
+                        `INSERT INTO candidaturas (usuario_id, vaga_id)
+                         VALUES (?, ?)`,
+                        [usuarioId, vagaId],
+                        (err) => {
+                            if (err) {
+                                console.error("Erro ao candidatar:", err);
+                                return res.status(500).json({
+                                    erro: "Não foi possível registrar a candidatura."
+                                });
+                            }
+
+                            return res.status(201).json({
+                                mensagem: "Candidatura realizada com sucesso!"
+                            });
+                        }
+                    );
+                }
+            );
         }
-
-        res.sendStatus(200);
-    });
+    );
 });
+
 
 // GRAFICO DE PERFORMANCE
 
@@ -467,6 +650,83 @@ app.get("/empresas/:id/vagas", (req, res) => {
     });
 
 });
+
+
+// CADASTRAR VAGA VINCULADA A UMA EMPRESA 
+app.post("/empresas/:id/vagas", (req, res) => {
+    const empresaId = Number(req.params.id);
+    const { titulo, turno, descricao } = req.body;
+
+    if (!Number.isInteger(empresaId) || empresaId <= 0) {
+        return res.status(400).json({
+            erro: "ID da empresa inválido."
+        });
+    }
+
+    if (!titulo || !turno || !descricao) {
+        return res.status(400).json({
+            erro: "Preencha título, turno e descrição da vaga."
+        });
+    }
+
+    if (
+        titulo.length > 100 ||
+        turno.length > 50 ||
+        descricao.length > 150
+    ) {
+        return res.status(400).json({
+            erro: "Um ou mais campos ultrapassam o limite permitido."
+        });
+    }
+
+    db.query(
+        "SELECT id, nome FROM empresas WHERE id = ?",
+        [empresaId],
+        (err, empresas) => {
+            if (err) {
+                console.error("Erro ao consultar empresa:", err);
+                return res.status(500).json({
+                    erro: "Erro ao consultar a empresa."
+                });
+            }
+
+            if (empresas.length === 0) {
+                return res.status(404).json({
+                    erro: "Empresa não encontrada."
+                });
+            }
+
+            const empresa = empresas[0];
+
+            const sql = `
+                INSERT INTO vagas
+                    (titulo, empresa, turno, descricao, empresa_id)
+                VALUES (?, ?, ?, ?, ?)
+            `;
+
+            db.query(
+                sql,
+                [titulo.trim(), empresa.nome, turno.trim(),
+                 descricao.trim(), empresaId],
+                (err, resultado) => {
+                    if (err) {
+                        console.error("Erro ao cadastrar vaga:", err);
+                        return res.status(500).json({
+                            erro: "Não foi possível cadastrar a vaga."
+                        });
+                    }
+
+                    return res.status(201).json({
+                        mensagem: "Vaga cadastrada com sucesso!",
+                        vaga_id: resultado.insertId,
+                        empresa_id: empresaId
+                    });
+                }
+            );
+        }
+    );
+});
+
 
 // INICIAR SERVIDOR
 app.listen(3000, () => {

@@ -231,3 +231,29 @@ button.candidatado:disabled {
     cursor: not-allowed;
     opacity: 1;
 }
+
+.area-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.botao-foto {
+  display: inline-block;
+  padding: 9px 14px;
+  background-color: rgb(75, 2, 2);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.botao-foto:hover {
+  opacity: 0.8;
+}
+
+#mensagemFoto {
+  font-size: 12px;
+  text-align: center;
+}

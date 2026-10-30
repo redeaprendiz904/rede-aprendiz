@@ -1,244 +1,179 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
+-- MySQL dump 10.13  Distrib 8.0.46, for Win64 (x86_64)
 --
--- Host: 127.0.0.1
--- Tempo de geração: 22/06/2026 às 03:34
--- Versão do servidor: 10.4.32-MariaDB
--- Versão do PHP: 8.2.12
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
+-- Host: localhost    Database: rede_aprendiz
+-- ------------------------------------------------------
+-- Server version	8.0.46
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Banco de dados: `rede_aprendiz`
+-- Table structure for table `candidaturas`
 --
 
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `candidaturas`
---
-
-CREATE DATABASE IF NOT EXISTS rede_aprendiz;
-
-USE rede_aprendiz;
-
+DROP TABLE IF EXISTS `candidaturas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `candidaturas` (
-  `id` int(11) NOT NULL,
-  `usuario_id` int(11) DEFAULT NULL,
-  `vaga_id` int(11) DEFAULT NULL,
-  `data` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int NOT NULL AUTO_INCREMENT,
+  `usuario_id` int DEFAULT NULL,
+  `vaga_id` int DEFAULT NULL,
+  `data` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_usuario_vaga` (`usuario_id`,`vaga_id`),
+  KEY `usuario_id` (`usuario_id`),
+  KEY `vaga_id` (`vaga_id`),
+  CONSTRAINT `candidaturas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `candidaturas_ibfk_2` FOREIGN KEY (`vaga_id`) REFERENCES `vagas` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Despejando dados para a tabela `candidaturas`
+-- Dumping data for table `candidaturas`
 --
 
-INSERT INTO `candidaturas` (`id`, `usuario_id`, `vaga_id`, `data`) VALUES
-(1, 1, 1, '2026-04-25 17:26:49'),
-(5, 1, 1, '2026-05-04 19:20:45'),
-(6, 1, 1, '2026-05-04 19:39:57'),
-(7, 1, 1, '2026-05-07 13:57:01');
-
--- --------------------------------------------------------
+LOCK TABLES `candidaturas` WRITE;
+/*!40000 ALTER TABLE `candidaturas` DISABLE KEYS */;
+INSERT INTO `candidaturas` VALUES (1,1,1,'2026-04-25 17:26:49'),(8,1,4,'2026-10-30 17:57:13');
+/*!40000 ALTER TABLE `candidaturas` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estrutura para tabela `empresas`
+-- Table structure for table `empresas`
 --
 
+DROP TABLE IF EXISTS `empresas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `empresas` (
-  `id` int(11) NOT NULL,
-  `nome` varchar(100) NOT NULL,
-  `descricao` text NOT NULL,
-  `categoria` varchar(50) NOT NULL,
-  `data_cadastro` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` text COLLATE utf8mb4_general_ci NOT NULL,
+  `categoria` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `data_cadastro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Despejando dados para a tabela `empresas`
+-- Dumping data for table `empresas`
 --
 
-INSERT INTO `empresas` (`id`, `nome`, `descricao`, `categoria`, `data_cadastro`) VALUES
-(2, 'Vale', 'Programa Jovem Aprendiz para estudantes do ensino médio', 'atendimento', '2026-06-22 01:05:46'),
-(3, 'Alumar', 'Vagas para suporte e tecnologia', 'ti', '2026-06-22 01:05:46'),
-(4, 'Mateus', 'Atendimento ao cliente e reposição', 'atendimento', '2026-06-22 01:05:46'),
-(5, 'Google', 'Desenvolvimento de software e aplicativos', 'ti', '2026-06-22 01:05:46'),
-(6, 'Agência Criativa', 'Marketing digital e redes sociais', 'marketing', '2026-06-22 01:05:46');
-
--- --------------------------------------------------------
+LOCK TABLES `empresas` WRITE;
+/*!40000 ALTER TABLE `empresas` DISABLE KEYS */;
+INSERT INTO `empresas` VALUES (2,'Vale','Programa Jovem Aprendiz para estudantes do ensino médio','atendimento','2026-06-22 01:05:46'),(3,'Alumar','Vagas para suporte e tecnologia','ti','2026-06-22 01:05:46'),(4,'Mateus','Atendimento ao cliente e reposição','atendimento','2026-06-22 01:05:46'),(5,'Google','Desenvolvimento de software e aplicativos','ti','2026-06-22 01:05:46'),(6,'Agência Criativa','Marketing digital e redes sociais','marketing','2026-06-22 01:05:46');
+/*!40000 ALTER TABLE `empresas` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estrutura para tabela `perfil`
+-- Table structure for table `perfil`
 --
 
+DROP TABLE IF EXISTS `perfil`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `perfil` (
-  `id` int(11) NOT NULL,
-  `usuario_id` int(11) DEFAULT NULL,
-  `nome` varchar(100) DEFAULT NULL,
-  `idade` int(11) DEFAULT NULL,
-  `turno` varchar(20) DEFAULT NULL,
-  `horario` varchar(50) DEFAULT NULL,
-  `escola` varchar(100) DEFAULT NULL,
-  `serie` varchar(30) DEFAULT NULL,
-  `area_interesse` varchar(100) DEFAULT NULL,
-  `habilidades` text DEFAULT NULL,
-  `sobre_mim` text DEFAULT NULL,
-  `telefone` varchar(20) DEFAULT NULL,
-  `cursos_concluidos` int(11) DEFAULT 0,
-  `horas_estudo` int(11) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int NOT NULL AUTO_INCREMENT,
+  `usuario_id` int DEFAULT NULL,
+  `nome` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idade` int DEFAULT NULL,
+  `turno` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `horario` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `escola` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `serie` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `area_interesse` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `habilidades` text COLLATE utf8mb4_general_ci,
+  `sobre_mim` text COLLATE utf8mb4_general_ci,
+  `telefone` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cursos_concluidos` int DEFAULT '0',
+  `horas_estudo` int DEFAULT '0',
+  `foto_perfil` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `usuario_id` (`usuario_id`),
+  CONSTRAINT `perfil_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Despejando dados para a tabela `perfil`
+-- Dumping data for table `perfil`
 --
 
-INSERT INTO `perfil` (`id`, `usuario_id`, `nome`, `idade`, `turno`, `horario`, `escola`, `serie`, `area_interesse`, `habilidades`, `sobre_mim`, `telefone`, `cursos_concluidos`, `horas_estudo`) VALUES
-(1, 1, 'gerson felipe', 17, 'Manhã', 'Tarde', NULL, NULL, NULL, NULL, NULL, NULL, 0, 0),
-(11, 1, 'Gerson', 18, 'Manhã', 'Tarde', 'ifma', '2º Ano', 'TI', 'x', 'xx', '98988642696', 3, 4);
-
--- --------------------------------------------------------
+LOCK TABLES `perfil` WRITE;
+/*!40000 ALTER TABLE `perfil` DISABLE KEYS */;
+INSERT INTO `perfil` VALUES (1,1,'gerson felipe',17,'Manhã','Tarde',NULL,NULL,NULL,NULL,NULL,NULL,0,0,'/uploads/perfis/usuario-1-1793401795966.png'),(11,1,'Gerson',18,'Manhã','Tarde','ifma','2º Ano','TI','x','xx','98988642696',3,4,'/uploads/perfis/usuario-1-1793401795966.png');
+/*!40000 ALTER TABLE `perfil` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estrutura para tabela `usuarios`
+-- Table structure for table `usuarios`
 --
 
+DROP TABLE IF EXISTS `usuarios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `usuarios` (
-  `id` int(11) NOT NULL,
-  `nome` varchar(80) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `telefone` varchar(20) DEFAULT NULL,
-  `senha` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(80) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `telefone` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `senha` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Despejando dados para a tabela `usuarios`
+-- Dumping data for table `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `telefone`, `senha`) VALUES
-(1, 'Gerson Felipe Pinheiro Pereira', 'gersonfelipe@acad.ifma.edu.br', '98988642696', '12345678');
-
--- --------------------------------------------------------
+LOCK TABLES `usuarios` WRITE;
+/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
+INSERT INTO `usuarios` VALUES (1,'Gerson Felipe Pinheiro Pereira','gersonfelipe@acad.ifma.edu.br','98988642696','12345678');
+/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estrutura para tabela `vagas`
+-- Table structure for table `vagas`
 --
 
+DROP TABLE IF EXISTS `vagas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `vagas` (
-  `id` int(11) NOT NULL,
-  `titulo` varchar(100) DEFAULT NULL,
-  `empresa` varchar(100) DEFAULT NULL,
-  `turno` varchar(50) DEFAULT NULL,
-  `descricao` varchar(150) DEFAULT NULL,
-  `empresa_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `id` int NOT NULL AUTO_INCREMENT,
+  `titulo` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `empresa` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `turno` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `descricao` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `empresa_id` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Despejando dados para a tabela `vagas`
+-- Dumping data for table `vagas`
 --
 
-INSERT INTO `vagas` (`id`, `titulo`, `empresa`, `turno`, `descricao`, `empresa_id`) VALUES
-(1, 'Atendente (Meio período)', 'Empresa local', 'Tarde', 'Compatível com escola', 0),
-(4, 'Auxiliar Administrativo', NULL, 'Manhã', 'Organização de documentos', 1),
-(5, 'Suporte de TI', NULL, 'Tarde', 'Atendimento técnico', 2),
-(6, 'Atendente', NULL, 'Noite', 'Atendimento ao cliente', 3);
+LOCK TABLES `vagas` WRITE;
+/*!40000 ALTER TABLE `vagas` DISABLE KEYS */;
+INSERT INTO `vagas` VALUES (1,'Atendente (Meio período)','Mateus','Tarde','Compatível com escola',4),(4,'Auxiliar Administrativo','Agência Criativa','Manhã','Organização de documentos',6),(5,'Suporte de TI','Vale','Tarde','Atendimento técnico',2),(6,'Atendente','Alumar','Noite','Atendimento ao cliente',3);
+/*!40000 ALTER TABLE `vagas` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
---
--- Índices para tabelas despejadas
---
-
---
--- Índices de tabela `candidaturas`
---
-ALTER TABLE `candidaturas`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`),
-  ADD KEY `vaga_id` (`vaga_id`);
-
---
--- Índices de tabela `empresas`
---
-ALTER TABLE `empresas`
-  ADD PRIMARY KEY (`id`);
-
---
--- Índices de tabela `perfil`
---
-ALTER TABLE `perfil`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`);
-
---
--- Índices de tabela `usuarios`
---
-ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id`);
-
---
--- Índices de tabela `vagas`
---
-ALTER TABLE `vagas`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT para tabelas despejadas
---
-
---
--- AUTO_INCREMENT de tabela `candidaturas`
---
-ALTER TABLE `candidaturas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT de tabela `empresas`
---
-ALTER TABLE `empresas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT de tabela `perfil`
---
-ALTER TABLE `perfil`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
---
--- AUTO_INCREMENT de tabela `usuarios`
---
-ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de tabela `vagas`
---
-ALTER TABLE `vagas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- Restrições para tabelas despejadas
---
-
---
--- Restrições para tabelas `candidaturas`
---
-ALTER TABLE `candidaturas`
-  ADD CONSTRAINT `candidaturas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
-  ADD CONSTRAINT `candidaturas_ibfk_2` FOREIGN KEY (`vaga_id`) REFERENCES `vagas` (`id`);
-
---
--- Restrições para tabelas `perfil`
---
-ALTER TABLE `perfil`
-  ADD CONSTRAINT `perfil_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
-COMMIT;
-
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-10-30 20:45:57

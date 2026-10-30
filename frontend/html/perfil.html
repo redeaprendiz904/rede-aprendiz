@@ -13,6 +13,7 @@
     <a href="/perfil">Perfil</a>
     <a href="/dashboard">Dashboard</a>
     <a href="/empresas">Empresas</a>
+    <a href="/oportunidades">Vagas</a>
     <a href="/logout">Sair</a>
   </div>
 
@@ -48,12 +49,15 @@
         <h2>Resumo do seu perfil</h2>
 
         <div class="cardperfil">
-          <img src="../img/fotoperfil.jpg"
-               alt="Foto do estudante"
-               class="fotoperfil">
+          <div class="area-foto">
+            <img src="../img/fotoperfil.png" alt="Foto do estudante" class="fotoperfil" id="fotoPerfil">           
+              <label for="arquivoFoto" class="botao-foto"> Alterar foto </label>
+              <input type="file" id="arquivoFoto" accept="image/jpeg,image/png,image/webp" hidden>
+              <p id="mensagemFoto" role="status"></p>
+      </div>
 
           <div class="infoperfil">
-            <h3 id="resumoNome">Carregando perfil...</h3>
+            <h3 id="resumoName">Carregando perfil...</h3>
             <p>Idade: <span id="resumoIdade">—</span></p>
             <p>Telefone: <span id="resumoTelefone">—</span></p>
             <p>Escola: <span id="resumoEscola">—</span></p>

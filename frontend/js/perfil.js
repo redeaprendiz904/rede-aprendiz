@@ -66,6 +66,12 @@ async function carregarPerfil() {
             mostrarResumo(resultado.perfil);
             preencherFormulario(resultado.perfil);
 
+            const fotoPerfil = document.getElementById("fotoPerfil");
+
+            if (fotoPerfil) {
+                fotoPerfil.src = resultado.perfil.foto_perfil || "../img/fotoperfil.png";
+            }
+
             const titulo = document.getElementById("tituloFormulario");
             if (titulo) titulo.textContent = "Editar perfil";
 
@@ -170,4 +176,43 @@ if (formPerfil && btnPerfil && mensagemPerfil) {
     });
 
     carregarPerfil();
+}
+
+// Envia a foto escolhida e atualiza a imagem do perfil.
+const arquivoFoto = document.getElementById("arquivoFoto");
+const fotoPerfil = document.getElementById("fotoPerfil");
+const mensagemFoto = document.getElementById("mensagemFoto");
+
+if (arquivoFoto && fotoPerfil && mensagemFoto) {
+    arquivoFoto.addEventListener("change", async () => {
+        const arquivo = arquivoFoto.files[0];
+
+        if (!arquivo) return;
+
+        const dadosFoto = new FormData();
+        dadosFoto.append("foto", arquivo);
+
+        mensagemFoto.textContent = "Enviando foto...";
+
+        try {
+            const resposta = await fetch("/perfil/foto", {
+                method: "POST",
+                credentials: "include",
+                body: dadosFoto
+            });
+
+            const resultado = await resposta.json();
+
+            if (!resposta.ok) {
+                throw new Error(resultado.erro || "Erro ao enviar a foto.");
+            }
+
+            fotoPerfil.src = resultado.foto_perfil + "?t=" + Date.now();
+            mensagemFoto.textContent = resultado.mensagem;
+        } catch (erro) {
+            mensagemFoto.textContent = erro.message;
+        } finally {
+            arquivoFoto.value = "";
+        }
+    });
 }
