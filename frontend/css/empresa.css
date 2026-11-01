@@ -1,270 +1,456 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+/* ========================================
+   REDE APRENDIZ — EMPRESAS DISPONÍVEIS
+======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --vinho: #4b0202;
+    --vinho-escuro: #350000;
+    --vermelho: #ff0000;
+    --branco: #ffffff;
+    --fundo: #f4f7fb;
+    --cinza: #6b7280;
+    --texto: #252525;
+    --borda: #e5e7eb;
+    --sombra: 0 4px 18px rgba(75, 2, 2, 0.08);
+}
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    display: flex;
     min-height: 100vh;
-    background-color: #fff;
-    color: #000;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: 'Montserrat', sans-serif;
 }
 
-/* Sidebar */
+/* ========================================
+   MENU LATERAL
+======================================== */
+
 .sidebar {
-    width: 250px;
-    background-color: #800000;
-    display: flex;
-    flex-direction: column;
-    padding: 30px 20px;
     position: fixed;
     top: 0;
-    bottom: 0;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    height: 100vh;
+    padding: 30px 20px;
+    background: var(--vinho);
+    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar h2 {
-    color: #FF0000;
-  text-align: center;
-  margin-bottom: 40px;
-  font-size: 1.8rem;
+    margin-bottom: 40px;
+    color: var(--branco);
+    font-size: 23px;
+    font-weight: 800;
+    text-align: center;
 }
 
 .sidebar a {
-    color: #fff;
-    text-decoration: none;
-    margin-bottom: 15px;
-    padding: 12px 15px;
+    display: block;
+    margin-bottom: 10px;
+    padding: 14px 16px;
     border-radius: 8px;
-    transition: all 0.3s ease;
-    font-weight: 500;
+    color: #f5eaea;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.25s, color 0.25s;
 }
 
-.sidebar a:hover {
-    background-color: #FF0000;
-    transform: translateX(5px);
+.sidebar a:hover,
+.sidebar a[href="/empresas"] {
+    background: var(--branco);
+    color: var(--vinho);
 }
 
-/* Main content */
+/* ========================================
+   CONTEÚDO PRINCIPAL
+======================================== */
+
 .main-content {
+    width: calc(100% - 250px);
+    max-width: 1600px;
+    min-height: 100vh;
     margin-left: 250px;
-    flex: 1;
-    padding: 40px;
+    padding: 36px;
 }
 
-.main-content h1 {
-    color: #800000;
-    margin-bottom: 15px;
-    font-size: 2rem;
+.main-content > h1 {
+    margin-bottom: 12px;
+    color: var(--vinho);
+    font-size: 30px;
+    font-weight: 800;
 }
 
 .result-count {
-    margin-bottom: 20px;
-    font-size: 1.1rem;
-    color: #800000;
-    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 28px;
+    padding: 9px 14px;
+    border-radius: 20px;
+    background: #fff0f0;
+    color: var(--vinho);
+    font-size: 13px;
+    font-weight: 700;
 }
 
-/* Controls */
+/* ========================================
+   FILTROS E PESQUISA
+======================================== */
+
 .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.filters {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-bottom: 20px;
 }
 
-.filters button {
-    background-color: #800000;
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
+.filter-btn {
+    padding: 10px 17px;
+    border: 1px solid var(--borda);
     border-radius: 8px;
+    background: var(--branco);
+    color: var(--vinho);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
-.filters button.active, .filters button:hover {
-    background-color: #FF0000;
+.filter-btn:hover {
+    border-color: var(--vinho);
+    background: #fff0f0;
+}
+
+.filter-btn.active {
+    border-color: var(--vinho);
+    background: var(--vinho);
+    color: var(--branco);
+}
+
+.search-bar {
+    flex: 0 1 320px;
+    min-width: 200px;
 }
 
 .search-bar input {
-    flex: 1;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: 2px solid #800000;
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--borda);
+    border-radius: 9px;
     outline: none;
-    font-size: 1rem;
-    transition: border-color 0.3s;
+    background: var(--branco);
+    color: var(--texto);
+    font-family: inherit;
+    font-size: 13px;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .search-bar input:focus {
-    border-color: #FF0000;
+    border-color: var(--vinho);
+    box-shadow: 0 0 0 3px rgba(75, 2, 2, 0.08);
 }
 
-/* Grid de cards */
+.search-bar input::placeholder {
+    color: #9ca3af;
+}
+
+/* ========================================
+   CARDS DAS EMPRESAS
+======================================== */
+
 .company-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
 }
 
-.card {
-    background-color: #FF0000;
-    border-radius: 15px;
-    padding: 25px 20px;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.card:hover {
-    background-color: #800000;
-}
-
-.card h3 {
-    margin-bottom: 15px;
-    font-size: 1.4rem;
-}
-
-.card p {
-    flex: 1;
-    font-size: 0.95rem;
-    margin-bottom: 20px;
-}
-
-.card button {
-    background-color: #fff;
-    color: #800000;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.card button:hover {
-    background-color: #FF0000;
-    color: #fff;
-}
-
-/* No results */
-.no-results {
-    grid-column: 1 / -1;
-    text-align: center;
-    font-size: 1.3rem;
-    color: #800000;
-    display: none;
-    padding: 20px;
-    background-color: #ffe6e6;
+.company-cards > * {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid var(--borda);
+    border-top: 4px solid var(--vinho);
     border-radius: 12px;
+    background: var(--branco);
+    box-shadow: var(--sombra);
+    overflow-wrap: anywhere;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.company-cards > *:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(75, 2, 2, 0.13);
+}
+
+.company-cards h2,
+.company-cards h3,
+.company-cards h4 {
+    margin-bottom: 12px;
+    color: var(--vinho);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.company-cards p {
+    margin-bottom: 12px;
+    color: var(--cinza);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.company-cards button {
+    margin-top: 10px;
+    margin-right: 6px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 7px;
+    background: var(--vinho);
+    color: var(--branco);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.company-cards button:hover {
+    background: var(--vinho-escuro);
+}
+
+.company-cards a {
+    color: var(--vinho);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.no-results {
+    margin-top: 20px;
+    padding: 30px 20px;
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+    background: var(--branco);
+    color: var(--cinza);
+    font-size: 14px;
+    text-align: center;
+}
+
+/* ========================================
+   MODAIS
+======================================== */
+
+/* Esconde o cadastro e as vagas inicialmente */
+#modal,
+#modalVagas {
+    display: none;
 }
 
 .modal {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.5);
-
-    display: none;
-    justify-content: center;
+    z-index: 100;
     align-items: center;
-
-    z-index: 999;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+    background: rgba(20, 0, 0, 0.65);
+    backdrop-filter: blur(3px);
 }
 
 .modal-content {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-
-    width: 600px;
-    max-width: 90%;
-    max-height: 80vh;
-
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    padding: 30px;
     overflow-y: auto;
+    border-radius: 14px;
+    background: var(--branco);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    animation: aparecer 0.2s ease-out;
 }
 
-/* Responsividade */
-@media (max-width: 992px) {
-    .main-content {
-        margin-left: 200px;
-        padding: 30px;
+.modal-content h2 {
+    margin-bottom: 24px;
+    color: var(--vinho);
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 13px 14px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    outline: none;
+    background: var(--branco);
+    color: var(--texto);
+    font-family: inherit;
+    font-size: 13px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.modal-content textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus,
+.modal-content select:focus {
+    border-color: var(--vinho);
+    box-shadow: 0 0 0 3px rgba(75, 2, 2, 0.08);
+}
+
+.modal-content button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 13px 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--vinho);
+    color: var(--branco);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modal-content button:hover {
+    background: var(--vinho-escuro);
+}
+
+/* ========================================
+   VAGAS DA EMPRESA
+======================================== */
+
+#listaVagasEmpresa {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+#listaVagasEmpresa > * {
+    padding: 14px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background: #fffafa;
+    overflow-wrap: anywhere;
+}
+
+#listaVagasEmpresa h3,
+#listaVagasEmpresa h4 {
+    margin-bottom: 8px;
+    color: var(--vinho);
+}
+
+#listaVagasEmpresa p {
+    margin-bottom: 6px;
+    color: var(--cinza);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
-    .sidebar {
-        width: 200px;
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 1200px) {
+    .company-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .controls {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .search-bar {
+        flex-basis: auto;
+        width: 100%;
     }
 }
 
 @media (max-width: 768px) {
-    body {
-        flex-direction: column;
-    }
     .sidebar {
         position: relative;
         width: 100%;
-        flex-direction: row;
-        overflow-x: auto;
-        padding: 10px;
+        height: auto;
+        padding: 18px;
     }
+
     .sidebar h2 {
-        display: none;
+        margin-bottom: 15px;
     }
+
     .sidebar a {
-        margin: 0 10px;
-        white-space: nowrap;
+        margin-bottom: 5px;
+        padding: 11px 12px;
     }
+
     .main-content {
+        width: 100%;
         margin-left: 0;
-        padding: 20px;
+        padding: 24px 16px;
     }
+
+    .main-content > h1 {
+        font-size: 25px;
+    }
+
     .company-cards {
         grid-template-columns: 1fr;
-        gap: 20px;
+    }
+
+    .modal-content {
+        padding: 22px;
     }
 }
 
+@media (max-width: 420px) {
+    .filters {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-    
+    .filter-btn {
+        padding: 10px;
+    }
 
-
-.add-card button {
-    background: #ffffff;
-}
-
-/* Formulário modal */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);        
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-}
-
-.modal input, .modal textarea, .modal select {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 10px;
-}
-
-.modal button {
-    width: 100%;
+    .result-count {
+        font-size: 12px;
+    }
 }

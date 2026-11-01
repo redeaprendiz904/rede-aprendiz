@@ -61,6 +61,7 @@ async function carregarPerfil() {
         }
 
         const resultado = await resposta.json();
+        
 
         if (resultado.perfil) {
             mostrarResumo(resultado.perfil);

@@ -1,0 +1,299 @@
+/* ========================================
+   REDE APRENDIZ — VAGAS DISPONÍVEIS
+======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --vinho: #4b0202;
+    --vinho-escuro: #350000;
+    --vermelho: #ff0000;
+    --branco: #ffffff;
+    --fundo: #f4f7fb;
+    --cinza: #6b7280;
+    --texto: #252525;
+    --borda: #e5e7eb;
+    --sombra: 0 4px 18px rgba(75, 2, 2, 0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ========================================
+   MENU LATERAL
+======================================== */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    height: 100vh;
+    padding: 30px 20px;
+    background: var(--vinho);
+    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar h2 {
+    margin-bottom: 40px;
+    color: var(--branco);
+    font-size: 23px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.sidebar a {
+    display: block;
+    margin-bottom: 10px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    color: #f5eaea;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.25s, color 0.25s;
+}
+
+.sidebar a:hover,
+.sidebar a[href="/oportunidades"] {
+    background: var(--branco);
+    color: var(--vinho);
+}
+
+/* ========================================
+   ÁREA PRINCIPAL
+======================================== */
+
+.hero {
+    min-height: calc(100vh - 60px);
+    margin-left: 250px;
+    padding: 40px 36px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section {
+    width: 100%;
+}
+
+.section > h2 {
+    margin-bottom: 14px;
+    color: var(--vinho);
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.section > p {
+    margin-bottom: 30px;
+    color: var(--cinza);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+/* ========================================
+   LISTA E CARDS DE VAGAS
+======================================== */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    align-items: stretch;
+}
+
+/* Cards que podem ser criados pelo vagas.js */
+.cards > article,
+.cards > .card,
+.cards > .vaga-card,
+.cards > div {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid var(--borda);
+    border-top: 4px solid var(--vinho);
+    border-radius: 12px;
+    background: var(--branco);
+    box-shadow: var(--sombra);
+    overflow-wrap: anywhere;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cards > article:hover,
+.cards > .card:hover,
+.cards > .vaga-card:hover,
+.cards > div:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(75, 2, 2, 0.13);
+}
+
+.cards h3 {
+    margin-bottom: 12px;
+    color: var(--vinho);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.cards h4 {
+    margin-bottom: 10px;
+    color: var(--vinho);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.cards p {
+    margin-bottom: 12px;
+    color: var(--cinza);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.cards strong {
+    color: var(--texto);
+    font-weight: 700;
+}
+
+.cards span {
+    overflow-wrap: anywhere;
+}
+
+/* Botões dentro dos cards */
+.cards button,
+.cards a.botao,
+.cards .btn-candidatar {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--vinho);
+    color: var(--branco);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.cards button:hover,
+.cards a.botao:hover,
+.cards .btn-candidatar:hover {
+    background: var(--vinho-escuro);
+    transform: translateY(-1px);
+}
+
+/* Caso não existam vagas */
+.cards > p {
+    grid-column: 1 / -1;
+    padding: 30px 20px;
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+    background: var(--branco);
+    color: var(--cinza);
+    font-size: 14px;
+    text-align: center;
+}
+
+/* ========================================
+   RODAPÉ
+======================================== */
+
+footer {
+    margin-left: 250px;
+    padding: 20px;
+    border-top: 1px solid var(--borda);
+    background: var(--branco);
+    color: var(--cinza);
+    font-size: 12px;
+    text-align: center;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 1200px) {
+    .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hero {
+        padding: 32px 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 18px;
+    }
+
+    .sidebar h2 {
+        margin-bottom: 15px;
+    }
+
+    .sidebar a {
+        margin-bottom: 5px;
+        padding: 11px 12px;
+    }
+
+    .hero {
+        min-height: auto;
+        margin-left: 0;
+        padding: 28px 16px;
+    }
+
+    .section > h2 {
+        font-size: 25px;
+    }
+
+    .section > p {
+        font-size: 14px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    footer {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 420px) {
+    .hero {
+        padding: 24px 12px;
+    }
+
+    .section > h2 {
+        font-size: 22px;
+    }
+
+    .cards > article,
+    .cards > .card,
+    .cards > .vaga-card,
+    .cards > div {
+        padding: 18px;
+    }
+}

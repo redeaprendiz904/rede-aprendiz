@@ -23,9 +23,11 @@ window.addEventListener("click", (e) => {
 // Cadastrar empresa
 async function adicionarEmpresa() {
 
-    const nome = document.getElementById("nome").value;
-    const descricao = document.getElementById("desc").value;
+    const nome = document.getElementById("nome").value.trim();
+    const descricao = document.getElementById("desc").value.trim();
     const categoria = document.getElementById("categoria").value;
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value;
 
     if (!nome || !descricao) {
         alert("Preencha todos os campos!");
@@ -44,8 +46,10 @@ async function adicionarEmpresa() {
                 body: JSON.stringify({
                     nome,
                     descricao,
-                    categoria
-                })
+                    categoria,
+                    email,
+                    senha
+            })
             }
         );
 
@@ -56,8 +60,9 @@ async function adicionarEmpresa() {
             document.getElementById("nome").value = "";
             document.getElementById("desc").value = "";
             document.getElementById("categoria").selectedIndex = 0;
-
             document.getElementById("modal").style.display = "none";
+            document.getElementById("email").value = "";
+            document.getElementById("senha").value = "";
 
             carregarEmpresas();
 

@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Empresarial | Rede Aprendiz</title>
+    <link rel="stylesheet" href="../css/login-empresa.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Área da Empresa</h1>
+        <p>Entre para gerenciar suas vagas.</p>
+
+        <form id="formLoginEmpresa">
+            <label for="email">E-mail empresarial</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                required
+            >
+
+            <label for="senha">Senha</label>
+            <input
+                type="password"
+                id="senha"
+                name="senha"
+                required
+            >
+
+            <button type="submit">Entrar</button>
+
+            <p id="mensagem" role="status"></p>
+        </form>
+
+        <p>
+            É candidato?
+            <a href="/html/login.html">Acesse o login de candidato</a>
+        </p>
+    </main>
+
+    <script src="../js/login-empresa.js"></script>
+</body>
+</html>

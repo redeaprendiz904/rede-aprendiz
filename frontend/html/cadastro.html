@@ -12,12 +12,20 @@
 <body>
       <a href="../index.html" class="btn-voltar">Início</a>
     <div class="login-container">
-      
+      <div id="escolhaTipoConta">
+    <h2>REDE APRENDIZ</h2>
+    <h3>Como deseja se cadastrar?</h3>
 
-        <h2>REDE APRENDIZ</h2>
+    <button type="button" onclick="mostrarCadastro('candidato')">
+        Sou candidato
+    </button>
 
-        <form  method="post">
+    <button type="button" onclick="mostrarCadastro('empresa')">
+        Sou uma empresa
+    </button>
+</div>
 
+<form id="formCadastroCandidato" method="post" style="display: none;">
 
             <div class="input-group">
                 <label for="Nome"> Nome </label>
@@ -93,7 +101,19 @@
     </div>
 
     <div class="bg-credit">Foto: Criado por FreePik</div>
-    
+    <script>
+    function mostrarCadastro(tipo) {
+        const escolha = document.getElementById("escolhaTipoConta");
+        const formulario = document.getElementById("formCadastroCandidato");
+
+        if (tipo === "candidato") {
+            escolha.style.display = "none";
+            formulario.style.display = "block";
+        } else if (tipo === "empresa") {
+            window.location.href = "cadastro-empresa.html";
+        }
+    }
+    </script>
      <script src="../js/cadastro.js"></script>
 </body>
 </html>

@@ -1,259 +1,487 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
+/* ========================================
+   REDE APRENDIZ - PERFIL DO ESTUDANTE
+======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --vinho: #4b0202;
+    --vermelho: #800000;
+    --branco: #ffffff;
+    --fundo: #f4f7fb;
+    --borda: #e0e0e0;
+    --texto: #333333;
+    --texto-secundario: #666666;
+    --sombra: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
-  background-color: #f4f7fb;
-  color: #333;
+    font-family: 'Montserrat', Arial, sans-serif;
+    background: var(--fundo);
+    color: var(--texto);
+    min-height: 100vh;
+    line-height: 1.6;
 }
 
+/* BARRA LATERAL */
+
 .sidebar {
-  width: 250px;
-  background-color: #800000;
-  display: flex;
-  flex-direction: column;
-  padding: 30px 20px;
-  position: fixed;
-  top: 0;
-  bottom: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    height: 100vh;
+    padding: 30px 20px;
+    background: var(--vinho);
+    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar h2 {
-  color: #FF0000;
-  text-align: center;
-  margin-bottom: 40px;
-  font-size: 1.8rem;
+    margin-bottom: 40px;
+    color: var(--branco);
+    font-size: 23px;
+    font-weight: 800;
+    text-align: center;
 }
 
 .sidebar a {
-  color: #fff;
-  text-decoration: none;
-  margin-bottom: 15px;
-  padding: 12px 15px;
-  border-radius: 8px;
-  transition: 0.3s;
-  font-weight: 500;
+    display: block;
+    margin-bottom: 10px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    color: #f5eaea;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.25s, color 0.25s;
 }
 
-.sidebar a:hover {
-  background-color: #FF0000;
-  transform: translateX(5px);
+.sidebar a:hover,
+.sidebar a[href="/perfil"] {
+    background: var(--branco);
+    color: var(--vinho);
 }
 
-/* CONTEÚDO */
+/* CONTEÚDO PRINCIPAL */
+
+.hero {
+    margin-left: 250px;
+    min-height: 100vh;
+    padding: 40px;
+}
+
 .container {
-  margin-left: 270px; /* espaço da sidebar */
-  width: calc(100% - 270px);
-  padding: 20px;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  color: white;
-  padding: 20px;
-}
-
-/* TEXTOS */
-h2 {
-  margin-bottom: 10px;
-  color: rgb(75, 2, 2); 
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .section {
-  margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 
-/* CARDS */
+.section h1 {
+    color: var(--vinho);
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.section h2 {
+    color: var(--vinho);
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.section p {
+    color: var(--texto-secundario);
+    font-size: 15px;
+    margin-bottom: 15px;
+}
+
+/* CARTÕES DAS DICAS */
+
 .cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    align-items: stretch;
 }
 
 .card {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    background: var(--branco);
+    padding: 24px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: var(--sombra);
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.11);
+}
+
+.card h3 {
+    color: var(--vinho);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
 .card p {
-  margin: 5px 0;
+    color: var(--texto-secundario);
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 0;
 }
 
-/* BOTÕES */
-button {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 8px 12px;
-  background-color: rgb(75, 2, 2);
-  color: white;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-}
+/* RESUMO DO PERFIL */
 
-button:hover {
-  opacity: 0.7;
-}
-
-/* FORM */
-.form {
-  margin-bottom: 10px;
-}
-
-input, select {
-  width: 100%;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-/* PERFIL */
 .cardperfil {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  display: flex;
-  gap: 20px;
-  align-items: center;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 30px;
+    align-items: start;
+    padding: 30px;
+    background: var(--branco);
+    border-radius: 16px;
+    box-shadow: var(--sombra);
+}
+
+/* FOTO DO ESTUDANTE */
+
+.area-foto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
 }
 
 .fotoperfil {
-  border-radius: 50%;
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-}
-
-.infoperfil {
-  padding: 10px;
-}
-
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 15px;
-  font-size: 14px;
-  color: #777;
-}
-
-/* Tablet */
-@media (max-width: 1024px) {
-
-  .sidebar {
-    position: relative;
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-around;
-  }
-
-  .sidebar h2 {
-    display: none;
-  }
-
-  .container {
-    margin-left: 0;
-    width: 100%;
-  }
-}
-
-/* Celular */
-@media (max-width: 600px) {
-
-  header {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .sidebar {
-    flex-wrap: wrap;
-    padding: 15px;
-    gap: 10px;
-  }
-
-  .sidebar a {
-    flex: 1 1 45%;
-    text-align: center;
-  }
-
-  .cardperfil {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .fotoperfil {
-    width: 120px;
-    height: 120px;
-  }
-}
-
-#formPerfil {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-#formPerfil label {
-    font-weight: 600;
-    margin-top: 5px;
-}
-
-#formPerfil input,
-#formPerfil select {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 10px;
-    border: 1px solid #b2b2b2;
-    border-radius: 6px;
-    font: inherit;
-}
-
-#btnPerfil:disabled {
-    opacity: 0.7;
-    cursor: wait;
-}
-
-/* Indicação de candidatura já realizada */
-button.candidatado,
-button.candidatado:disabled {
-    background-color: #e1f5e7;
-    color: #176b35;
-    border: 1px solid #8bc99e;
-    cursor: not-allowed;
-    opacity: 1;
-}
-
-.area-foto {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+    display: block;
+    width: 170px;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #eeeeee;
+    border: 4px solid var(--vinho);
+    box-shadow: 0 4px 12px rgba(75, 2, 2, 0.15);
 }
 
 .botao-foto {
-  display: inline-block;
-  padding: 9px 14px;
-  background-color: rgb(75, 2, 2);
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
+    display: inline-block;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--vinho);
+    color: var(--branco);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.25s;
 }
 
 .botao-foto:hover {
-  opacity: 0.8;
+    background: var(--vermelho);
+    transform: translateY(-2px);
+}
+
+#arquivoFoto {
+    display: none;
 }
 
 #mensagemFoto {
-  font-size: 12px;
-  text-align: center;
+    display: block;
+    max-width: 220px;
+    color: var(--texto-secundario);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+/* INFORMAÇÕES DO PERFIL */
+
+.infoperfil {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-content: start;
+}
+
+.infoperfil p {
+    padding: 13px 15px;
+    margin: 0;
+    background: var(--fundo);
+    border-radius: 8px;
+    border-left: 4px solid var(--vinho);
+    color: var(--texto);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.infoperfil strong {
+    color: var(--vinho);
+    font-weight: 700;
+}
+
+/* FORMULÁRIO DO PERFIL */
+
+#secaoFormulario {
+    scroll-margin-top: 25px;
+}
+
+#tituloFormulario {
+    margin-bottom: 20px;
+}
+
+#formPerfil {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    padding: 30px;
+    background: var(--branco);
+    border-radius: 16px;
+    box-shadow: var(--sombra);
+}
+
+#formPerfil label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: var(--vinho);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+#formPerfil input,
+#formPerfil select,
+#formPerfil textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    outline: none;
+    background: var(--branco);
+    color: var(--texto);
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#formPerfil input:focus,
+#formPerfil select:focus,
+#formPerfil textarea:focus {
+    border-color: var(--vinho);
+    box-shadow: 0 0 0 3px rgba(75, 2, 2, 0.1);
+}
+
+#formPerfil input::placeholder,
+#formPerfil textarea::placeholder {
+    color: #999999;
+}
+
+#formPerfil select {
+    cursor: pointer;
+}
+
+#formPerfil textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* BOTÃO DE SALVAR */
+
+#btnPerfil {
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-width: 180px;
+    padding: 13px 24px;
+    border: none;
+    border-radius: 8px;
+    background: var(--vinho);
+    color: var(--branco);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.25s;
+}
+
+#btnPerfil:hover {
+    background: var(--vermelho);
+    transform: translateY(-2px);
+}
+
+#btnPerfil:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#mensagemPerfil {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* RODAPÉ */
+
+footer {
+    margin-left: 250px;
+    padding: 22px 30px;
+    text-align: center;
+    background: var(--branco);
+    border-top: 1px solid var(--borda);
+    color: var(--texto-secundario);
+    font-size: 13px;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 1000px) {
+    .hero {
+        padding: 30px 25px;
+    }
+
+    .cardperfil {
+        grid-template-columns: 180px minmax(0, 1fr);
+        gap: 22px;
+        padding: 24px;
+    }
+
+    .fotoperfil {
+        width: 145px;
+        height: 145px;
+    }
+
+    .infoperfil {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 18px;
+    }
+
+    .sidebar h2 {
+        margin-bottom: 15px;
+        font-size: 21px;
+    }
+
+    .sidebar nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .sidebar a {
+        padding: 9px 12px;
+        font-size: 13px;
+    }
+
+    .sidebar a:hover {
+        transform: none;
+    }
+
+    .hero {
+        margin-left: 0;
+        padding: 25px 18px;
+    }
+
+    footer {
+        margin-left: 0;
+        padding: 20px 15px;
+    }
+
+    .section h1 {
+        font-size: 26px;
+    }
+
+    .section h2 {
+        font-size: 22px;
+    }
+
+    .cardperfil {
+        grid-template-columns: 1fr;
+    }
+
+    .infoperfil {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #formPerfil {
+        padding: 22px;
+    }
+}
+
+@media (max-width: 520px) {
+    .hero {
+        padding: 20px 14px;
+    }
+
+    .sidebar nav {
+        flex-direction: column;
+    }
+
+    .sidebar a {
+        text-align: center;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .cardperfil {
+        padding: 20px;
+    }
+
+    .infoperfil {
+        grid-template-columns: 1fr;
+    }
+
+    #formPerfil {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 20px;
+    }
+
+    #btnPerfil,
+    #mensagemPerfil {
+        grid-column: 1;
+    }
+
+    #btnPerfil {
+        width: 100%;
+    }
+
+    .section h1 {
+        font-size: 23px;
+    }
+
+    .section h2 {
+        font-size: 20px;
+    }
 }

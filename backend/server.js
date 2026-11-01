@@ -4,6 +4,7 @@ const path = require("path");
 const session = require("express-session");
 const multer = require("multer");
 const fs = require("fs");
+const bcrypt = require("bcryptjs");
 
 const app = express();
 
@@ -140,6 +141,48 @@ function verificarLogin(req, res, next) {
     }
     next();
 }
+
+function verificarLoginEmpresa(req, res, next) {
+    if (!req.session.empresa) {
+        return res.status(401).json({
+            erro: "Você precisa entrar com uma conta empresarial."
+        });
+    }
+
+    next();
+}
+
+// ÁREA EXCLUSIVA DA EMPRESA 
+app.get("/area-empresa", verificarLoginEmpresa, (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "../frontend/html/area-empresa.html")
+    );
+});
+
+app.get("/empresa-logada", verificarLoginEmpresa, (req, res) => {
+    res.json({
+        id: req.session.empresa.id,
+        nome: req.session.empresa.nome,
+        email: req.session.empresa.email
+    });
+});
+
+// SAIR DA CONTA EMPRESARIAL 
+app.post("/logout-empresa", (req, res) => {
+    req.session.empresa = null;
+
+    req.session.save((erro) => {
+        if (erro) {
+            console.error("Erro ao sair da conta empresarial:", erro);
+            return res.status(500).json({
+                erro: "Não foi possível sair da conta."
+            });
+        }
+
+        res.json({ mensagem: "Logout empresarial realizado com sucesso." });
+    });
+});
+
 
 app.get("/dashboard", verificarLogin, (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/html/dashboard.html"));
@@ -581,29 +624,112 @@ app.get("/dashboard/resumo", (req, res) => {
 });
 
 
-// CADASTRAR EMPRESA
-app.post("/empresas", (req, res) => {
 
-    const { nome, descricao, categoria } = req.body;
+ // CADASTRAR EMPRESA
+app.post("/empresas", async (req, res) => {
+    const { nome, descricao, categoria, email, senha } = req.body;
 
-    const sql = `
-        INSERT INTO empresas
-        (nome, descricao, categoria)
-        VALUES (?, ?, ?)
-    `;
+    if (!nome || !descricao || !categoria || !email || !senha) {
+        return res.status(400).json({
+            erro: "Preencha todos os campos, incluindo e-mail e senha."
+        });
+    }
 
-    db.query(sql, [nome, descricao, categoria], (err) => {
+    if (senha.length < 8) {
+        return res.status(400).json({
+            erro: "A senha deve ter pelo menos 8 caracteres."
+        });
+    }
 
-        if (err) {
-            console.log(err);
-            return res.status(500).send("Erro ao cadastrar empresa");
+    try {
+        const [existentes] = await db.promise().execute(
+            "SELECT id FROM empresas WHERE email = ?",
+            [email.trim().toLowerCase()]
+        );
+
+        if (existentes.length > 0) {
+            return res.status(409).json({
+                erro: "Já existe uma empresa cadastrada com esse e-mail."
+            });
         }
 
-        res.sendStatus(200);
+        const senhaHash = await bcrypt.hash(senha, 10);
 
-    });
+        await db.promise().execute(
+            `INSERT INTO empresas (nome, descricao, categoria, email, senha)
+             VALUES (?, ?, ?, ?, ?)`,
+            [
+                nome.trim(),
+                descricao.trim(),
+                categoria.trim(),
+                email.trim().toLowerCase(),
+                senhaHash
+            ]
+        );
 
+        return res.status(201).json({
+            mensagem: "Empresa cadastrada com sucesso!"
+        });
+    } catch (erro) {
+        console.error("Erro ao cadastrar empresa:", erro);
+
+        return res.status(500).json({
+            erro: "Não foi possível cadastrar a empresa."
+        });
+    }
 });
+
+
+ // LOGIN EMPRESARIAL
+app.post("/login-empresa", async (req, res) => {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json({
+            erro: "Informe o e-mail e a senha."
+        });
+    }
+
+    try {
+        const [empresas] = await db.promise().execute(
+            "SELECT id, nome, email, senha FROM empresas WHERE email = ?",
+            [email.trim().toLowerCase()]
+        );
+
+        if (empresas.length === 0) {
+            return res.status(401).json({
+                erro: "E-mail ou senha incorretos."
+            });
+        }
+
+        const empresa = empresas[0];
+        const senhaCorreta = await bcrypt.compare(senha, empresa.senha);
+
+        if (!senhaCorreta) {
+            return res.status(401).json({
+                erro: "E-mail ou senha incorretos."
+            });
+        }
+
+        req.session.empresa = {
+            id: empresa.id,
+            nome: empresa.nome,
+            email: empresa.email
+        };
+
+        return res.json({
+            mensagem: "Login empresarial realizado com sucesso!",
+            empresa: req.session.empresa
+        });
+    } catch (erro) {
+        console.error("Erro no login empresarial:", erro);
+
+        return res.status(500).json({
+            erro: "Não foi possível realizar o login."
+        });
+    }
+});
+
 
 // LISTAR EMPRESAS
 app.get("/empresas/listar", (req, res) => {
@@ -627,7 +753,7 @@ app.get("/empresas/listar", (req, res) => {
 
 });
 
-// LISTART VAGAS DE UMA EMPRESA
+// LISTAR VAGAS DE UMA EMPRESA
 app.get("/empresas/:id/vagas", (req, res) => {
 
     const empresa_id = req.params.id;
@@ -652,80 +778,222 @@ app.get("/empresas/:id/vagas", (req, res) => {
 });
 
 
-// CADASTRAR VAGA VINCULADA A UMA EMPRESA 
-app.post("/empresas/:id/vagas", (req, res) => {
-    const empresaId = Number(req.params.id);
-    const { titulo, turno, descricao } = req.body;
+ // LISTAR VAGAS DA EMPRESA LOGADA
+app.get("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
+    const empresaId = req.session.empresa.id;
 
-    if (!Number.isInteger(empresaId) || empresaId <= 0) {
+    try {
+        const [vagas] = await db.promise().execute(
+            `SELECT id, titulo, descricao, requisitos, turno, salario
+             FROM vagas
+             WHERE empresa_id = ?
+             ORDER BY id DESC`,
+            [empresaId]
+        );
+
+        return res.json(vagas);
+    } catch (erro) {
+        console.error("Erro ao listar vagas da empresa:", erro);
+
+        return res.status(500).json({
+            erro: "Não foi possível carregar suas vagas."
+        });
+    }
+});
+
+
+ // EDITAR VAGA DA EMPRESA LOGADA
+app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) => {
+    const empresaId = req.session.empresa.id;
+    const vagaId = req.params.id;
+
+    const {
+        titulo,
+        descricao,
+        requisitos,
+        tipoContrato,
+        salario
+    } = req.body;
+
+    if (
+        !titulo?.trim() ||
+        !descricao?.trim() ||
+        !requisitos?.trim() ||
+        !tipoContrato?.trim()
+    ) {
         return res.status(400).json({
-            erro: "ID da empresa inválido."
+            erro: "Preencha o título, a descrição, os requisitos e o tipo de contrato."
         });
     }
 
-    if (!titulo || !turno || !descricao) {
+    if (titulo.trim().length > 100 || tipoContrato.trim().length > 50) {
         return res.status(400).json({
-            erro: "Preencha título, turno e descrição da vaga."
+            erro: "O título deve ter até 100 caracteres e o tipo de contrato até 50."
         });
     }
 
     if (
-        titulo.length > 100 ||
-        turno.length > 50 ||
-        descricao.length > 150
+        salario !== "" &&
+        salario != null &&
+        (!Number.isFinite(Number(salario)) || Number(salario) < 0)
     ) {
         return res.status(400).json({
-            erro: "Um ou mais campos ultrapassam o limite permitido."
+            erro: "Informe um salário válido e não negativo."
         });
     }
 
-    db.query(
-        "SELECT id, nome FROM empresas WHERE id = ?",
-        [empresaId],
-        (err, empresas) => {
-            if (err) {
-                console.error("Erro ao consultar empresa:", err);
-                return res.status(500).json({
-                    erro: "Erro ao consultar a empresa."
-                });
-            }
+    const salarioValor =
+        salario === "" || salario == null ? null : Number(salario);
 
-            if (empresas.length === 0) {
-                return res.status(404).json({
-                    erro: "Empresa não encontrada."
-                });
-            }
+    try {
+        const [resultado] = await db.promise().execute(
+            `UPDATE vagas
+             SET titulo = ?, descricao = ?, requisitos = ?, turno = ?, salario = ?
+             WHERE id = ? AND empresa_id = ?`,
+            [
+                titulo.trim(),
+                descricao.trim(),
+                requisitos.trim(),
+                tipoContrato.trim(),
+                salarioValor,
+                vagaId,
+                empresaId
+            ]
+        );
 
-            const empresa = empresas[0];
-
-            const sql = `
-                INSERT INTO vagas
-                    (titulo, empresa, turno, descricao, empresa_id)
-                VALUES (?, ?, ?, ?, ?)
-            `;
-
-            db.query(
-                sql,
-                [titulo.trim(), empresa.nome, turno.trim(),
-                 descricao.trim(), empresaId],
-                (err, resultado) => {
-                    if (err) {
-                        console.error("Erro ao cadastrar vaga:", err);
-                        return res.status(500).json({
-                            erro: "Não foi possível cadastrar a vaga."
-                        });
-                    }
-
-                    return res.status(201).json({
-                        mensagem: "Vaga cadastrada com sucesso!",
-                        vaga_id: resultado.insertId,
-                        empresa_id: empresaId
-                    });
-                }
+        if (resultado.affectedRows === 0) {
+            const [vagas] = await db.promise().execute(
+                "SELECT id FROM vagas WHERE id = ? AND empresa_id = ?",
+                [vagaId, empresaId]
             );
+
+            if (vagas.length === 0) {
+                return res.status(404).json({
+                    erro: "Vaga não encontrada ou não pertence à sua empresa."
+                });
+            }
         }
-    );
+
+        return res.json({
+            mensagem: "Vaga atualizada com sucesso!"
+        });
+    } catch (erro) {
+        console.error("Erro ao editar vaga:", erro);
+
+        return res.status(500).json({
+            erro: "Não foi possível atualizar a vaga."
+        });
+    }
 });
+
+
+ // EXCLUIR VAGA DA EMPRESA LOGADA
+app.delete("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) => {
+    const empresaId = req.session.empresa.id;
+    const vagaId = req.params.id;
+
+    try {
+        const [resultado] = await db.promise().execute(
+            `DELETE FROM vagas
+             WHERE id = ? AND empresa_id = ?`,
+            [vagaId, empresaId]
+        );
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({
+                erro: "Vaga não encontrada ou não pertence à sua empresa."
+            });
+        }
+
+        return res.json({
+            mensagem: "Vaga excluída com sucesso!"
+        });
+    } catch (erro) {
+        console.error("Erro ao excluir vaga:", erro);
+
+        return res.status(500).json({
+            erro: "Não foi possível excluir a vaga."
+        });
+    }
+});
+
+
+ // CADASTRAR VAGA DA EMPRESA LOGADA
+app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
+    const empresaId = req.session.empresa.id;
+
+    const {
+        titulo,
+        descricao,
+        requisitos,
+        tipoContrato,
+        salario
+    } = req.body;
+
+    if (
+        !titulo?.trim() ||
+        !descricao?.trim() ||
+        !requisitos?.trim() ||
+        !tipoContrato?.trim()
+    ) {
+        return res.status(400).json({
+            erro: "Preencha o título, a descrição, os requisitos e o tipo de contrato."
+        });
+    }
+
+    if (
+        titulo.trim().length > 100 ||
+        tipoContrato.trim().length > 50
+    ) {
+        return res.status(400).json({
+            erro: "O título deve ter até 100 caracteres e o tipo de contrato até 50."
+        });
+    }
+
+    if (!Number.isFinite(Number(salario)) && salario !== "" && salario != null) {
+        return res.status(400).json({
+            erro: "Informe um salário válido."
+        });
+    }
+
+    const salarioValor =
+        salario === "" || salario == null ? null : Number(salario);
+
+    if (salarioValor !== null && salarioValor < 0) {
+        return res.status(400).json({
+            erro: "O salário não pode ser negativo."
+        });
+    }
+
+    try {
+        const [resultado] = await db.promise().execute(
+            `INSERT INTO vagas
+                (titulo, empresa, turno, descricao, empresa_id, requisitos, salario)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [
+                titulo.trim(),
+                req.session.empresa.nome,
+                tipoContrato.trim(),
+                descricao.trim(),
+                empresaId,
+                requisitos.trim(),
+                salarioValor
+            ]
+        );
+
+        return res.status(201).json({
+            mensagem: "Vaga cadastrada com sucesso!",
+            vaga_id: resultado.insertId
+        });
+    } catch (erro) {
+        console.error("Erro ao cadastrar vaga:", erro);
+
+        return res.status(500).json({
+            erro: "Não foi possível cadastrar a vaga."
+        });
+    }
+});
+
 
 
 // INICIAR SERVIDOR

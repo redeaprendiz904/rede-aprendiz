@@ -1,0 +1,152 @@
+
+/* ========================================
+   REDE APRENDIZ — LOGIN EMPRESARIAL
+======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #f4f7fb;
+    color: #333333;
+}
+
+/* Cartão de login */
+
+.container {
+    width: 100%;
+    max-width: 430px;
+    padding: 38px;
+    background: #ffffff;
+    border-top: 6px solid #800000;
+    border-radius: 14px;
+    box-shadow: 0 8px 28px rgba(75, 2, 2, 0.12);
+}
+
+/* Título e descrição */
+
+.container h1 {
+    margin-bottom: 10px;
+    color: #4b0202;
+    font-size: 28px;
+    text-align: center;
+}
+
+.container > p {
+    margin: 12px 0 24px;
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* Formulário */
+
+#formLoginEmpresa {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+#formLoginEmpresa label {
+    margin-top: 10px;
+    color: #4b0202;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#formLoginEmpresa input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #cccccc;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #333333;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#formLoginEmpresa input:focus {
+    border-color: #800000;
+    box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.12);
+}
+
+/* Botão Entrar */
+
+#formLoginEmpresa button[type="submit"] {
+    width: 100%;
+    padding: 13px;
+    margin-top: 18px;
+    border: none;
+    border-radius: 7px;
+    background: #4b0202;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+#formLoginEmpresa button[type="submit"]:hover {
+    background: #800000;
+    transform: translateY(-1px);
+}
+
+/* Mensagem de retorno do login */
+
+#mensagem {
+    margin-top: 12px;
+    color: #800000;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* Link para login de candidato */
+
+.container a {
+    color: #800000;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.container a:hover {
+    color: #ff0000;
+    text-decoration: underline;
+}
+
+/* Acessibilidade */
+
+#formLoginEmpresa button:focus-visible,
+.container a:focus-visible {
+    outline: 3px solid #ff0000;
+    outline-offset: 3px;
+}
+
+/* Responsividade */
+
+@media (max-width: 480px) {
+    body {
+        padding: 16px;
+    }
+
+    .container {
+        padding: 26px 20px;
+    }
+
+    .container h1 {
+        font-size: 24px;
+    }
+}

@@ -1,145 +1,326 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+/* ========================================
+   REDE APRENDIZ — DASHBOARD
+======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --vinho: #4b0202;
+    --vinho-escuro: #350000;
+    --vermelho: #ff0000;
+    --branco: #ffffff;
+    --fundo: #f4f7fb;
+    --cinza: #6b7280;
+    --texto: #252525;
+    --borda: #e7e7e7;
+    --sombra: 0 4px 18px rgba(75, 2, 2, 0.07);
+}
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial;
 }
 
 body {
-    background: #f4f4f4;
+    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+    background: var(--fundo);
+    color: var(--texto);
 }
 
-/* SIDEBAR */
+/* ========================================
+   MENU LATERAL
+======================================== */
+
 .sidebar {
-  width: 250px;
-  background-color: #800000;
-  display: flex;
-  flex-direction: column;
-  padding: 30px 20px;
-  position: fixed;
-  top: 0;
-  bottom: 0;
+    width: 250px;
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 20px;
+    background: var(--vinho);
+    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar h2 {
-  color: #FF0000;
-  text-align: center;
-  margin-bottom: 40px;
-  font-size: 1.8rem;
+    margin-bottom: 40px;
+    color: var(--branco);
+    font-size: 23px;
+    font-weight: 800;
+    text-align: center;
 }
 
 .sidebar a {
-  color: #fff;
-  text-decoration: none;
-  margin-bottom: 15px;
-  padding: 12px 15px;
-  border-radius: 8px;
-  transition: 0.3s;
-  font-weight: 500;
+    display: block;
+    margin-bottom: 10px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    color: #f5eaea;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.25s, color 0.25s;
 }
 
-.sidebar a:hover {
-  background-color: #FF0000;
-  transform: translateX(5px);
+.sidebar a:hover,
+.sidebar a[href="/dashboard"] {
+    background: var(--branco);
+    color: var(--vinho);
 }
 
+/* ========================================
+   CONTEÚDO PRINCIPAL
+======================================== */
 
-/* CONTEÚDO */
 .container {
-    margin-left: 270px; /* compensar sidebar */
-    padding: 20px;
-    max-width: 1200px;
+    width: calc(100% - 250px);
+    max-width: 1600px;
+    min-height: 100vh;
+    margin-left: 250px;
+    padding: 30px 36px;
 }
 
-/* TOPO */
+/* ========================================
+   CABEÇALHO
+======================================== */
+
 .top {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    gap: 20px;
+    margin-bottom: 35px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.logo {
+    color: var(--vinho);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .mensagens {
-    background: #eee;
-    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--borda);
     border-radius: 10px;
+    background: var(--branco);
+    color: var(--vinho);
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .mensagens span {
-    color: red;
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #fff0f0;
+    color: var(--vermelho);
+    font-size: 11px;
 }
 
-/* CARDS */
+/* ========================================
+   BOAS-VINDAS
+======================================== */
+
+.container > h2 {
+    margin-bottom: 25px;
+    color: var(--vinho);
+    font-size: 25px;
+    font-weight: 700;
+}
+
+#nomeUsuario {
+    color: var(--vermelho);
+}
+
+/* ========================================
+   CARDS DE RESUMO
+======================================== */
+
 .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
 .card {
-    background: linear-gradient(to right, #eee, #c0392b);
-    padding: 20px;
-    border-radius: 10px;
+    min-width: 0;
+    padding: 24px 20px;
+    border: 1px solid var(--borda);
+    border-top: 4px solid var(--vinho);
+    border-radius: 12px;
+    background: var(--branco);
+    box-shadow: var(--sombra);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(75, 2, 2, 0.12);
+}
+
+.card h3 {
+    margin-bottom: 18px;
+    color: var(--cinza);
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .card h1 {
-    color: red;
+    color: var(--vinho);
+    font-size: 25px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
 }
 
-/* BARRA */
+.card:nth-child(2) {
+    border-top-color: var(--vermelho);
+}
+
+.card:nth-child(3) {
+    border-top-color: #a84b4b;
+}
+
+.card:nth-child(4) {
+    border-top-color: #777777;
+}
+
+/* ========================================
+   BARRA DE PROGRESSO DO PERFIL
+======================================== */
+
 .barra {
+    width: 100%;
     height: 10px;
-    background: #ddd;
-    border-radius: 10px;
+    margin: 22px 0 12px;
     overflow: hidden;
+    border-radius: 20px;
+    background: #eeeeee;
 }
 
 .progresso {
     height: 100%;
-    width: 70%;
-    background: red;
+    border-radius: 20px;
+    background: linear-gradient(90deg, var(--vinho), var(--vermelho));
+    transition: width 0.5s ease;
 }
 
-/* PARTE DE BAIXO */
+.card > p {
+    color: var(--cinza);
+    font-size: 12px;
+}
+
+#percentualPerfil {
+    color: var(--vinho);
+    font-weight: 800;
+}
+
+/* ========================================
+   GRÁFICO E EMPRESAS
+======================================== */
+
 .baixo {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
+    grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+    gap: 24px;
+    align-items: stretch;
 }
 
-.grafico, 
+.grafico,
 .empresas {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
+    min-width: 0;
+    padding: 25px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: var(--branco);
+    box-shadow: var(--sombra);
 }
 
-.empresa {
-    background: linear-gradient(to right, #eee, #c0392b);
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 10px;
+.grafico h3,
+.empresas h3 {
+    margin-bottom: 18px;
+    color: var(--vinho);
+    font-size: 17px;
+    font-weight: 700;
 }
 
-/* 🔥 RESPONSIVO */
+.grafico > p {
+    margin-bottom: 22px;
+    color: var(--cinza);
+    font-size: 13px;
+}
 
-/* Tablet */
-@media (max-width: 1024px) {
-    .container {
-        margin-left: 0;
-    }
+.grafico > p span {
+    color: var(--vinho);
+    font-weight: 800;
+}
 
-    .sidebar {
-        position: relative;
-        width: 100%;
-        flex-direction: row;
-        justify-content: space-around;
-    }
+.area-grafico {
+    position: relative;
+    width: 100%;
+    height: 280px;
+}
 
-    .sidebar h2 {
-        display: none;
+#meuGrafico {
+    max-width: 100%;
+}
+
+/* ========================================
+   LISTA DE EMPRESAS
+======================================== */
+
+#listaEmpresas {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#listaEmpresas > p {
+    color: var(--cinza);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* Estilo para itens que o JavaScript inserir */
+#listaEmpresas > div,
+#listaEmpresas > article,
+#listaEmpresas > li {
+    padding: 15px;
+    border: 1px solid var(--borda);
+    border-radius: 9px;
+    background: #fffafa;
+    overflow-wrap: anywhere;
+}
+
+#listaEmpresas h4 {
+    margin-bottom: 6px;
+    color: var(--vinho);
+    font-size: 14px;
+}
+
+#listaEmpresas p {
+    color: var(--cinza);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 1200px) {
+    .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .baixo {
@@ -147,21 +328,71 @@ body {
     }
 }
 
-/* Celular */
-@media (max-width: 600px) {
-    .top {
-        flex-direction: column;
-        gap: 10px;
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        min-height: auto;
+        padding: 18px;
     }
 
-    .sidebar {
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 15px;
+    .sidebar h2 {
+        margin-bottom: 15px;
     }
 
     .sidebar a {
-        flex: 1 1 45%;
-        text-align: center;
+        margin-bottom: 5px;
+        padding: 11px 12px;
+    }
+
+    .container {
+        width: 100%;
+        margin-left: 0;
+        padding: 22px 16px;
+    }
+
+    .top {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 25px;
+    }
+
+    .container > h2 {
+        font-size: 21px;
+    }
+
+    .cards {
+        gap: 14px;
+    }
+
+    .card {
+        padding: 18px 14px;
+    }
+
+    .card h1 {
+        font-size: 21px;
+    }
+
+    .grafico,
+    .empresas {
+        padding: 18px;
+    }
+
+    .area-grafico {
+        height: 240px;
+    }
+}
+
+@media (max-width: 420px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .card h1 {
+        font-size: 24px;
+    }
+
+    .mensagens {
+        flex-wrap: wrap;
     }
 }

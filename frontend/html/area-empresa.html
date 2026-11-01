@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área da Empresa | Rede Aprendiz</title>
+    <link rel="stylesheet" href="../css/area-empresa.css">
+</head>
+
+<body>
+    <main class="hero">
+        <div class="container">
+            <section class="section">
+                <h1>Área da Empresa</h1>
+
+                <p id="mensagem">Carregando informações da empresa...</p>
+                <h2 id="nomeEmpresa"></h2>
+
+                <p>Bem-vindo à área de gerenciamento da sua empresa.</p>
+
+                <hr>
+
+                <h2>Cadastrar nova vaga</h2>
+                <p>Preencha os dados para divulgar uma oportunidade.</p>
+
+                <form id="formCadastroVaga">
+                    <label for="titulo">Nome da vaga:</label>
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        required
+                    >
+
+                    <br><br>
+
+                    <label for="descricao">Descrição da vaga:</label>
+                    <textarea
+                        id="descricao"
+                        name="descricao"
+                        rows="4"
+                        required
+                    ></textarea>
+
+                    <br><br>
+
+                    <label for="requisitos">Requisitos:</label>
+                    <textarea
+                        id="requisitos"
+                        name="requisitos"
+                        rows="3"
+                        required
+                    ></textarea>
+
+                    <br><br>
+
+                    <label for="tipoContrato">Tipo de contrato:</label>
+                    <select id="tipoContrato" name="tipoContrato" required>
+                        <option value="">Selecione</option>
+                        <option value="Estágio">Estágio</option>
+                        <option value="Aprendiz">Jovem aprendiz</option>
+                        <option value="Meio período">Meio período</option>
+                        <option value="Tempo integral">Tempo integral</option>
+                        <option value="Temporário">Temporário</option>
+                    </select>
+
+                    <br><br>
+
+                    <label for="salario">Salário (opcional):</label>
+                    <input
+                        type="number"
+                        id="salario"
+                        name="salario"
+                        min="0"
+                        step="0.01"
+                    >
+
+                    <br><br>
+
+                    <button type="submit">Cadastrar vaga</button>
+                </form>
+
+                <p id="mensagemVaga"></p>
+
+                <hr>
+
+                <h2>Minhas vagas</h2>
+                <p id="listaVagas">As vagas cadastradas aparecerão aqui.</p>
+
+                <button id="btnSair" type="button">Sair</button>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById("btnSair").addEventListener("click", async () => {
+            try {
+                const resposta = await fetch("/logout-empresa", {
+                    method: "POST",
+                    credentials: "include"
+                });
+
+                if (resposta.ok) {
+                    window.location.href = "/html/login-empresa.html";
+                } else {
+                    alert("Não foi possível sair da conta.");
+                }
+            } catch (erro) {
+                alert("Erro de conexão ao sair da conta.");
+            }
+        });
+
+        fetch("/empresa-logada", {
+            credentials: "include"
+        })
+        .then(resposta => {
+            if (!resposta.ok) {
+                throw new Error("Não foi possível carregar a empresa.");
+            }
+            return resposta.json();
+        })
+        .then(empresa => {
+            document.getElementById("mensagem").textContent =
+                "Login empresarial realizado com sucesso!";
+            document.getElementById("nomeEmpresa").textContent =
+                empresa.nome;
+        })
+        .catch(erro => {
+            console.error(erro);
+            document.getElementById("mensagem").textContent =
+                "Não foi possível carregar os dados da empresa.";
+        });
+    </script>
+    <script src="../js/area-empresa.js"></script>
+</body>
+</html>
