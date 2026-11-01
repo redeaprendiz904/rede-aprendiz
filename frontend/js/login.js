@@ -1,23 +1,60 @@
-document.querySelector("form").addEventListener("submit", async (e) => {
-    e.preventDefault();
 
-    const dados = {
-        email: document.getElementById("email").value,
-        senha: document.getElementById("senha").value
-    };
+const formLogin = document.querySelector("form");
 
-    const resposta = await fetch("http://localhost:3000/login", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    credentials: "include",
-    body: JSON.stringify(dados)
-});
+if (formLogin) {
+    formLogin.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-    if (resposta.ok) {
-        window.location.href = "/dashboard";
-    } else {
-        alert("Email ou senha inválidos");
-    }
-});
+        const email = document.getElementById("email")?.value.trim();
+        const senha = document.getElementById("senha")?.value;
+
+        if (!email || !senha) {
+            alert("Informe seu e-mail e sua senha.");
+            return;
+        }
+
+        const botao = formLogin.querySelector(
+            'button[type="submit"], input[type="submit"]'
+        );
+
+        if (botao) {
+            botao.disabled = true;
+        }
+
+        try {
+            const resposta = await fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "same-origin",
+                body: JSON.stringify({
+                    email,
+                    senha
+                })
+            });
+
+            const resultado = await resposta.json().catch(() => ({}));
+
+            if (!resposta.ok) {
+                alert(
+                    resultado.erro ||
+                    "E-mail ou senha inválidos."
+                );
+                return;
+            }
+
+            window.location.href = "/dashboard";
+        } catch (erro) {
+            console.error("Erro no login:", erro);
+
+            alert(
+                "Não foi possível conectar ao servidor. Tente novamente."
+            );
+        } finally {
+            if (botao) {
+                botao.disabled = false;
+            }
+        }
+    });
+}

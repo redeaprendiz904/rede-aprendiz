@@ -15,10 +15,23 @@ app.use(cors({
 
 app.use(express.json());
 
+const sessionSecret = process.env.SESSION_SECRET;
+
+if (!sessionSecret && process.env.NODE_ENV === "production") {
+    throw new Error("Defina a variável de ambiente SESSION_SECRET antes de iniciar o servidor em produção.");
+}
+
 app.use(session({
-    secret: "segredo123",
+    name: "redeaprendiz.sid",
+    secret: sessionSecret || "rede-aprendiz-dev-secret-altere-isto",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 1000 * 60 * 60 * 8
+    }
 }));
 
 // SERVIR ARQUIVOS DO FRONTEND
@@ -75,47 +88,139 @@ const uploadFoto = multer({
     }
 });
 
-// CADASTRO
-app.post("/cadastro", (req, res) => {
-    const { nome, email, telefone, senha } = req.body;
+// CADASTRO DE ESTUDANTE
+app.post("/cadastro", async (req, res) => {
+    let { nome, email, telefone, senha } = req.body || {};
 
-    const sql = "INSERT INTO usuarios (nome, email, telefone, senha) VALUES (?, ?, ?, ?)";
+    if (![nome, email, telefone, senha].every((valor) => typeof valor === "string")) {
+        return res.status(400).json({ erro: "Preencha nome, e-mail, telefone e senha." });
+    }
 
-    db.query(sql, [nome, email, telefone, senha], (err) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).send("Erro no cadastro");
-        }
-        res.sendStatus(200);
-    });
+    nome = nome.trim();
+    email = email.trim().toLowerCase();
+    telefone = telefone.trim();
+
+    if (!nome || nome.length > 100) {
+        return res.status(400).json({ erro: "O nome é obrigatório e deve ter até 100 caracteres." });
+    }
+    if (email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ erro: "Informe um e-mail válido." });
+    }
+    if (!telefone || telefone.length > 20) {
+        return res.status(400).json({ erro: "Informe um telefone válido com até 20 caracteres." });
+    }
+    if (senha.length < 8 || senha.length > 72) {
+        return res.status(400).json({ erro: "A senha deve ter entre 8 e 72 caracteres." });
+    }
+
+    try {
+        const senhaHash = await bcrypt.hash(senha, 12);
+
+        db.query(
+            "INSERT INTO usuarios (nome, email, telefone, senha) VALUES (?, ?, ?, ?)",
+            [nome, email, telefone, senhaHash],
+            (err) => {
+                if (err) {
+                    if (err.code === "ER_DUP_ENTRY") {
+                        return res.status(409).json({ erro: "Já existe uma conta com esse e-mail." });
+                    }
+
+                    console.error("Erro ao cadastrar estudante:", err);
+                    return res.status(500).json({ erro: "Não foi possível realizar o cadastro." });
+                }
+
+                return res.status(201).json({ mensagem: "Cadastro realizado com sucesso!" });
+            }
+        );
+    } catch (erro) {
+        console.error("Erro ao proteger senha do estudante:", erro);
+        return res.status(500).json({ erro: "Não foi possível realizar o cadastro." });
+    }
 });
 
-// LOGIN
+// LOGIN DE ESTUDANTE
 app.post("/login", (req, res) => {
-    const { email, senha } = req.body;
+    let { email, senha } = req.body || {};
 
-    const sql = "SELECT * FROM usuarios WHERE email = ?";
+    if (typeof email !== "string" || typeof senha !== "string" || !email.trim() || !senha) {
+        return res.status(400).json({ erro: "Informe o e-mail e a senha." });
+    }
 
-    db.query(sql, [email], (err, result) => {
-        if (err) return res.status(500).send(err);
+    email = email.trim().toLowerCase();
 
-        if (result.length > 0) {
-            const usuario = result[0];
+    db.query(
+        "SELECT id, nome, email, senha FROM usuarios WHERE email = ? LIMIT 1",
+        [email],
+        async (err, resultado) => {
+            if (err) {
+                console.error("Erro no login do estudante:", err);
+                return res.status(500).json({ erro: "Não foi possível realizar o login." });
+            }
 
-            if (senha === usuario.senha) {
+            if (resultado.length === 0) {
+                return res.status(401).json({ erro: "E-mail ou senha incorretos." });
+            }
+
+            const usuario = resultado[0];
+            let senhaCorreta = false;
+            const senhaArmazenada = String(usuario.senha || "");
+            const pareceHashBcrypt = /^\$2[aby]\$\d{2}\$/.test(senhaArmazenada);
+
+            try {
+                if (pareceHashBcrypt) {
+                    senhaCorreta = await bcrypt.compare(senha, senhaArmazenada);
+                } else {
+                    // Compatibilidade temporária com contas antigas que tinham senha em texto puro.
+                    senhaCorreta = senha === senhaArmazenada;
+
+                    if (senhaCorreta) {
+                        const novoHash = await bcrypt.hash(senha, 12);
+
+                        db.query(
+                            "UPDATE usuarios SET senha = ? WHERE id = ?",
+                            [novoHash, usuario.id],
+                            (erroAtualizacao) => {
+                                if (erroAtualizacao) {
+                                    console.error("Não foi possível atualizar o hash da senha:", erroAtualizacao);
+                                }
+                            }
+                        );
+                    }
+                }
+            } catch (erroSenha) {
+                console.error("Erro ao verificar senha do estudante:", erroSenha);
+                return res.status(500).json({ erro: "Não foi possível realizar o login." });
+            }
+
+            if (!senhaCorreta) {
+                return res.status(401).json({ erro: "E-mail ou senha incorretos." });
+            }
+
+            req.session.regenerate((erroSessao) => {
+                if (erroSessao) {
+                    console.error("Erro ao renovar sessão do estudante:", erroSessao);
+                    return res.status(500).json({ erro: "Não foi possível iniciar a sessão." });
+                }
+
                 req.session.usuario = {
                     id: usuario.id,
                     nome: usuario.nome
                 };
 
-                return res.sendStatus(200);
-            } else {
-                return res.status(401).send("Senha incorreta");
-            }
-        } else {
-            return res.status(404).send("Usuário não encontrado");
+                req.session.save((erroSalvar) => {
+                    if (erroSalvar) {
+                        console.error("Erro ao salvar sessão do estudante:", erroSalvar);
+                        return res.status(500).json({ erro: "Não foi possível iniciar a sessão." });
+                    }
+
+                    return res.json({
+                        mensagem: "Login realizado com sucesso!",
+                        usuario: req.session.usuario
+                    });
+                });
+            });
         }
-    });
+    );
 });
 
 // USUÁRIO LOGADO
@@ -129,16 +234,27 @@ app.get("/usuario", (req, res) => {
 
 // LOGOUT
 app.get("/logout", (req, res) => {
-    req.session.destroy();
-    res.redirect("/html/login.html");
+    if (!req.session) {
+        return res.redirect("/html/login.html");
+    }
+
+    req.session.destroy((erro) => {
+        if (erro) {
+            console.error("Erro ao encerrar sessão:", erro);
+            return res.status(500).send("Não foi possível sair da conta.");
+        }
+
+        res.clearCookie("redeaprendiz.sid");
+        return res.redirect("/html/login.html");
+    });
 });
 
-// 
-
+// MIDDLEWARES DE AUTENTICAÇÃO
 function verificarLogin(req, res, next) {
     if (!req.session.usuario) {
         return res.redirect("/html/login.html");
     }
+
     next();
 }
 
@@ -152,11 +268,9 @@ function verificarLoginEmpresa(req, res, next) {
     next();
 }
 
-// ÁREA EXCLUSIVA DA EMPRESA 
+// ÁREA EXCLUSIVA DA EMPRESA
 app.get("/area-empresa", verificarLoginEmpresa, (req, res) => {
-    res.sendFile(
-        path.join(__dirname, "../frontend/html/area-empresa.html")
-    );
+    res.sendFile(path.join(__dirname, "../frontend/html/area-empresa.html"));
 });
 
 app.get("/empresa-logada", verificarLoginEmpresa, (req, res) => {
@@ -167,7 +281,7 @@ app.get("/empresa-logada", verificarLoginEmpresa, (req, res) => {
     });
 });
 
-// SAIR DA CONTA EMPRESARIAL 
+// SAIR DA CONTA EMPRESARIAL
 app.post("/logout-empresa", (req, res) => {
     req.session.empresa = null;
 
@@ -183,7 +297,7 @@ app.post("/logout-empresa", (req, res) => {
     });
 });
 
-
+// ROTAS DE PÁGINAS
 app.get("/dashboard", verificarLogin, (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/html/dashboard.html"));
 });
@@ -197,9 +311,7 @@ app.get("/perfil", verificarLogin, (req, res) => {
 });
 
 app.get("/oportunidades", verificarLogin, (req, res) => {
-    res.sendFile(
-        path.join(__dirname, "../frontend/html/vagas.html")
-    );
+    res.sendFile(path.join(__dirname, "../frontend/html/vagas.html"));
 });
 
 // LISTAR VAGAS
@@ -207,7 +319,11 @@ app.get("/vagas", (req, res) => {
     const sql = "SELECT * FROM vagas";
 
     db.query(sql, (err, result) => {
-        if (err) return res.status(500).send(err);
+        if (err) {
+            console.error("Erro ao listar vagas:", err);
+            return res.status(500).json({ erro: "Erro ao listar vagas." });
+        }
+
         res.json(result);
     });
 });
@@ -229,7 +345,6 @@ app.get("/minhas-candidaturas", (req, res) => {
     db.query(sql, [req.session.usuario.id], (err, resultados) => {
         if (err) {
             console.error("Erro ao buscar candidaturas:", err);
-
             return res.status(500).json({
                 erro: "Não foi possível carregar as candidaturas."
             });
@@ -238,7 +353,6 @@ app.get("/minhas-candidaturas", (req, res) => {
         res.json(resultados);
     });
 });
-
 // CRIAR PERFIL
 app.post("/perfil", (req, res) => {
     if (!req.session.usuario) {
@@ -292,7 +406,6 @@ app.post("/perfil", (req, res) => {
         }
 
         if (resultado.length > 0) {
-            // O perfil já existe: atualiza os dados.
             const perfil_id = resultado[0].id;
 
             const sqlAtualizar = `
@@ -327,7 +440,6 @@ app.post("/perfil", (req, res) => {
                 }
             );
         } else {
-            // O perfil ainda não existe: cria um novo.
             const sqlInserir = `
                 INSERT INTO perfil (
                     usuario_id,
@@ -365,16 +477,14 @@ app.post("/perfil", (req, res) => {
     });
 });
 
-// Rota para enviar e salvar a foto do perfil.
+// ENVIAR E SALVAR FOTO DO PERFIL
 app.post("/perfil/foto", (req, res) => {
-    // Verifica se o usuário está autenticado.
     if (!req.session.usuario) {
         return res.status(401).json({
             erro: "Você precisa estar logado para alterar a foto."
         });
     }
 
-    // Recebe o arquivo enviado pelo formulário.
     uploadFoto.single("foto")(req, res, async (erro) => {
         if (erro) {
             return res.status(400).json({
@@ -392,7 +502,6 @@ app.post("/perfil/foto", (req, res) => {
         const caminhoFoto = `/uploads/perfis/${req.file.filename}`;
 
         try {
-            // Atualiza a foto do perfil do usuário conectado.
             const [resultado] = await db.promise().execute(
                 `UPDATE perfil
                  SET foto_perfil = ?
@@ -400,7 +509,6 @@ app.post("/perfil/foto", (req, res) => {
                 [caminhoFoto, usuarioId]
             );
 
-            // Se o usuário ainda não tiver um perfil, remove o arquivo enviado.
             if (resultado.affectedRows === 0) {
                 fs.unlink(req.file.path, () => {});
 
@@ -415,7 +523,6 @@ app.post("/perfil/foto", (req, res) => {
             });
         } catch (erroBanco) {
             console.error("Erro ao salvar foto:", erroBanco);
-
             fs.unlink(req.file.path, () => {});
 
             return res.status(500).json({
@@ -425,6 +532,7 @@ app.post("/perfil/foto", (req, res) => {
     });
 });
 
+// BUSCAR DADOS DO PERFIL
 app.get("/perfil/dados", (req, res) => {
     if (!req.session.usuario) {
         return res.status(401).json({
@@ -433,12 +541,14 @@ app.get("/perfil/dados", (req, res) => {
     }
 
     const sql = `
-        SELECT  nome, idade, telefone, escola, serie, turno,
-                horario, area_interesse, cursos_concluidos,
-                horas_estudo, habilidades, sobre_mim, foto_perfil
-        FROM perfil WHERE usuario_id = ?
-                    ORDER BY id DESC
-                    LIMIT 1`;
+        SELECT nome, idade, telefone, escola, serie, turno,
+               horario, area_interesse, cursos_concluidos,
+               horas_estudo, habilidades, sobre_mim, foto_perfil
+        FROM perfil
+        WHERE usuario_id = ?
+        ORDER BY id DESC
+        LIMIT 1
+    `;
 
     db.query(sql, [req.session.usuario.id], (err, resultado) => {
         if (err) {
@@ -454,9 +564,7 @@ app.get("/perfil/dados", (req, res) => {
     });
 });
 
-
-
- // CANDIDATAR-SE
+// CANDIDATAR-SE A UMA VAGA
 app.post("/candidatar", (req, res) => {
     if (!req.session.usuario) {
         return res.status(401).json({
@@ -473,7 +581,6 @@ app.post("/candidatar", (req, res) => {
         });
     }
 
-    // Confere se a vaga existe.
     db.query(
         "SELECT id FROM vagas WHERE id = ?",
         [vagaId],
@@ -491,7 +598,6 @@ app.post("/candidatar", (req, res) => {
                 });
             }
 
-            // Confere se o estudante já se candidatou.
             db.query(
                 `SELECT id
                  FROM candidaturas
@@ -512,7 +618,6 @@ app.post("/candidatar", (req, res) => {
                         });
                     }
 
-                    // Registra a candidatura.
                     db.query(
                         `INSERT INTO candidaturas (usuario_id, vaga_id)
                          VALUES (?, ?)`,
@@ -536,9 +641,7 @@ app.post("/candidatar", (req, res) => {
     );
 });
 
-
-// GRAFICO DE PERFORMANCE
-
+// DADOS DO GRÁFICO DE PERFORMANCE
 app.get("/dashboard/dados", (req, res) => {
     if (!req.session.usuario) {
         return res.status(401).json({
@@ -569,7 +672,7 @@ app.get("/dashboard/dados", (req, res) => {
     });
 });
 
-
+// RESUMO DO DASHBOARD
 app.get("/dashboard/resumo", (req, res) => {
     if (!req.session.usuario) {
         return res.status(401).json({
@@ -622,10 +725,7 @@ app.get("/dashboard/resumo", (req, res) => {
         });
     });
 });
-
-
-
- // CADASTRAR EMPRESA
+// CADASTRAR EMPRESA
 app.post("/empresas", async (req, res) => {
     const { nome, descricao, categoria, email, senha } = req.body;
 
@@ -682,18 +782,25 @@ app.post("/empresas", async (req, res) => {
 
  // LOGIN EMPRESARIAL
 app.post("/login-empresa", async (req, res) => {
-    const { email, senha } = req.body;
+    let { email, senha } = req.body || {};
 
-    if (!email || !senha) {
+    if (
+        typeof email !== "string" ||
+        typeof senha !== "string" ||
+        !email.trim() ||
+        !senha
+    ) {
         return res.status(400).json({
             erro: "Informe o e-mail e a senha."
         });
     }
 
+    email = email.trim().toLowerCase();
+
     try {
         const [empresas] = await db.promise().execute(
-            "SELECT id, nome, email, senha FROM empresas WHERE email = ?",
-            [email.trim().toLowerCase()]
+            "SELECT id, nome, email, senha FROM empresas WHERE email = ? LIMIT 1",
+            [email]
         );
 
         if (empresas.length === 0) {
@@ -703,7 +810,10 @@ app.post("/login-empresa", async (req, res) => {
         }
 
         const empresa = empresas[0];
-        const senhaCorreta = await bcrypt.compare(senha, empresa.senha);
+        const senhaCorreta = await bcrypt.compare(
+            senha,
+            String(empresa.senha || "")
+        );
 
         if (!senhaCorreta) {
             return res.status(401).json({
@@ -711,15 +821,41 @@ app.post("/login-empresa", async (req, res) => {
             });
         }
 
-        req.session.empresa = {
-            id: empresa.id,
-            nome: empresa.nome,
-            email: empresa.email
-        };
+        req.session.regenerate((erroSessao) => {
+            if (erroSessao) {
+                console.error(
+                    "Erro ao renovar sessão empresarial:",
+                    erroSessao
+                );
 
-        return res.json({
-            mensagem: "Login empresarial realizado com sucesso!",
-            empresa: req.session.empresa
+                return res.status(500).json({
+                    erro: "Não foi possível iniciar a sessão."
+                });
+            }
+
+            req.session.empresa = {
+                id: empresa.id,
+                nome: empresa.nome,
+                email: empresa.email
+            };
+
+            req.session.save((erroSalvar) => {
+                if (erroSalvar) {
+                    console.error(
+                        "Erro ao salvar sessão empresarial:",
+                        erroSalvar
+                    );
+
+                    return res.status(500).json({
+                        erro: "Não foi possível iniciar a sessão."
+                    });
+                }
+
+                return res.json({
+                    mensagem: "Login empresarial realizado com sucesso!",
+                    empresa: req.session.empresa
+                });
+            });
         });
     } catch (erro) {
         console.error("Erro no login empresarial:", erro);
@@ -731,31 +867,28 @@ app.post("/login-empresa", async (req, res) => {
 });
 
 
-// LISTAR EMPRESAS
+// LISTAR EMPRESAS (SEM EXPOR SENHAS)
 app.get("/empresas/listar", (req, res) => {
-
     const sql = `
-        SELECT *
+        SELECT id, nome, descricao, categoria, email, data_cadastro
         FROM empresas
         ORDER BY data_cadastro DESC
     `;
 
     db.query(sql, (err, resultado) => {
-
         if (err) {
-            console.log(err);
-            return res.status(500).send("Erro ao listar empresas");
+            console.error("Erro ao listar empresas:", err);
+            return res.status(500).json({
+                erro: "Erro ao listar empresas."
+            });
         }
 
         res.json(resultado);
-
     });
-
 });
 
 // LISTAR VAGAS DE UMA EMPRESA
 app.get("/empresas/:id/vagas", (req, res) => {
-
     const empresa_id = req.params.id;
 
     const sql = `
@@ -765,20 +898,18 @@ app.get("/empresas/:id/vagas", (req, res) => {
     `;
 
     db.query(sql, [empresa_id], (err, resultado) => {
-
         if (err) {
-            console.log(err);
-            return res.status(500).send(err);
+            console.error("Erro ao listar vagas da empresa:", err);
+            return res.status(500).json({
+                erro: "Erro ao listar vagas."
+            });
         }
 
         res.json(resultado);
-
     });
-
 });
 
-
- // LISTAR VAGAS DA EMPRESA LOGADA
+// LISTAR VAGAS DA EMPRESA LOGADA
 app.get("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
     const empresaId = req.session.empresa.id;
 
@@ -801,8 +932,7 @@ app.get("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
     }
 });
 
-
- // EDITAR VAGA DA EMPRESA LOGADA
+// EDITAR VAGA DA EMPRESA LOGADA
 app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) => {
     const empresaId = req.session.empresa.id;
     const vagaId = req.params.id;
@@ -886,8 +1016,7 @@ app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) =>
     }
 });
 
-
- // EXCLUIR VAGA DA EMPRESA LOGADA
+// EXCLUIR VAGA DA EMPRESA LOGADA
 app.delete("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) => {
     const empresaId = req.session.empresa.id;
     const vagaId = req.params.id;
@@ -917,8 +1046,7 @@ app.delete("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res)
     }
 });
 
-
- // CADASTRAR VAGA DA EMPRESA LOGADA
+// CADASTRAR VAGA DA EMPRESA LOGADA
 app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
     const empresaId = req.session.empresa.id;
 
@@ -993,8 +1121,6 @@ app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
         });
     }
 });
-
-
 
 // INICIAR SERVIDOR
 app.listen(3000, () => {
