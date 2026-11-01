@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo | Rede Aprendiz</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <script src="../js/admin.js" defer></script>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>Rede Aprendiz</h1>
+        <span>Painel Administrativo</span>
+        <button id="btnSair" type="button">Sair</button>
+    </header>
+
+    <main class="admin-container">
+        <h2>Bem-vindo ao painel administrativo</h2>
+        <p>Gerencie estudantes, empresas e vagas da plataforma.</p>
+
+        <section class="admin-cards">
+            <article class="admin-card">
+                <h3>Estudantes</h3>
+                <p>Consultar e gerenciar contas de estudantes.</p>
+                <button type="button" id="btnEstudantes">
+                    Gerenciar estudantes
+                </button>
+                <div id="listaEstudantes"></div>
+            </article>
+
+            <article class="admin-card">
+                <h3>Empresas</h3>
+                <p>Consultar e gerenciar contas empresariais.</p>
+                <button type="button" id="btnEmpresas">
+                    Gerenciar empresas
+                </button>
+            </article>
+
+            <article class="admin-card">
+                <h3>Vagas</h3>
+                <p>Consultar e moderar vagas publicadas.</p>
+                <button type="button" id="btnVagas">
+                    Gerenciar vagas
+                </button>
+            </article>
+        </section>
+    </main>
+</body>
+</html>

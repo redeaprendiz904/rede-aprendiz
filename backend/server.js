@@ -223,6 +223,107 @@ app.post("/login", (req, res) => {
     );
 });
 
+
+// LOGIN DE ADMINISTRADOR 
+app.post("/login-admin", (req, res) => {
+    let { email, senha } = req.body || {};
+
+    if (
+        typeof email !== "string" ||
+        typeof senha !== "string" ||
+        !email.trim() ||
+        !senha
+    ) {
+        return res.status(400).json({
+            erro: "Informe o e-mail e a senha."
+        });
+    }
+
+    email = email.trim().toLowerCase();
+
+    db.query(
+        "SELECT id, nome, email, senha FROM administradores WHERE email = ? LIMIT 1",
+        [email],
+        async (err, resultado) => {
+            if (err) {
+                console.error("Erro no login do administrador:", err);
+                return res.status(500).json({
+                    erro: "Não foi possível realizar o login."
+                });
+            }
+
+            if (resultado.length === 0) {
+                return res.status(401).json({
+                    erro: "E-mail ou senha incorretos."
+                });
+            }
+
+            const administrador = resultado[0];
+            let senhaCorreta = false;
+
+            try {
+                senhaCorreta = await bcrypt.compare(
+                    senha,
+                    administrador.senha
+                );
+            } catch (erroSenha) {
+                console.error(
+                    "Erro ao verificar senha do administrador:",
+                    erroSenha
+                );
+
+                return res.status(500).json({
+                    erro: "Não foi possível realizar o login."
+                });
+            }
+
+            if (!senhaCorreta) {
+                return res.status(401).json({
+                    erro: "E-mail ou senha incorretos."
+                });
+            }
+
+            req.session.regenerate((erroSessao) => {
+                if (erroSessao) {
+                    console.error(
+                        "Erro ao renovar sessão administrativa:",
+                        erroSessao
+                    );
+
+                    return res.status(500).json({
+                        erro: "Não foi possível iniciar a sessão."
+                    });
+                }
+
+                req.session.administrador = {
+                    id: administrador.id,
+                    nome: administrador.nome,
+                    email: administrador.email
+                };
+
+                req.session.save((erroSalvar) => {
+                    if (erroSalvar) {
+                        console.error(
+                            "Erro ao salvar sessão administrativa:",
+                            erroSalvar
+                        );
+
+                        return res.status(500).json({
+                            erro: "Não foi possível iniciar a sessão."
+                        });
+                    }
+
+                    return res.json({
+                        mensagem: "Login administrativo realizado com sucesso!",
+                        administrador: req.session.administrador
+                    });
+                });
+            });
+        }
+    );
+});
+
+
 // USUÁRIO LOGADO
 app.get("/usuario", (req, res) => {
     if (!req.session.usuario) {
@@ -233,7 +334,7 @@ app.get("/usuario", (req, res) => {
 });
 
 // LOGOUT
-app.get("/logout", (req, res) => {
+app.post("/logout", (req, res) => {
     if (!req.session) {
         return res.redirect("/html/login.html");
     }
@@ -268,6 +369,15 @@ function verificarLoginEmpresa(req, res, next) {
     next();
 }
 
+
+function verificarLoginAdmin(req, res, next) {
+    if (!req.session || !req.session.administrador) {
+        return res.redirect("/html/login-admin.html");
+    }
+
+    next();
+}
+
 // ÁREA EXCLUSIVA DA EMPRESA
 app.get("/area-empresa", verificarLoginEmpresa, (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/html/area-empresa.html"));
@@ -280,22 +390,167 @@ app.get("/empresa-logada", verificarLoginEmpresa, (req, res) => {
         email: req.session.empresa.email
     });
 });
+// PAINEL ADMINISTRATIVO
+app.get("/admin", verificarLoginAdmin, (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "../frontend/html/admin.html")
+    );
+});
 
-// SAIR DA CONTA EMPRESARIAL
+app.get("/admin/estudantes", verificarLoginAdmin, (req, res) => {
+    const sql = `
+        SELECT id, nome, email, telefone
+        FROM usuarios
+        ORDER BY nome ASC
+    `;
+
+    db.query(sql, (erro, resultados) => {
+        if (erro) {
+            console.error("Erro ao listar estudantes:", erro);
+            return res.status(500).json({
+                erro: "Não foi possível carregar os estudantes."
+            });
+        }
+
+        return res.json(resultados);
+    });
+});
+
+
+app.delete(
+    "/admin/estudantes/:id",
+    verificarLoginAdmin,
+    (req, res) => {
+        const id = Number(req.params.id);
+
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({
+                erro: "ID de estudante inválido."
+            });
+        }
+
+        db.beginTransaction((erro) => {
+            if (erro) {
+                console.error("Erro ao iniciar transação:", erro);
+                return res.status(500).json({
+                    erro: "Não foi possível iniciar a exclusão."
+                });
+            }
+
+            const executarExclusao = (sql, callback) => {
+                db.query(sql, [id], (erroConsulta) => {
+                    if (erroConsulta) {
+                        return db.rollback(() => {
+                            console.error("Erro durante exclusão:", erroConsulta);
+                            res.status(500).json({
+                                erro: "Não foi possível excluir os dados vinculados ao estudante."
+                            });
+                        });
+                    }
+
+                    callback();
+                });
+            };
+
+            executarExclusao(
+                "DELETE FROM candidaturas WHERE usuario_id = ?",
+                () => {
+                    executarExclusao(
+                        "DELETE FROM perfil WHERE usuario_id = ?",
+                        () => {
+                            db.query(
+                                "DELETE FROM usuarios WHERE id = ?",
+                                [id],
+                                (erroUsuario, resultado) => {
+                                    if (erroUsuario || resultado.affectedRows === 0) {
+                                        return db.rollback(() => {
+                                            if (erroUsuario) {
+                                                console.error(
+                                                    "Erro ao excluir estudante:",
+                                                    erroUsuario
+                                                );
+                                            }
+
+                                            res.status(
+                                                erroUsuario ? 500 : 404
+                                            ).json({
+                                                erro: erroUsuario
+                                                    ? "Não foi possível excluir o estudante."
+                                                    : "Estudante não encontrado."
+                                            });
+                                        });
+                                    }
+
+                                    db.commit((erroCommit) => {
+                                        if (erroCommit) {
+                                            return db.rollback(() => {
+                                                console.error(
+                                                    "Erro ao confirmar exclusão:",
+                                                    erroCommit
+                                                );
+                                                res.status(500).json({
+                                                    erro: "Não foi possível concluir a exclusão."
+                                                });
+                                            });
+                                        }
+
+                                        res.json({
+                                            mensagem: "Estudante, perfil e candidaturas vinculadas excluídos com sucesso."
+                                        });
+                                    });
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        });
+    }
+);
+
+
+// SAIR DA CONTA EMPRESARIAL 
 app.post("/logout-empresa", (req, res) => {
-    req.session.empresa = null;
-
-    req.session.save((erro) => {
+    req.session.destroy((erro) => {
         if (erro) {
             console.error("Erro ao sair da conta empresarial:", erro);
+
             return res.status(500).json({
                 erro: "Não foi possível sair da conta."
             });
         }
 
-        res.json({ mensagem: "Logout empresarial realizado com sucesso." });
+        res.clearCookie("redeaprendiz.sid");
+
+        return res.json({
+            mensagem: "Logout empresarial realizado com sucesso."
+        });
     });
 });
+
+// SAIR DA CONTA ADMINISTRATIVA
+app.post("/logout-admin", (req, res) => {
+    if (!req.session) {
+        res.clearCookie("redeaprendiz.sid");
+        return res.json({ mensagem: "Sessão administrativa encerrada." });
+    }
+
+    req.session.destroy((erro) => {
+        if (erro) {
+            console.error("Erro ao encerrar sessão administrativa:", erro);
+            return res.status(500).json({
+                erro: "Não foi possível sair da conta administrativa."
+            });
+        }
+
+        res.clearCookie("redeaprendiz.sid");
+
+        return res.json({
+            mensagem: "Logout administrativo realizado com sucesso."
+        });
+    });
+});
+
 
 // ROTAS DE PÁGINAS
 app.get("/dashboard", verificarLogin, (req, res) => {
@@ -314,19 +569,28 @@ app.get("/oportunidades", verificarLogin, (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/html/vagas.html"));
 });
 
-// LISTAR VAGAS
-app.get("/vagas", (req, res) => {
-    const sql = "SELECT * FROM vagas";
 
-    db.query(sql, (err, result) => {
+ // LISTAR VAGAS PÚBLICAS
+app.get("/vagas", (req, res) => {
+    const sql = `
+        SELECT id, titulo, empresa, turno, descricao,
+               requisitos, salario, empresa_id
+        FROM vagas
+        ORDER BY id DESC
+    `;
+
+    db.query(sql, (err, resultado) => {
         if (err) {
             console.error("Erro ao listar vagas:", err);
-            return res.status(500).json({ erro: "Erro ao listar vagas." });
+            return res.status(500).json({
+                erro: "Erro ao listar vagas."
+            });
         }
 
-        res.json(result);
+        return res.json(resultado);
     });
 });
+
 
 // LISTAR CANDIDATURAS DO USUÁRIO LOGADO
 app.get("/minhas-candidaturas", (req, res) => {
@@ -725,26 +989,60 @@ app.get("/dashboard/resumo", (req, res) => {
         });
     });
 });
-// CADASTRAR EMPRESA
-app.post("/empresas", async (req, res) => {
-    const { nome, descricao, categoria, email, senha } = req.body;
 
-    if (!nome || !descricao || !categoria || !email || !senha) {
+// CADASTRAR EMPRESA 
+app.post("/empresas", async (req, res) => {
+    let { nome, descricao, categoria, email, senha } = req.body || {};
+
+    // Validar se todos os campos são textos
+    if (
+        ![nome, descricao, categoria, email, senha]
+            .every((valor) => typeof valor === "string")
+    ) {
         return res.status(400).json({
-            erro: "Preencha todos os campos, incluindo e-mail e senha."
+            erro: "Preencha todos os campos corretamente."
         });
     }
 
-    if (senha.length < 8) {
+    // Limpar espaços e padronizar o e-mail
+    nome = nome.trim();
+    descricao = descricao.trim();
+    categoria = categoria.trim();
+    email = email.trim().toLowerCase();
+
+    // Validar nome, descrição e categoria
+    if (
+        !nome || nome.length > 100 ||
+        !descricao || descricao.length > 1000 ||
+        !categoria || categoria.length > 50
+    ) {
         return res.status(400).json({
-            erro: "A senha deve ter pelo menos 8 caracteres."
+            erro: "Confira o nome, a descrição e a categoria."
+        });
+    }
+
+    // Validar e-mail
+    if (
+        email.length > 100 ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
+        return res.status(400).json({
+            erro: "Informe um e-mail válido com até 100 caracteres."
+        });
+    }
+
+    // Validar senha
+    if (senha.length < 8 || senha.length > 72) {
+        return res.status(400).json({
+            erro: "A senha deve ter entre 8 e 72 caracteres."
         });
     }
 
     try {
+        // Verificar se já existe empresa com esse e-mail
         const [existentes] = await db.promise().execute(
             "SELECT id FROM empresas WHERE email = ?",
-            [email.trim().toLowerCase()]
+            [email]
         );
 
         if (existentes.length > 0) {
@@ -753,24 +1051,29 @@ app.post("/empresas", async (req, res) => {
             });
         }
 
-        const senhaHash = await bcrypt.hash(senha, 10);
+        // Proteger a senha com bcrypt
+        const senhaHash = await bcrypt.hash(senha, 12);
 
+        // Inserir empresa no banco de dados
         await db.promise().execute(
-            `INSERT INTO empresas (nome, descricao, categoria, email, senha)
+            `INSERT INTO empresas
+                (nome, descricao, categoria, email, senha)
              VALUES (?, ?, ?, ?, ?)`,
-            [
-                nome.trim(),
-                descricao.trim(),
-                categoria.trim(),
-                email.trim().toLowerCase(),
-                senhaHash
-            ]
+            [nome, descricao, categoria, email, senhaHash]
         );
 
         return res.status(201).json({
             mensagem: "Empresa cadastrada com sucesso!"
         });
+
     } catch (erro) {
+        // Tratar e-mail duplicado, caso haja cadastro simultâneo
+        if (erro.code === "ER_DUP_ENTRY") {
+            return res.status(409).json({
+                erro: "Já existe uma empresa cadastrada com esse e-mail."
+            });
+        }
+
         console.error("Erro ao cadastrar empresa:", erro);
 
         return res.status(500).json({
@@ -778,6 +1081,7 @@ app.post("/empresas", async (req, res) => {
         });
     }
 });
+
 
 
  // LOGIN EMPRESARIAL
@@ -887,17 +1191,26 @@ app.get("/empresas/listar", (req, res) => {
     });
 });
 
-// LISTAR VAGAS DE UMA EMPRESA
+
+ // LISTAR VAGAS PÚBLICAS DE UMA EMPRESA
 app.get("/empresas/:id/vagas", (req, res) => {
-    const empresa_id = req.params.id;
+    const empresaId = Number(req.params.id);
+
+    if (!Number.isInteger(empresaId) || empresaId <= 0) {
+        return res.status(400).json({
+            erro: "ID da empresa inválido."
+        });
+    }
 
     const sql = `
-        SELECT *
+        SELECT id, titulo, empresa, turno, descricao,
+               requisitos, salario, empresa_id
         FROM vagas
         WHERE empresa_id = ?
+        ORDER BY id DESC
     `;
 
-    db.query(sql, [empresa_id], (err, resultado) => {
+    db.query(sql, [empresaId], (err, resultado) => {
         if (err) {
             console.error("Erro ao listar vagas da empresa:", err);
             return res.status(500).json({
@@ -905,9 +1218,10 @@ app.get("/empresas/:id/vagas", (req, res) => {
             });
         }
 
-        res.json(resultado);
+        return res.json(resultado);
     });
 });
+
 
 // LISTAR VAGAS DA EMPRESA LOGADA
 app.get("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
