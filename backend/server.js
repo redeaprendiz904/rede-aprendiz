@@ -416,6 +416,55 @@ app.get("/admin/estudantes", verificarLoginAdmin, (req, res) => {
     });
 });
 
+app.get("/admin/empresas", verificarLoginAdmin, (req, res) => {
+    const sql = `
+        SELECT id, nome, descricao, categoria, email
+        FROM empresas
+        ORDER BY nome ASC
+    `;
+
+    db.query(sql, (erro, resultados) => {
+        if (erro) {
+            console.error("Erro ao listar empresas:", erro);
+
+            return res.status(500).json({
+                erro: "Não foi possível carregar as empresas."
+            });
+        }
+
+        return res.json(resultados);
+    });
+});
+
+
+app.get("/admin/vagas", verificarLoginAdmin, (req, res) => {
+    const sql = `
+        SELECT
+            id,
+            titulo,
+            empresa,
+            empresa_id,
+            turno,
+            descricao,
+            requisitos,
+            salario
+        FROM vagas
+        ORDER BY id DESC
+    `;
+
+    db.query(sql, (erro, resultados) => {
+        if (erro) {
+            console.error("Erro ao listar vagas:", erro);
+
+            return res.status(500).json({
+                erro: "Não foi possível carregar as vagas."
+            });
+        }
+
+        return res.json(resultados);
+    });
+});
+
 
 app.delete(
     "/admin/estudantes/:id",
@@ -496,6 +545,280 @@ app.delete(
 
                                         res.json({
                                             mensagem: "Estudante, perfil e candidaturas vinculadas excluídos com sucesso."
+                                        });
+                                    });
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        });
+    }
+);
+
+
+app.delete(
+    "/admin/empresas/:id",
+    verificarLoginAdmin,
+    (req, res) => {
+        const id = Number(req.params.id);
+
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({
+                erro: "ID de empresa inválido."
+            });
+        }
+
+        db.beginTransaction((erro) => {
+            if (erro) {
+                console.error("Erro ao iniciar transação:", erro);
+
+                return res.status(500).json({
+                    erro: "Não foi possível iniciar a exclusão."
+                });
+            }
+
+            
+            db.query(
+                "SELECT id FROM empresas WHERE id = ?",
+                [id],
+                (erroConsulta, empresas) => {
+                    if (erroConsulta) {
+                        return db.rollback(() => {
+                            console.error(
+                                "Erro ao consultar empresa:",
+                                erroConsulta
+                            );
+
+                            res.status(500).json({
+                                erro: "Não foi possível consultar a empresa."
+                            });
+                        });
+                    }
+
+                    if (empresas.length === 0) {
+                        return db.rollback(() => {
+                            res.status(404).json({
+                                erro: "Empresa não encontrada."
+                            });
+                        });
+                    }
+
+                    // Exclui candidaturas das vagas vinculadas à empresa.
+                    db.query(
+                        `DELETE FROM candidaturas
+                         WHERE vaga_id IN (
+                             SELECT id FROM vagas WHERE empresa_id = ?
+                         )`,
+                        [id],
+                        (erroCandidaturas, resultadoCandidaturas) => {
+                            if (erroCandidaturas) {
+                                return db.rollback(() => {
+                                    console.error(
+                                        "Erro ao excluir candidaturas:",
+                                        erroCandidaturas
+                                    );
+
+                                    res.status(500).json({
+                                        erro: "Não foi possível excluir as candidaturas vinculadas."
+                                    });
+                                });
+                            }
+
+                            // Depois, exclui as vagas da empresa.
+                            db.query(
+                                "DELETE FROM vagas WHERE empresa_id = ?",
+                                [id],
+                                (erroVagas, resultadoVagas) => {
+                                    if (erroVagas) {
+                                        return db.rollback(() => {
+                                            console.error(
+                                                "Erro ao excluir vagas:",
+                                                erroVagas
+                                            );
+
+                                            res.status(500).json({
+                                                erro: "Não foi possível excluir as vagas vinculadas."
+                                            });
+                                        });
+                                    }
+
+                                    // Por último, exclui a empresa.
+                                    db.query(
+                                        "DELETE FROM empresas WHERE id = ?",
+                                        [id],
+                                        (erroEmpresa, resultadoEmpresa) => {
+                                            if (
+                                                erroEmpresa ||
+                                                resultadoEmpresa.affectedRows === 0
+                                            ) {
+                                                return db.rollback(() => {
+                                                    if (erroEmpresa) {
+                                                        console.error(
+                                                            "Erro ao excluir empresa:",
+                                                            erroEmpresa
+                                                        );
+                                                    }
+
+                                                    res.status(
+                                                        erroEmpresa ? 500 : 404
+                                                    ).json({
+                                                        erro: erroEmpresa
+                                                            ? "Não foi possível excluir a empresa."
+                                                            : "Empresa não encontrada."
+                                                    });
+                                                });
+                                            }
+
+                                            db.commit((erroCommit) => {
+                                                if (erroCommit) {
+                                                    return db.rollback(() => {
+                                                        console.error(
+                                                            "Erro ao confirmar exclusão:",
+                                                            erroCommit
+                                                        );
+
+                                                        res.status(500).json({
+                                                            erro: "Não foi possível concluir a exclusão."
+                                                        });
+                                                    });
+                                                }
+
+                                                return res.json({
+                                                    mensagem:
+                                                        "Empresa, vagas e candidaturas vinculadas excluídas com sucesso.",
+                                                    vagasExcluidas:
+                                                        resultadoVagas.affectedRows,
+                                                    candidaturasExcluidas:
+                                                        resultadoCandidaturas.affectedRows
+                                                });
+                                            });
+                                        }
+                                    );
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        });
+    }
+);
+
+
+app.delete(
+    "/admin/vagas/:id",
+    verificarLoginAdmin,
+    (req, res) => {
+        const id = Number(req.params.id);
+
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({
+                erro: "ID de vaga inválido."
+            });
+        }
+
+        db.beginTransaction((erro) => {
+            if (erro) {
+                console.error("Erro ao iniciar transação:", erro);
+
+                return res.status(500).json({
+                    erro: "Não foi possível iniciar a exclusão."
+                });
+            }
+
+            // Verifica se a vaga existe.
+            db.query(
+                "SELECT id FROM vagas WHERE id = ?",
+                [id],
+                (erroConsulta, vagas) => {
+                    if (erroConsulta) {
+                        return db.rollback(() => {
+                            console.error(
+                                "Erro ao consultar vaga:",
+                                erroConsulta
+                            );
+
+                            res.status(500).json({
+                                erro: "Não foi possível consultar a vaga."
+                            });
+                        });
+                    }
+
+                    if (vagas.length === 0) {
+                        return db.rollback(() => {
+                            res.status(404).json({
+                                erro: "Vaga não encontrada."
+                            });
+                        });
+                    }
+
+                    // Exclui primeiro as candidaturas vinculadas.
+                    db.query(
+                        "DELETE FROM candidaturas WHERE vaga_id = ?",
+                        [id],
+                        (erroCandidaturas, resultadoCandidaturas) => {
+                            if (erroCandidaturas) {
+                                return db.rollback(() => {
+                                    console.error(
+                                        "Erro ao excluir candidaturas:",
+                                        erroCandidaturas
+                                    );
+
+                                    res.status(500).json({
+                                        erro: "Não foi possível excluir as candidaturas vinculadas."
+                                    });
+                                });
+                            }
+
+                            // Depois exclui a vaga.
+                            db.query(
+                                "DELETE FROM vagas WHERE id = ?",
+                                [id],
+                                (erroVaga, resultadoVaga) => {
+                                    if (
+                                        erroVaga ||
+                                        resultadoVaga.affectedRows === 0
+                                    ) {
+                                        return db.rollback(() => {
+                                            if (erroVaga) {
+                                                console.error(
+                                                    "Erro ao excluir vaga:",
+                                                    erroVaga
+                                                );
+                                            }
+
+                                            res.status(
+                                                erroVaga ? 500 : 404
+                                            ).json({
+                                                erro: erroVaga
+                                                    ? "Não foi possível excluir a vaga."
+                                                    : "Vaga não encontrada."
+                                            });
+                                        });
+                                    }
+
+                                    // Confirma as exclusões.
+                                    db.commit((erroCommit) => {
+                                        if (erroCommit) {
+                                            return db.rollback(() => {
+                                                console.error(
+                                                    "Erro ao confirmar exclusão:",
+                                                    erroCommit
+                                                );
+
+                                                res.status(500).json({
+                                                    erro: "Não foi possível concluir a exclusão."
+                                                });
+                                            });
+                                        }
+
+                                        return res.json({
+                                            mensagem:
+                                                "Vaga e candidaturas vinculadas excluídas com sucesso.",
+                                            candidaturasExcluidas:
+                                                resultadoCandidaturas.affectedRows
                                         });
                                     });
                                 }

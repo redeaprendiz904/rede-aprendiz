@@ -150,3 +150,35 @@ body {
         font-size: 24px;
     }
 }
+/* Botão Voltar — Rede Aprendiz */
+.container .btn-voltar-escolha {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    margin-top: 12px;
+
+    border: 1px solid #800000;
+    border-radius: 7px;
+
+    background: #ffffff;
+    color: #800000;
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.container .btn-voltar-escolha:hover {
+    background: #f9eeee;
+    color: #800000;
+    transform: translateY(-1px);
+}
+
+.container .btn-voltar-escolha:focus-visible {
+    outline: 3px solid #b86b6b;
+    outline-offset: 3px;
+}

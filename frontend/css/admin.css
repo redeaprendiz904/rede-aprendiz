@@ -1,0 +1,342 @@
+:root {
+    --vinho: #4b0202;
+    --vermelho: #800000;
+    --branco: #ffffff;
+    --fundo: #f4f7fb;
+    --borda: #e0e0e0;
+    --texto: #333333;
+    --texto-secundario: #666666;
+    --sombra: 0 4px 15px rgba(0, 0, 0, 0.08);
+    --vermelho-hover: #650000;
+    --raio: 14px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--fundo);
+    color: var(--texto);
+    line-height: 1.6;
+}
+
+/* Cabeçalho administrativo */
+.admin-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding: 22px 5%;
+    background: var(--vinho);
+    color: var(--branco);
+    box-shadow: 0 3px 12px rgba(75, 2, 2, 0.18);
+}
+
+.admin-header h1 {
+    margin: 0;
+    font-size: clamp(22px, 3vw, 30px);
+    letter-spacing: -0.5px;
+}
+
+.admin-header span {
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+.admin-header #btnSair {
+    margin-left: auto;
+    width: auto;
+    min-width: 90px;
+    background: var(--branco);
+    color: var(--vinho);
+}
+
+.admin-header #btnSair:hover {
+    background: #f3e8e8;
+}
+
+/* Conteúdo principal */
+.admin-container {
+    width: min(1200px, 100%);
+    margin: 0 auto;
+    padding: 42px 28px;
+}
+
+.admin-container > h2 {
+    margin: 0 0 8px;
+    color: var(--vinho);
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1.3;
+}
+
+.admin-container > p {
+    margin: 0 0 30px;
+    color: var(--texto-secundario);
+    font-size: 16px;
+}
+
+/* Cards principais */
+.admin-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+
+.admin-card {
+    min-width: 0;
+    padding: 26px 22px;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-top: 5px solid var(--vermelho);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(75, 2, 2, 0.12);
+}
+
+.admin-card h3 {
+    margin: 0 0 10px;
+    color: var(--vinho);
+    font-size: 21px;
+}
+
+.admin-card > p {
+    min-height: 48px;
+    margin: 0 0 20px;
+    color: var(--texto-secundario);
+    font-size: 14px;
+}
+
+/* Botões */
+button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    max-width: 100%;
+    padding: 11px 17px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: var(--vermelho);
+    color: var(--branco);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background: var(--vermelho-hover);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:focus-visible {
+    outline: 3px solid #c98b8b;
+    outline-offset: 3px;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.admin-card > button {
+    width: 100%;
+}
+
+/* Listas carregadas pelo admin.js */
+#listaEstudantes,
+#listaEmpresas,
+#listaVagas {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+    min-width: 0;
+}
+
+#listaEstudantes:empty,
+#listaEmpresas:empty,
+#listaVagas:empty {
+    display: none;
+}
+
+/* Cards individuais criados pelo JavaScript */
+#listaEstudantes > *,
+#listaEmpresas > *,
+#listaVagas > * {
+    min-width: 0;
+    padding: 17px;
+    overflow-wrap: anywhere;
+    background: #fffafa;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+#listaEstudantes h3,
+#listaEstudantes h4,
+#listaEmpresas h3,
+#listaEmpresas h4,
+#listaVagas h3,
+#listaVagas h4 {
+    margin-top: 0;
+    color: var(--vinho);
+    overflow-wrap: anywhere;
+}
+
+#listaEstudantes p,
+#listaEmpresas p,
+#listaVagas p {
+    color: var(--texto-secundario);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+/* Botões de exclusão das listas */
+#listaEstudantes button,
+#listaEmpresas button,
+#listaVagas button {
+    margin-top: 8px;
+    background: var(--vermelho);
+}
+
+#listaEstudantes button:hover,
+#listaEmpresas button:hover,
+#listaVagas button:hover {
+    background: var(--vermelho-hover);
+}
+
+/* Campos de formulário, caso sejam usados no painel */
+input,
+select,
+textarea {
+    width: 100%;
+    max-width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background: var(--branco);
+    color: var(--texto);
+    font: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--vermelho);
+    outline: 2px solid rgba(128, 0, 0, 0.12);
+}
+
+/* Tablets */
+@media (max-width: 1000px) {
+    .admin-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .admin-container {
+        padding: 32px 22px;
+    }
+}
+
+/* Celulares */
+@media (max-width: 650px) {
+    .admin-header {
+        gap: 8px 12px;
+        padding: 18px;
+    }
+
+    .admin-header h1 {
+        width: calc(100% - 105px);
+    }
+
+    .admin-header span {
+        order: 3;
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .admin-header #btnSair {
+        order: 2;
+        margin-left: auto;
+    }
+
+    .admin-container {
+        padding: 26px 16px;
+    }
+
+    .admin-container > p {
+        margin-bottom: 24px;
+    }
+
+    .admin-cards {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .admin-card {
+        padding: 22px 18px;
+    }
+
+    .admin-card > p {
+        min-height: 0;
+    }
+
+    button {
+        min-height: 44px;
+    }
+}
+
+/* Celulares pequenos */
+@media (max-width: 360px) {
+    .admin-header {
+        padding: 15px 12px;
+    }
+
+    .admin-container {
+        padding: 22px 12px;
+    }
+
+    .admin-card {
+        padding: 18px 14px;
+    }
+
+    .admin-header h1 {
+        font-size: 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

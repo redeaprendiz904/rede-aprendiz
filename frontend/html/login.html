@@ -3,33 +3,108 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Login </title>
+
+    <title>Login | Rede Aprendiz</title>
+
     <link rel="stylesheet" href="../css/login.css">
     <link rel="shortcut icon" href="../img/favicon.png" type="image/x-icon">
-    
 </head>
+
 <body>
     <a href="../index.html" class="btn-voltar">Início</a>
-    <div class="login-container">
-        <h2> REDE APRENDIZ</h2> 
-            
-            <form method="post">
-                <div class="input-group">
-                    <label for="email"> Email </label>
-                    <input type="text" id="email" name="email" placeholder="Digite seu email" maxlength="50" required >
-                </div>
 
-                <div class="input-group">
-                    <label for="senha"> Senha </label>
-                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha" maxlength="20" required pattern="[A-Za-z0-9]{6,20}" title="A senha deve conter apenas letras e números (6 a 20 caracteres).">
-                    
-                </div>
-                <button type="submit">Entrar</button>
-            </form>
-            <p1>Não tem uma conta? <a href="cadastro.html">Cadastre-se</a></p1> 
+    <div class="login-container">
+
+        <!-- Escolha do tipo de conta -->
+        <div id="escolhaTipoConta">
+            <h2>REDE APRENDIZ</h2>
+            <h3>Como deseja entrar?</h3>
+
+            <button type="button" onclick="mostrarLogin('candidato')">
+                Sou candidato
+            </button>
+
+            <button type="button" onclick="mostrarLogin('empresa')">
+                Sou uma empresa
+            </button>
+
+            <p>
+                Não tem uma conta?
+                <a href="cadastro.html">Cadastre-se</a>
+            </p>
+        </div>
+
+        <!-- Formulário de login do candidato -->
+        <form id="formLoginCandidato" method="post" style="display: none;">
+
+            <h2>REDE APRENDIZ</h2>
+            <h3>Login do candidato</h3>
+
+            <div class="input-group">
+                <label for="email">E-mail</label>
+                <input
+                    type="text"
+                    id="email"
+                    name="email"
+                    placeholder="Digite seu e-mail"
+                    maxlength="50"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="senha">Senha</label>
+                <input
+                    type="password"
+                    id="senha"
+                    name="senha"
+                    placeholder="Digite sua senha"
+                    maxlength="20"
+                    pattern="[A-Za-z0-9]{6,20}"
+                    title="A senha deve conter apenas letras e números (6 a 20 caracteres)."
+                    required
+                >
+            </div>
+
+            <button type="submit">Entrar</button>
+
+            <p>
+                Não tem uma conta?
+                <a href="cadastro.html">Cadastre-se</a>
+            </p>
+
+            <button type="button" class="btn-voltar-escolha" onclick="voltarEscolha()">
+                Voltar
+            </button>
+        </form>
+
     </div>
 
     <div class="bg-credit">Foto: Criado por FreePik</div>
+
+    <script>
+        function mostrarLogin(tipo) {
+        const escolha = document.getElementById("escolhaTipoConta");
+        const formulario = document.getElementById("formLoginCandidato");
+        const botaoInicio = document.querySelector(".btn-voltar");
+
+        if (tipo === "candidato") {
+            escolha.style.display = "none";
+            formulario.style.display = "block";
+
+            if (botaoInicio) {
+                botaoInicio.style.display = "none";
+            }
+        } else if (tipo === "empresa") {
+            window.location.href = "login-empresa.html";
+        }
+    }
+
+        function voltarEscolha() {
+            document.getElementById("formLoginCandidato").style.display = "none";
+            document.getElementById("escolhaTipoConta").style.display = "block";
+        }
+    </script>
 
     <script src="../js/login.js"></script>
 </body>

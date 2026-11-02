@@ -61,7 +61,7 @@ CREATE TABLE `candidaturas` (
   KEY `vaga_id` (`vaga_id`),
   CONSTRAINT `candidaturas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `candidaturas_ibfk_2` FOREIGN KEY (`vaga_id`) REFERENCES `vagas` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,7 +99,7 @@ CREATE TABLE `empresas` (
 
 LOCK TABLES `empresas` WRITE;
 /*!40000 ALTER TABLE `empresas` DISABLE KEYS */;
-INSERT INTO `empresas` VALUES (2,'Vale','Programa Jovem Aprendiz para estudantes do ensino médio','atendimento','2026-06-22 01:05:46',NULL,NULL),(3,'Alumar','Vagas para suporte e tecnologia','ti','2026-06-22 01:05:46',NULL,NULL),(4,'Mateus','Atendimento ao cliente e reposição','atendimento','2026-06-22 01:05:46',NULL,NULL),(5,'Google','Desenvolvimento de software e aplicativos','ti','2026-06-22 01:05:46',NULL,NULL),(6,'Agência Criativa','Marketing digital e redes sociais','marketing','2026-06-22 01:05:46',NULL,NULL),(7,'Rede Aprendiz','empresa','ti','2026-10-31 19:21:11','redeaprendiz904@gmail.com','$2b$10$cn6aW5EqOdBkzhxLdP5A1.id7XYtV1OlGZdLbyC/l/UB1JjhEJ4cO'),(8,'ddddd','dddd','marketing','2026-10-31 19:53:12','123abc@gmail.com','$2b$10$SkGc7NV/B1tJpSHZtFvg0.IhWTAjCWQkoZ6MQke6/iuxCKZhUOzTW');
+INSERT INTO `empresas` VALUES (2,'Vale','Programa Jovem Aprendiz para estudantes do ensino médio','atendimento','2026-06-22 01:05:46',NULL,NULL),(3,'Alumar','Vagas para suporte e tecnologia','ti','2026-06-22 01:05:46',NULL,NULL),(4,'Mateus','Atendimento ao cliente e reposição','atendimento','2026-06-22 01:05:46',NULL,NULL),(5,'Google','Desenvolvimento de software e aplicativos','ti','2026-06-22 01:05:46',NULL,NULL),(6,'Agência Criativa','Marketing digital e redes sociais','marketing','2026-06-22 01:05:46',NULL,NULL),(8,'ddddd','dddd','marketing','2026-10-31 19:53:12','123abc@gmail.com','$2b$10$SkGc7NV/B1tJpSHZtFvg0.IhWTAjCWQkoZ6MQke6/iuxCKZhUOzTW');
 /*!40000 ALTER TABLE `empresas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -187,7 +187,7 @@ CREATE TABLE `vagas` (
   `requisitos` text COLLATE utf8mb4_general_ci,
   `salario` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -209,4 +209,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-01 14:37:27
+-- Dump completed on 2026-11-01 23:09:37

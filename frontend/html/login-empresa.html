@@ -1,15 +1,20 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Login Empresarial | Rede Aprendiz</title>
+
     <link rel="stylesheet" href="../css/login-empresa.css">
+    <link rel="shortcut icon" href="../img/favicon.png" type="image/x-icon">
 </head>
+
 <body>
+
     <main class="container">
-        <h1>Área da Empresa</h1>
+        <h1>REDE APRENDIZ</h1>
+        <h2>Login da empresa</h2>
         <p>Entre para gerenciar suas vagas.</p>
 
         <form id="formLoginEmpresa">
@@ -18,6 +23,7 @@
                 type="email"
                 id="email"
                 name="email"
+                placeholder="Digite seu e-mail empresarial"
                 required
             >
 
@@ -26,6 +32,7 @@
                 type="password"
                 id="senha"
                 name="senha"
+                placeholder="Digite sua senha"
                 required
             >
 
@@ -34,10 +41,17 @@
             <p id="mensagem" role="status"></p>
         </form>
 
-        <p>
-            É candidato?
-            <a href="/html/login.html">Acesse o login de candidato</a>
+        <p class="texto-cadastro">
+            Ainda não tem uma conta?
+            <a href="cadastro-empresa.html">Cadastre-se</a>
         </p>
+
+        <button
+            type="button"
+            class="btn-voltar-escolha"
+            onclick="window.location.href='login.html'">
+            Voltar
+        </button>
     </main>
 
     <script src="../js/login-empresa.js"></script>
