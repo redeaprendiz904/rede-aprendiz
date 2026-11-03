@@ -61,7 +61,7 @@ CREATE TABLE `candidaturas` (
   KEY `vaga_id` (`vaga_id`),
   CONSTRAINT `candidaturas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `candidaturas_ibfk_2` FOREIGN KEY (`vaga_id`) REFERENCES `vagas` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +70,7 @@ CREATE TABLE `candidaturas` (
 
 LOCK TABLES `candidaturas` WRITE;
 /*!40000 ALTER TABLE `candidaturas` DISABLE KEYS */;
-INSERT INTO `candidaturas` VALUES (1,1,1,'2026-04-25 17:26:49'),(8,1,4,'2026-10-30 17:57:13'),(10,1,8,'2026-10-31 20:56:33'),(11,1,5,'2026-10-31 21:08:13');
+INSERT INTO `candidaturas` VALUES (1,1,1,'2026-04-25 17:26:49'),(8,1,4,'2026-10-30 17:57:13'),(11,1,5,'2026-10-31 21:08:13'),(15,1,18,'2026-11-02 21:29:50');
 /*!40000 ALTER TABLE `candidaturas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -186,8 +186,9 @@ CREATE TABLE `vagas` (
   `empresa_id` int NOT NULL,
   `requisitos` text COLLATE utf8mb4_general_ci,
   `salario` decimal(10,2) DEFAULT NULL,
+  `tipo_contrato` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -196,7 +197,7 @@ CREATE TABLE `vagas` (
 
 LOCK TABLES `vagas` WRITE;
 /*!40000 ALTER TABLE `vagas` DISABLE KEYS */;
-INSERT INTO `vagas` VALUES (1,'Atendente (Meio período)','Mateus','Tarde','Compatível com escola',4,NULL,NULL),(4,'Auxiliar Administrativo','Agência Criativa','Manhã','Organização de documentos',6,NULL,NULL),(5,'Suporte de TI','Vale','Tarde','Atendimento técnico',2,NULL,NULL),(6,'Atendente','Alumar','Noite','Atendimento ao cliente',3,NULL,NULL),(8,'Jovem Aprendiz','ddddd','Estágio','dddd',8,'dddd',600.00);
+INSERT INTO `vagas` VALUES (1,'Atendente (Meio período)','Mateus','Tarde','Compatível com escola',4,NULL,NULL,NULL),(4,'Auxiliar Administrativo','Agência Criativa','Manhã','Organização de documentos',6,NULL,NULL,NULL),(5,'Suporte de TI','Vale','Tarde','Atendimento técnico',2,NULL,NULL,NULL),(6,'Atendente','Alumar','Noite','Atendimento ao cliente',3,NULL,NULL,NULL),(18,'Jovem Aprendiz','ddddd','Vespertino','vaga teste',8,'18 anos',1250.00,'Jovem Aprendiz');
 /*!40000 ALTER TABLE `vagas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -209,4 +210,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-01 23:09:37
+-- Dump completed on 2026-11-02 22:24:35

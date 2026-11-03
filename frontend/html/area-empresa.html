@@ -1,136 +1,187 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Área da Empresa | Rede Aprendiz</title>
+
     <link rel="stylesheet" href="../css/area-empresa.css">
+    <script src="../js/area-empresa.js" defer></script>
 </head>
-
 <body>
-    <main class="hero">
-        <div class="container">
-            <section class="section">
-                <h1>Área da Empresa</h1>
 
-                <p id="mensagem">Carregando informações da empresa...</p>
-                <h2 id="nomeEmpresa"></h2>
+    <div class="sidebar">
+        <h2>Rede Aprendiz</h2>
 
-                <p>Bem-vindo à área de gerenciamento da sua empresa.</p>
+        <nav>
+            <a href="/area-empresa">Painel</a>
+            <a href="/area-empresa">Minhas vagas</a>
+            <a href="#" id="btnSair">Sair</a>
+        </nav>
+    </div>
 
-                <hr>
+    <main class="conteudo">
+        <header class="cabecalho">
+            <h1>Área da Empresa</h1>
+            <p>Bem-vindo(a), <strong id="nomeEmpresa">Empresa</strong>!</p>
+        </header>
 
-                <h2>Cadastrar nova vaga</h2>
-                <p>Preencha os dados para divulgar uma oportunidade.</p>
+        <section class="secao">
+            <h2>Cadastrar nova vaga</h2>
 
-                <form id="formCadastroVaga">
-                    <label for="titulo">Nome da vaga:</label>
+            <form id="formCadastroVaga">
+
+                <div class="campo">
+                    <label for="titulo">Título da vaga</label>
                     <input
                         type="text"
                         id="titulo"
                         name="titulo"
+                        maxlength="100"
                         required
                     >
+                </div>
 
-                    <br><br>
-
-                    <label for="descricao">Descrição da vaga:</label>
+                <div class="campo">
+                    <label for="descricao">Descrição da vaga</label>
                     <textarea
                         id="descricao"
                         name="descricao"
                         rows="4"
                         required
                     ></textarea>
+                </div>
 
-                    <br><br>
-
-                    <label for="requisitos">Requisitos:</label>
+                <div class="campo">
+                    <label for="requisitos">Requisitos</label>
                     <textarea
                         id="requisitos"
                         name="requisitos"
                         rows="3"
                         required
                     ></textarea>
+                </div>
 
-                    <br><br>
-
-                    <label for="tipoContrato">Tipo de contrato:</label>
+                <div class="campo">
+                    <label for="tipoContrato">Tipo de contrato</label>
                     <select id="tipoContrato" name="tipoContrato" required>
-                        <option value="">Selecione</option>
+                        <option value="">Selecione o tipo de contrato</option>
+                        <option value="Jovem Aprendiz">Jovem Aprendiz</option>
                         <option value="Estágio">Estágio</option>
-                        <option value="Aprendiz">Jovem aprendiz</option>
-                        <option value="Meio período">Meio período</option>
-                        <option value="Tempo integral">Tempo integral</option>
+                        <option value="CLT">CLT</option>
                         <option value="Temporário">Temporário</option>
+                        <option value="PJ">Pessoa Jurídica (PJ)</option>
                     </select>
+                </div>
 
-                    <br><br>
+                <div class="campo">
+                    <label for="turno">Turno de trabalho</label>
+                    <select id="turno" name="turno" required>
+                        <option value="">Selecione o turno</option>
+                        <option value="Matutino">Matutino</option>
+                        <option value="Vespertino">Vespertino</option>
+                        <option value="Noturno">Noturno</option>
+                        <option value="Integral">Integral</option>
+                    </select>
+                </div>
 
-                    <label for="salario">Salário (opcional):</label>
+                <div class="campo">
+                    <label for="salario">Salário (R$)</label>
                     <input
                         type="number"
                         id="salario"
                         name="salario"
                         min="0"
                         step="0.01"
+                        placeholder="Ex.: 1200.00"
                     >
+                </div>
 
-                    <br><br>
+                <button type="submit">Cadastrar vaga</button>
 
-                    <button type="submit">Cadastrar vaga</button>
-                </form>
+                <p id="mensagemVaga" role="status"></p>
+            </form>
+        </section>
 
-                <p id="mensagemVaga"></p>
+        <section class="secao">
+            <h2>Minhas vagas cadastradas</h2>
 
-                <hr>
-
-                <h2>Minhas vagas</h2>
-                <p id="listaVagas">As vagas cadastradas aparecerão aqui.</p>
-
-                <button id="btnSair" type="button">Sair</button>
-            </section>
-        </div>
+            <div id="listaVagas">
+                <p>Carregando vagas...</p>
+            </div>
+        </section>
     </main>
 
     <script>
-        document.getElementById("btnSair").addEventListener("click", async () => {
+        // ========================================
+        // LOGOUT DA EMPRESA
+        // ========================================
+
+        const botaoSair = document.getElementById("btnSair");
+
+        botaoSair.addEventListener("click", async function (evento) {
+            evento.preventDefault();
+
+            botaoSair.style.pointerEvents = "none";
+            botaoSair.textContent = "Saindo...";
+
             try {
                 const resposta = await fetch("/logout-empresa", {
                     method: "POST",
                     credentials: "include"
                 });
 
-                if (resposta.ok) {
-                    window.location.href = "/html/login-empresa.html";
-                } else {
-                    alert("Não foi possível sair da conta.");
+                const dados = await resposta.json().catch(() => ({}));
+
+                if (!resposta.ok) {
+                    throw new Error(
+                        dados.erro || "Não foi possível sair da conta."
+                    );
                 }
+
+                // Impede o retorno à área privada pelo botão Voltar.
+                window.location.replace("/html/login-empresa.html");
+
             } catch (erro) {
-                alert("Erro de conexão ao sair da conta.");
+                console.error("Erro ao sair da conta empresarial:", erro);
+
+                alert(erro.message || "Erro de conexão ao sair da conta.");
+
+                botaoSair.style.pointerEvents = "";
+                botaoSair.textContent = "Sair";
             }
         });
 
-        fetch("/empresa-logada", {
-            credentials: "include"
-        })
-        .then(resposta => {
-            if (!resposta.ok) {
-                throw new Error("Não foi possível carregar a empresa.");
+        // ========================================
+        // NOME DA EMPRESA LOGADA
+        // ========================================
+
+        async function carregarNomeEmpresa() {
+            try {
+                const resposta = await fetch("/empresa-logada", {
+                    credentials: "include"
+                });
+
+                if (!resposta.ok) {
+                    return;
+                }
+
+                const dados = await resposta.json();
+
+                document.getElementById("nomeEmpresa").textContent =
+                    dados.nome ||
+                    dados.empresa?.nome ||
+                    "Empresa";
+
+            } catch (erro) {
+                console.error("Erro ao carregar empresa:", erro);
             }
-            return resposta.json();
-        })
-        .then(empresa => {
-            document.getElementById("mensagem").textContent =
-                "Login empresarial realizado com sucesso!";
-            document.getElementById("nomeEmpresa").textContent =
-                empresa.nome;
-        })
-        .catch(erro => {
-            console.error(erro);
-            document.getElementById("mensagem").textContent =
-                "Não foi possível carregar os dados da empresa.";
-        });
+        }
+
+        carregarNomeEmpresa();
     </script>
-    <script src="../js/area-empresa.js"></script>
+
 </body>
 </html>

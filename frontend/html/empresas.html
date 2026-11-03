@@ -3,133 +3,192 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Empresas</title>
+<title>Empresas | Rede Aprendiz</title>
+
 <link rel="stylesheet" href="../css/empresa.css">
 </head>
+
 <body>
 
 <div class="sidebar">
+
     <h2>Rede Aprendiz</h2>
-    <a href="/empresas">Empresas</a>
-    <a href="/perfil">Perfil</a>
-    <a href="/dashboard">Dashboard</a>
-    <a href="/oportunidades">Vagas</a>
+
+    <a href="/empresas">
+        Empresas
+    </a>
+
+    <a href="/perfil">
+        Perfil
+    </a>
+
+    <a href="/dashboard">
+        Dashboard
+    </a>
+
+    <a href="/oportunidades">
+        Vagas
+    </a>
+
     <form action="/logout" method="POST" class="logout-form">
-        <button type="submit">Sair</button>
+
+        <button type="submit">
+            Sair
+        </button>
+
     </form>
+
 </div>
+
 
 <div class="main-content">
 
-    <h1>Empresas Disponíveis</h1>
+
+    <h1>
+        Empresas Disponíveis
+    </h1>
+
 
     <div class="result-count" id="resultCount">
         Total: 0 empresas
     </div>
 
+
+
     <div class="controls">
 
+
         <div class="filters">
-            <button class="filter-btn active" data-filter="all">
+
+
+            <button 
+                class="filter-btn active"
+                data-filter="all">
+
                 Todos
+
             </button>
 
-            <button class="filter-btn" data-filter="ti">
+
+            <button 
+                class="filter-btn"
+                data-filter="ti">
+
                 TI
+
             </button>
 
-            <button class="filter-btn" data-filter="marketing">
+
+            <button 
+                class="filter-btn"
+                data-filter="marketing">
+
                 Marketing
+
             </button>
 
-            <button class="filter-btn" data-filter="atendimento">
+
+            <button 
+                class="filter-btn"
+                data-filter="atendimento">
+
                 Atendimento
+
             </button>
 
-            <button class="filter-btn" data-filter="mais">
+
+            <button 
+                class="filter-btn"
+                data-filter="mais">
+
                 Mais
+
             </button>
+
+
         </div>
 
+
+
         <div class="search-bar">
+
             <input
                 type="text"
                 id="searchInput"
                 placeholder="Pesquisar empresas..."
             >
+
         </div>
 
-    </div>
-
-    <div class="company-cards" id="cardsContainer">
 
     </div>
 
-    <div class="no-results" id="noResults" style="display:none;">
+
+
+    <div 
+        class="company-cards"
+        id="cardsContainer">
+
+
+    </div>
+
+
+
+    <div 
+        class="no-results"
+        id="noResults"
+        style="display:none;">
+
+
         Nenhuma empresa encontrada
-    </div>
 
-</div>
-
-<div class="modal" id="modal">
-
-    <div class="modal-content">
-
-        <h2>Nova Empresa</h2>
-
-        <input
-            type="text"
-            id="nome"
-            placeholder="Nome da Empresa"
-        >
-
-        <textarea
-            id="desc"
-            placeholder="Descrição da Empresa"
-        ></textarea>
-
-        <select id="categoria">
-
-            <option value="ti">
-                TI
-            </option>
-
-            <option value="marketing">
-                Marketing
-            </option>
-
-            <option value="atendimento">
-                Atendimento
-            </option>
-
-            <option value="mais">
-                Mais
-            </option>
-
-        </select>
-        <input type="email "id="email" placeholder="E-mail empresarial" required>
-
-        <input type="password" id="senha" placeholder="Senha (mínimo de 8 caracteres)" minlength="8" required>
-
-        <button onclick="adicionarEmpresa()">
-            Salvar
-        </button>
 
     </div>
 
+
+
 </div>
 
-<div class="modal" id="modalVagas" style="display:none;">
+
+
+
+<!-- MODAL DAS VAGAS -->
+
+<div 
+    class="modal"
+    id="modalVagas">
+
+
     <div class="modal-content">
-        <h2>Vagas da Empresa</h2>
 
-        <div id="listaVagasEmpresa"></div>
 
-        <button onclick="fecharModalVagas()">
+        <h2>
+            Vagas da Empresa
+        </h2>
+
+
+
+        <div id="listaVagasEmpresa">
+
+
+        </div>
+
+
+
+        <button 
+            onclick="fecharModalVagas()">
+
             Fechar
+
         </button>
+
+
     </div>
+
+
 </div>
+
+
 
 <script src="../js/empresa.js"></script>
 

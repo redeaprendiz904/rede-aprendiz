@@ -1,29 +1,41 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Cadastro Empresarial | Rede Aprendiz</title>
+
     <link rel="stylesheet" href="../css/cadastro-empresa.css">
     <link rel="shortcut icon" href="../img/favicon.png" type="image/x-icon">
 </head>
+
 <body>
-    <a href="cadastro.html" class="btn-voltar">Voltar</a>
 
     <div class="login-container">
+
         <h2>REDE APRENDIZ</h2>
         <h3>Cadastro de Empresa</h3>
 
         <form id="formCadastroEmpresa">
+
             <div class="input-group">
                 <label for="nome">Nome da empresa</label>
-                <input type="text" id="nome" name="nome" maxlength="100" required>
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    maxlength="100"
+                    required>
             </div>
 
             <div class="input-group">
                 <label for="descricao">Descrição</label>
-                <textarea id="descricao" name="descricao" maxlength="1000" required></textarea>
+                <textarea
+                    id="descricao"
+                    name="descricao"
+                    maxlength="1000"
+                    required></textarea>
             </div>
 
             <div class="input-group">
@@ -39,24 +51,45 @@
 
             <div class="input-group">
                 <label for="email">E-mail empresarial</label>
-                <input type="email" id="email" name="email" maxlength="100" required>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    maxlength="100"
+                    required>
             </div>
 
             <div class="input-group">
                 <label for="senha">Senha</label>
-                <input type="password" id="senha" name="senha"
-                       minlength="8" required>
+                <input
+                    type="password"
+                    id="senha"
+                    name="senha"
+                    minlength="8"
+                    required>
             </div>
 
             <button type="submit">Cadastrar empresa</button>
+
             <p id="mensagem" role="status"></p>
+
+            <p class="login-link">
+                Já tem uma conta empresarial?
+                <a href="login-empresa.html">Entrar</a>
+            </p>
+
+            <button
+                type="button"
+                class="btn-voltar-escolha"
+                onclick="window.location.href='cadastro.html'">
+                Voltar
+            </button>
+
         </form>
 
-        <p>Já tem uma conta empresarial?
-            <a href="login-empresa.html">Entrar</a>
-        </p>
     </div>
 
     <script src="../js/cadastro-empresa.js"></script>
+
 </body>
 </html>

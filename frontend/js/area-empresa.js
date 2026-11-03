@@ -1,15 +1,84 @@
 
+ // ========================================
+ // REDE APRENDIZ — ÁREA DA EMPRESA
+ // ========================================
+
 const form = document.getElementById("formCadastroVaga");
 const mensagem = document.getElementById("mensagemVaga");
 
-form.addEventListener("submit", async (event) => {
-    event.preventDefault();
+// ========================================
+// AUXILIAR: REQUISIÇÕES JSON
+// ========================================
+
+async function obterJson(resposta) {
+    try {
+        return await resposta.json();
+    } catch {
+        return {};
+    }
+}
+
+// ========================================
+// FORMATAR SALÁRIO
+// ========================================
+
+function formatarSalario(salario) {
+    if (
+        salario === null ||
+        salario === undefined ||
+        String(salario).trim() === ""
+    ) {
+        return "Salário não informado";
+    }
+
+    const valor = Number(salario);
+
+    if (!Number.isFinite(valor)) {
+        return `Salário: ${salario}`;
+    }
+
+    return "Salário: " + valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+// ========================================
+// CADASTRAR NOVA VAGA
+// ========================================
+
+form.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
 
     const titulo = document.getElementById("titulo").value.trim();
     const descricao = document.getElementById("descricao").value.trim();
     const requisitos = document.getElementById("requisitos").value.trim();
     const tipoContrato = document.getElementById("tipoContrato").value;
-    const salario = document.getElementById("salario").value;
+    const turno = document.getElementById("turno").value;
+    const salarioTexto = document.getElementById("salario").value;
+
+    if (
+        !titulo ||
+        !descricao ||
+        !requisitos ||
+        !tipoContrato ||
+        !turno
+    ) {
+        mensagem.textContent = "Preencha todos os campos obrigatórios.";
+        return;
+    }
+
+    const salario = salarioTexto === ""
+        ? null
+        : Number(salarioTexto);
+
+    if (
+        salario !== null &&
+        (!Number.isFinite(salario) || salario < 0)
+    ) {
+        mensagem.textContent = "Informe um salário válido.";
+        return;
+    }
 
     mensagem.textContent = "Cadastrando vaga...";
 
@@ -25,11 +94,12 @@ form.addEventListener("submit", async (event) => {
                 descricao,
                 requisitos,
                 tipoContrato,
+                turno,
                 salario
             })
         });
 
-        const dados = await resposta.json();
+        const dados = await obterJson(resposta);
 
         if (!resposta.ok) {
             mensagem.textContent =
@@ -37,9 +107,12 @@ form.addEventListener("submit", async (event) => {
             return;
         }
 
-        mensagem.textContent = dados.mensagem;
+        mensagem.textContent =
+            dados.mensagem || "Vaga cadastrada com sucesso!";
+
         form.reset();
-        carregarMinhasVagas();
+
+        await carregarMinhasVagas();
 
     } catch (erro) {
         console.error("Erro ao cadastrar vaga:", erro);
@@ -47,6 +120,9 @@ form.addEventListener("submit", async (event) => {
     }
 });
 
+// ========================================
+// CARREGAR VAGAS DA EMPRESA LOGADA
+// ========================================
 
 async function carregarMinhasVagas() {
     const lista = document.getElementById("listaVagas");
@@ -58,11 +134,16 @@ async function carregarMinhasVagas() {
             credentials: "include"
         });
 
-        const dados = await resposta.json();
+        const dados = await obterJson(resposta);
 
         if (!resposta.ok) {
             lista.textContent =
                 dados.erro || "Não foi possível carregar suas vagas.";
+            return;
+        }
+
+        if (!Array.isArray(dados)) {
+            lista.textContent = "O servidor retornou uma resposta inválida.";
             return;
         }
 
@@ -73,168 +154,62 @@ async function carregarMinhasVagas() {
             return;
         }
 
-        dados.forEach(vaga => {
+        dados.forEach((vaga) => {
             const card = document.createElement("article");
+            card.className = "card vaga-card";
+
             const titulo = document.createElement("h3");
+            titulo.textContent = vaga.titulo || "Vaga sem título";
+
             const descricao = document.createElement("p");
+            descricao.textContent =
+                "Descrição: " + (vaga.descricao || "Não informada");
+
             const requisitos = document.createElement("p");
+            requisitos.textContent =
+                "Requisitos: " + (vaga.requisitos || "Não informados");
+
             const contrato = document.createElement("p");
+            contrato.textContent =
+                "Tipo de contrato: " +
+                (vaga.tipo_contrato || "Não informado");
+
+            const turno = document.createElement("p");
+            turno.textContent =
+                "Turno: " + (vaga.turno || "Não informado");
+
             const salario = document.createElement("p");
-            const botaoExcluir = document.createElement("button");
+            salario.textContent = formatarSalario(vaga.salario);
+
+            const botoes = document.createElement("div");
+            botoes.className = "acoes-vaga";
+
             const botaoEditar = document.createElement("button");
-
-            titulo.textContent = vaga.titulo;
-            descricao.textContent = "Descrição: " + vaga.descricao;
-            requisitos.textContent = "Requisitos: " + vaga.requisitos;
-            contrato.textContent = "Tipo de contrato: " + vaga.turno;
-
-            salario.textContent = vaga.salario == null
-                ? "Salário não informado"
-                : "Salário: R$ " + Number(vaga.salario)
-                    .toLocaleString("pt-BR", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-
-            botaoExcluir.textContent = "Excluir";
-            botaoExcluir.type = "button";
-
-            botaoEditar.textContent = "Editar";
             botaoEditar.type = "button";
+            botaoEditar.textContent = "Editar";
 
-            botaoExcluir.addEventListener("click", async () => {
-                const confirmar = confirm(
-                    `Deseja excluir a vaga "${vaga.titulo}"?`
-                );
+            const botaoExcluir = document.createElement("button");
+            botaoExcluir.type = "button";
+            botaoExcluir.textContent = "Excluir";
 
-                if (!confirmar) {
-                    return;
-                }
-
-                try {
-                    const respostaExcluir = await fetch(
-                        `/empresas/minhas-vagas/${vaga.id}`,
-                        {
-                            method: "DELETE",
-                            credentials: "include"
-                        }
-                    );
-
-                    const resultado = await respostaExcluir.json();
-
-                    if (!respostaExcluir.ok) {
-                        alert(
-                            resultado.erro ||
-                            "Não foi possível excluir a vaga."
-                        );
-                        return;
-                    }
-
-                    alert(resultado.mensagem);
-                    await carregarMinhasVagas();
-
-                } catch (erro) {
-                    console.error("Erro ao excluir vaga:", erro);
-                    alert("Erro de conexão ao tentar excluir a vaga.");
-                }
+            botaoEditar.addEventListener("click", () => {
+                editarVaga(vaga);
             });
 
-            botaoEditar.addEventListener("click", async () => {
+            botaoExcluir.addEventListener("click", () => {
+                excluirVaga(vaga);
+            });
 
-                    const novoTitulo = prompt(
-                        "Título da vaga:",
-                        vaga.titulo
-                );
-
-                    if (novoTitulo === null) {
-                        return;
-            }
-
-                    const novaDescricao = prompt(
-                        "Descrição da vaga:",
-                        vaga.descricao
-                );
-
-                    if (novaDescricao === null) {
-                        return;
-            }
-
-                    const novosRequisitos = prompt(
-                      "Requisitos:",
-                      vaga.requisitos
-                );
-
-                     if (novosRequisitos === null) {
-                         return;
-            }
-
-                    const novoContrato = prompt(
-
-                        "Tipo de contrato:",
-                        vaga.turno
-                );
-
-                    if (novoContrato === null) {
-                        return;
-            }
-
-                    const novoSalario = prompt(
-                        "Salário:",
-                        vaga.salario ?? ""
-                 );
-
-                    if (novoSalario === null) {
-                        return;
-                    }
-
-    try {
-
-                    const resposta = await fetch(
-                        `/empresas/minhas-vagas/${vaga.id}`,
-                        {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            credentials: "include",
-                            body: JSON.stringify({
-                                titulo: novoTitulo,
-                                descricao: novaDescricao,
-                                requisitos: novosRequisitos,
-                                tipoContrato: novoContrato,
-                                salario: novoSalario
-                    })
-                });
-
-
-                    const resultado = await resposta.json();
-
-                    if (!resposta.ok) {
-                        alert(resultado.erro || "Não foi possível editar a vaga.");
-                        return;
-                    }
-
-                    alert(resultado.mensagem);
-
-                    carregarMinhasVagas();
-
-                }   catch (erro) {
-
-                    console.error("Erro ao editar vaga:", erro);
-                    alert("Erro de conexão ao editar vaga.");
-
-    }
-
-    });
+            botoes.append(botaoEditar, botaoExcluir);
 
             card.append(
                 titulo,
                 descricao,
                 requisitos,
                 contrato,
+                turno,
                 salario,
-                botaoEditar,
-                botaoExcluir
+                botoes
             );
 
             lista.appendChild(card);
@@ -246,5 +221,161 @@ async function carregarMinhasVagas() {
     }
 }
 
+// ========================================
+// EDITAR VAGA
+// ========================================
+
+async function editarVaga(vaga) {
+    const novoTitulo = prompt(
+        "Título da vaga:",
+        vaga.titulo || ""
+    );
+
+    if (novoTitulo === null) return;
+
+    const novaDescricao = prompt(
+        "Descrição da vaga:",
+        vaga.descricao || ""
+    );
+
+    if (novaDescricao === null) return;
+
+    const novosRequisitos = prompt(
+        "Requisitos:",
+        vaga.requisitos || ""
+    );
+
+    if (novosRequisitos === null) return;
+
+    const contratoAtual = vaga.tipo_contrato || "";
+
+    const novoContrato = prompt(
+        "Tipo de contrato:",
+        contratoAtual
+    );
+
+    if (novoContrato === null) return;
+
+    const turnoAtual = vaga.turno || "";
+
+    const novoTurno = prompt(
+        "Turno de trabalho:",
+        turnoAtual
+    );
+
+    if (novoTurno === null) return;
+
+    const novoSalario = prompt(
+        "Salário (deixe vazio se não informado):",
+        vaga.salario ?? ""
+    );
+
+    if (novoSalario === null) return;
+
+    if (
+        !novoTitulo.trim() ||
+        !novaDescricao.trim() ||
+        !novosRequisitos.trim() ||
+        !novoContrato.trim() ||
+        !novoTurno.trim()
+    ) {
+        alert("Preencha todos os campos obrigatórios.");
+        return;
+    }
+
+    let salario = null;
+
+    if (novoSalario.trim() !== "") {
+        salario = Number(novoSalario);
+
+        if (!Number.isFinite(salario) || salario < 0) {
+            alert("Informe um salário válido e não negativo.");
+            return;
+        }
+    }
+
+    try {
+        const resposta = await fetch(
+            `/empresas/minhas-vagas/${vaga.id}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    titulo: novoTitulo.trim(),
+                    descricao: novaDescricao.trim(),
+                    requisitos: novosRequisitos.trim(),
+                    tipoContrato: novoContrato.trim(),
+                    turno: novoTurno.trim(),
+                    salario
+                })
+            }
+        );
+
+        const resultado = await obterJson(resposta);
+
+        if (!resposta.ok) {
+            alert(
+                resultado.erro ||
+                "Não foi possível atualizar a vaga."
+            );
+            return;
+        }
+
+        alert(resultado.mensagem || "Vaga atualizada com sucesso!");
+
+        await carregarMinhasVagas();
+
+    } catch (erro) {
+        console.error("Erro ao editar vaga:", erro);
+        alert("Erro de conexão ao editar a vaga.");
+    }
+}
+
+// ========================================
+// EXCLUIR VAGA
+// ========================================
+
+async function excluirVaga(vaga) {
+    const confirmar = confirm(
+        `Deseja excluir a vaga "${vaga.titulo}"?`
+    );
+
+    if (!confirmar) return;
+
+    try {
+        const resposta = await fetch(
+            `/empresas/minhas-vagas/${vaga.id}`,
+            {
+                method: "DELETE",
+                credentials: "include"
+            }
+        );
+
+        const resultado = await obterJson(resposta);
+
+        if (!resposta.ok) {
+            alert(
+                resultado.erro ||
+                "Não foi possível excluir a vaga."
+            );
+            return;
+        }
+
+        alert(resultado.mensagem || "Vaga excluída com sucesso!");
+
+        await carregarMinhasVagas();
+
+    } catch (erro) {
+        console.error("Erro ao excluir vaga:", erro);
+        alert("Erro de conexão ao tentar excluir a vaga.");
+    }
+}
+
+// ========================================
+// INICIALIZAÇÃO
+// ========================================
 
 carregarMinhasVagas();

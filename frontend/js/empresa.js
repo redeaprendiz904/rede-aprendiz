@@ -1,241 +1,380 @@
+"use strict";
+
+// ========================================
+// REDE APRENDIZ — EMPRESAS
+// ========================================
+
 const cardsContainer = document.getElementById("cardsContainer");
 const searchInput = document.getElementById("searchInput");
 const resultCount = document.getElementById("resultCount");
 const filterButtons = document.querySelectorAll(".filter-btn");
+const noResults = document.getElementById("noResults");
 
 let empresas = [];
 let filtroAtual = "all";
 
-// Modal
-function abrirModal() {
-    document.getElementById("modal").style.display = "flex";
+// ========================================
+// MODAL DE VAGAS
+// ========================================
+
+function fecharModalVagas() {
+    const modal = document.getElementById("modalVagas");
+
+    if (modal) {
+        modal.style.display = "none";
+    }
 }
 
-// Fechar modal clicando fora
-window.addEventListener("click", (e) => {
-    const modal = document.getElementById("modal");
+window.fecharModalVagas = fecharModalVagas;
 
-    if (e.target === modal) {
-        modal.style.display = "none";
+window.addEventListener("click", (evento) => {
+    const modalVagas = document.getElementById("modalVagas");
+
+    if (evento.target === modalVagas) {
+        fecharModalVagas();
     }
 });
 
-// Cadastrar empresa
-async function adicionarEmpresa() {
+window.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") {
+        fecharModalVagas();
+    }
+});
 
-    const nome = document.getElementById("nome").value.trim();
-    const descricao = document.getElementById("desc").value.trim();
-    const categoria = document.getElementById("categoria").value;
-    const email = document.getElementById("email").value.trim();
-    const senha = document.getElementById("senha").value;
+// ========================================
+// CARREGAR EMPRESAS
+// ========================================
 
-    if (!nome || !descricao) {
-        alert("Preencha todos os campos!");
+async function carregarEmpresas() {
+    if (!cardsContainer || !searchInput || !resultCount) {
+        console.error("Elementos necessários da página não encontrados.");
         return;
     }
 
-    try {
+    cardsContainer.textContent = "Carregando empresas...";
+    resultCount.textContent = "Carregando empresas...";
 
+    try {
+        const resposta = await fetch("/empresas/listar", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        const dados = await resposta.json().catch(() => null);
+
+        if (!resposta.ok) {
+            throw new Error(
+                dados?.erro || "Não foi possível carregar as empresas."
+            );
+        }
+
+        if (!Array.isArray(dados)) {
+            throw new Error(
+                "A resposta do servidor não contém uma lista válida."
+            );
+        }
+
+        empresas = dados;
+        renderizarEmpresas();
+
+    } catch (erro) {
+        console.error("Erro ao carregar empresas:", erro);
+
+        cardsContainer.replaceChildren();
+
+        const mensagem = document.createElement("p");
+        mensagem.textContent =
+            erro.message || "Erro ao carregar as empresas.";
+
+        cardsContainer.appendChild(mensagem);
+
+        resultCount.textContent =
+            "Não foi possível carregar as empresas.";
+
+        if (noResults) {
+            noResults.style.display = "none";
+        }
+    }
+}
+
+// ========================================
+// EXIBIR EMPRESAS
+// ========================================
+
+function renderizarEmpresas() {
+    if (!cardsContainer || !searchInput || !resultCount) {
+        return;
+    }
+
+    const busca = searchInput.value.trim().toLowerCase();
+
+    cardsContainer.replaceChildren();
+
+    const filtradas = empresas.filter((empresa) => {
+        const categoria = String(empresa.categoria || "")
+            .trim()
+            .toLowerCase();
+
+        const categoriaOk =
+            filtroAtual === "all" || categoria === filtroAtual;
+
+        const nome = String(empresa.nome || "").toLowerCase();
+        const descricao = String(
+            empresa.descricao || ""
+        ).toLowerCase();
+
+        const nomeOk = nome.includes(busca);
+        const descricaoOk = descricao.includes(busca);
+
+        return categoriaOk && (nomeOk || descricaoOk);
+    });
+
+    filtradas.forEach((empresa) => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.dataset.category = String(empresa.categoria || "");
+
+        const titulo = document.createElement("h3");
+        titulo.textContent = empresa.nome || "Empresa";
+
+        const descricao = document.createElement("p");
+        descricao.textContent =
+            empresa.descricao || "Descrição não informada.";
+
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.textContent = "Ver vagas";
+
+        botao.addEventListener("click", () => {
+            verVagas(empresa.id);
+        });
+
+        card.append(titulo, descricao, botao);
+        cardsContainer.appendChild(card);
+    });
+
+    resultCount.textContent =
+        `Total: ${filtradas.length} empresa(s)`;
+
+    if (noResults) {
+        noResults.style.display =
+            filtradas.length === 0 ? "block" : "none";
+    }
+}
+
+// ========================================
+// PESQUISA
+// ========================================
+
+if (searchInput) {
+    searchInput.addEventListener("input", renderizarEmpresas);
+}
+
+// ========================================
+// FILTROS
+// ========================================
+
+filterButtons.forEach((botao) => {
+    botao.addEventListener("click", () => {
+        filterButtons.forEach((item) => {
+            item.classList.remove("active");
+        });
+
+        botao.classList.add("active");
+
+        filtroAtual = botao.dataset.filter || "all";
+
+        renderizarEmpresas();
+    });
+});
+
+// ========================================
+// AUXILIAR: ADICIONAR INFORMAÇÕES À VAGA
+// ========================================
+
+function adicionarCampoVaga(card, rotulo, valor) {
+    if (
+        valor === null ||
+        valor === undefined ||
+        String(valor).trim() === ""
+    ) {
+        return;
+    }
+
+    const paragrafo = document.createElement("p");
+    const destaque = document.createElement("strong");
+
+    destaque.textContent = `${rotulo}: `;
+
+    paragrafo.appendChild(destaque);
+    paragrafo.appendChild(
+        document.createTextNode(String(valor))
+    );
+
+    card.appendChild(paragrafo);
+}
+
+// ========================================
+// FORMATAR SALÁRIO
+// ========================================
+
+function formatarSalario(salario) {
+    if (
+        salario === null ||
+        salario === undefined ||
+        String(salario).trim() === ""
+    ) {
+        return "Não informado";
+    }
+
+    const valor = Number(salario);
+
+    if (!Number.isFinite(valor)) {
+        return String(salario);
+    }
+
+    return valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+// ========================================
+// VER VAGAS DE UMA EMPRESA
+// ========================================
+
+async function verVagas(empresaId) {
+    const container = document.getElementById("listaVagasEmpresa");
+    const modal = document.getElementById("modalVagas");
+
+    if (!container || !modal) {
+        console.error("Modal de vagas não encontrado no HTML.");
+        return;
+    }
+
+    if (empresaId === null || empresaId === undefined) {
+        console.error("ID da empresa não informado.");
+        return;
+    }
+
+    container.replaceChildren();
+
+    const carregando = document.createElement("p");
+    carregando.textContent = "Carregando vagas...";
+    container.appendChild(carregando);
+
+    modal.style.display = "flex";
+
+    try {
         const resposta = await fetch(
-            "http://localhost:3000/empresas",
+            `/empresas/${encodeURIComponent(empresaId)}/vagas`,
             {
-                method: "POST",
+                method: "GET",
+                credentials: "include",
                 headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    nome,
-                    descricao,
-                    categoria,
-                    email,
-                    senha
-            })
+                    "Accept": "application/json"
+                }
             }
         );
 
-        if (resposta.ok) {
+        const dados = await resposta.json().catch(() => null);
 
-            alert("Empresa cadastrada com sucesso!");
-
-            document.getElementById("nome").value = "";
-            document.getElementById("desc").value = "";
-            document.getElementById("categoria").selectedIndex = 0;
-            document.getElementById("modal").style.display = "none";
-            document.getElementById("email").value = "";
-            document.getElementById("senha").value = "";
-
-            carregarEmpresas();
-
-        } else {
-
-            alert("Erro ao cadastrar empresa");
-
+        if (!resposta.ok) {
+            throw new Error(
+                dados?.erro || "Não foi possível carregar as vagas."
+            );
         }
 
-    } catch (erro) {
+        if (!Array.isArray(dados)) {
+            throw new Error(
+                "A resposta recebida não é uma lista de vagas."
+            );
+        }
 
-        console.error(erro);
-        alert("Erro no servidor");
+        container.replaceChildren();
 
-    }
+        if (dados.length === 0) {
+            container.textContent =
+                "Nenhuma vaga disponível nesta empresa.";
+            return;
+        }
 
-}
+        dados.forEach((vaga) => {
+            const card = document.createElement("article");
+            card.className = "card vaga-card";
 
-// Carregar empresas do banco
-async function carregarEmpresas() {
+            const titulo = document.createElement("h3");
+            titulo.textContent = vaga.titulo || "Vaga sem título";
 
-    try {
+            card.appendChild(titulo);
 
-        const resposta = await fetch(
-            "http://localhost:3000/empresas/listar"
-        );
+            adicionarCampoVaga(
+                card,
+                "Descrição",
+                vaga.descricao
+            );
 
-        empresas = await resposta.json();
+            adicionarCampoVaga(
+                card,
+                "Requisitos",
+                vaga.requisitos
+            );
 
-        renderizarEmpresas();
+            adicionarCampoVaga(
+                card,
+                "Tipo de contrato",
+                vaga.tipo_contrato ?? vaga.tipoContrato
+            );
 
-    } catch (erro) {
+            adicionarCampoVaga(
+                card,
+                "Turno",
+                vaga.turno
+            );
 
-        console.error(erro);
+           adicionarCampoVaga(
+                card,
+                "Salário",
+                formatarSalario(vaga.salario)
+            );
 
-    }
+            // Botão de candidatura
+            const botaoCandidatar = document.createElement("button");
 
-}
+            botaoCandidatar.type = "button";
+            botaoCandidatar.textContent = "Candidatar-se";
+            botaoCandidatar.className = "btn-candidatar";
 
-// Mostrar empresas na tela
-function renderizarEmpresas() {
-
-    const busca = searchInput.value.toLowerCase();
-
-    cardsContainer.innerHTML = "";
-
-    const filtradas = empresas.filter(empresa => {
-
-        const categoriaOk =
-            filtroAtual === "all" ||
-            empresa.categoria === filtroAtual;
-
-        const buscaOk =
-            empresa.nome.toLowerCase().includes(busca);
-
-        return categoriaOk && buscaOk;
-
-    });
-
-    filtradas.forEach(empresa => {
-
-        cardsContainer.innerHTML += `
-            <div class="card"
-                 data-category="${empresa.categoria}">
-
-                <h3>${empresa.nome}</h3>
-
-                <p>${empresa.descricao}</p>
-
-                <button onclick="verVagas(${empresa.id})">
-                    Ver Vagas
-                </button>
-
-            </div>
-        `;
-
-    });
-
-    cardsContainer.innerHTML += `
-        <div class="card add-card">
-            <h3>Adicionar</h3>
-            <p>Cadastre sua empresa no catálogo de empresas!</p>
-            <button onclick="abrirModal()">Cadastrar</button>
-        </div>
-    `;
-
-    resultCount.textContent =
-        `Total: ${filtradas.length} empresas`;
-
-}
-
-// Pesquisa
-searchInput.addEventListener("input", () => {
-
-    renderizarEmpresas();
-
-});
-
-// Filtros
-filterButtons.forEach(btn => {
-
-    btn.addEventListener("click", () => {
-
-        filterButtons.forEach(b =>
-            b.classList.remove("active")
-        );
-
-        btn.classList.add("active");
-
-        filtroAtual = btn.dataset.filter;
-
-        renderizarEmpresas();
-
-    });
-
-});
-
-carregarEmpresas();
-
-async function verVagas(empresaId) {
-
-    try {
-
-        const resposta = await fetch(
-            `http://localhost:3000/empresas/${empresaId}/vagas`
-        );
-
-        const vagas = await resposta.json();
-
-        const container =
-            document.getElementById("listaVagasEmpresa");
-
-        container.innerHTML = "";
-
-        if (vagas.length === 0) {
-
-            container.innerHTML =
-                "<p>Nenhuma vaga disponível.</p>";
-
-        } else {
-
-            vagas.forEach(vaga => {
-
-                container.innerHTML += `
-                    <div class="card">
-                        <h3>${vaga.titulo}</h3>
-                        <p>${vaga.descricao}</p>
-                        <p><strong>Turno:</strong> ${vaga.turno}</p>
-
-                        <button onclick="candidatar(${vaga.id})">
-                            Candidatar-se
-                        </button>
-                    </div>
-                `;
-
+            botaoCandidatar.addEventListener("click", () => {
+                candidatarSe(vaga.id);
             });
 
-        }
+            card.appendChild(botaoCandidatar);
 
-        document.getElementById("modalVagas")
-            .style.display = "flex";
+            container.appendChild(card);
+        });
 
     } catch (erro) {
+        console.error(
+            "Erro ao carregar vagas da empresa:",
+            erro
+        );
 
-        console.error(erro);
+        container.replaceChildren();
 
+        const mensagemErro = document.createElement("p");
+        mensagemErro.textContent =
+            erro.message || "Erro ao carregar as vagas.";
+
+        container.appendChild(mensagemErro);
     }
-
 }
 
-function fecharModalVagas() {
+// ========================================
+// INICIALIZAÇÃO
+// ========================================
 
-    document.getElementById("modalVagas")
-        .style.display = "none";
-
-}
+carregarEmpresas();

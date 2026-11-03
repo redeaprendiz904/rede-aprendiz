@@ -379,24 +379,15 @@ function verificarLoginAdmin(req, res, next) {
 }
 
 // ÁREA EXCLUSIVA DA EMPRESA
-app.get("/area-empresa", verificarLoginEmpresa, (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/html/area-empresa.html"));
-});
+app.get("/area-empresa", (req, res) => {
+    if (!req.session || !req.session.empresa) {
+        return res.redirect("/html/login-empresa.html");
+    }
 
-app.get("/empresa-logada", verificarLoginEmpresa, (req, res) => {
-    res.json({
-        id: req.session.empresa.id,
-        nome: req.session.empresa.nome,
-        email: req.session.empresa.email
-    });
-});
-// PAINEL ADMINISTRATIVO
-app.get("/admin", verificarLoginAdmin, (req, res) => {
-    res.sendFile(
-        path.join(__dirname, "../frontend/html/admin.html")
+    return res.sendFile(
+        path.join(__dirname, "../frontend/html/area-empresa.html")
     );
 });
-
 app.get("/admin/estudantes", verificarLoginAdmin, (req, res) => {
     const sql = `
         SELECT id, nome, email, telefone
@@ -1516,6 +1507,7 @@ app.get("/empresas/listar", (req, res) => {
 
 
  // LISTAR VAGAS PÚBLICAS DE UMA EMPRESA
+
 app.get("/empresas/:id/vagas", (req, res) => {
     const empresaId = Number(req.params.id);
 
@@ -1526,8 +1518,16 @@ app.get("/empresas/:id/vagas", (req, res) => {
     }
 
     const sql = `
-        SELECT id, titulo, empresa, turno, descricao,
-               requisitos, salario, empresa_id
+        SELECT
+            id,
+            titulo,
+            empresa,
+            tipo_contrato,
+            turno,
+            descricao,
+            requisitos,
+            salario,
+            empresa_id
         FROM vagas
         WHERE empresa_id = ?
         ORDER BY id DESC
@@ -1536,6 +1536,7 @@ app.get("/empresas/:id/vagas", (req, res) => {
     db.query(sql, [empresaId], (err, resultado) => {
         if (err) {
             console.error("Erro ao listar vagas da empresa:", err);
+
             return res.status(500).json({
                 erro: "Erro ao listar vagas."
             });
@@ -1552,7 +1553,14 @@ app.get("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
 
     try {
         const [vagas] = await db.promise().execute(
-            `SELECT id, titulo, descricao, requisitos, turno, salario
+            `SELECT
+                id,
+                titulo,
+                descricao,
+                requisitos,
+                tipo_contrato,
+                turno,
+                salario
              FROM vagas
              WHERE empresa_id = ?
              ORDER BY id DESC`,
@@ -1560,6 +1568,7 @@ app.get("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
         );
 
         return res.json(vagas);
+
     } catch (erro) {
         console.error("Erro ao listar vagas da empresa:", erro);
 
@@ -1569,36 +1578,53 @@ app.get("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
     }
 });
 
+
 // EDITAR VAGA DA EMPRESA LOGADA
 app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) => {
     const empresaId = req.session.empresa.id;
-    const vagaId = req.params.id;
+    const vagaId = Number(req.params.id);
 
     const {
         titulo,
         descricao,
         requisitos,
         tipoContrato,
+        turno,
         salario
     } = req.body;
 
+    // Validar ID da vaga
+    if (!Number.isInteger(vagaId) || vagaId <= 0) {
+        return res.status(400).json({
+            erro: "ID da vaga inválido."
+        });
+    }
+
+    // Validar campos obrigatórios
     if (
         !titulo?.trim() ||
         !descricao?.trim() ||
         !requisitos?.trim() ||
-        !tipoContrato?.trim()
+        !tipoContrato?.trim() ||
+        !turno?.trim()
     ) {
         return res.status(400).json({
-            erro: "Preencha o título, a descrição, os requisitos e o tipo de contrato."
+            erro: "Preencha o título, a descrição, os requisitos, o tipo de contrato e o turno."
         });
     }
 
-    if (titulo.trim().length > 100 || tipoContrato.trim().length > 50) {
+    // Validar tamanho dos campos
+    if (
+        titulo.trim().length > 100 ||
+        tipoContrato.trim().length > 50 ||
+        turno.trim().length > 50
+    ) {
         return res.status(400).json({
-            erro: "O título deve ter até 100 caracteres e o tipo de contrato até 50."
+            erro: "O título deve ter até 100 caracteres; o tipo de contrato e o turno devem ter até 50 caracteres."
         });
     }
 
+    // Validar salário
     if (
         salario !== "" &&
         salario != null &&
@@ -1615,13 +1641,19 @@ app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) =>
     try {
         const [resultado] = await db.promise().execute(
             `UPDATE vagas
-             SET titulo = ?, descricao = ?, requisitos = ?, turno = ?, salario = ?
+             SET titulo = ?,
+                 descricao = ?,
+                 requisitos = ?,
+                 tipo_contrato = ?,
+                 turno = ?,
+                 salario = ?
              WHERE id = ? AND empresa_id = ?`,
             [
                 titulo.trim(),
                 descricao.trim(),
                 requisitos.trim(),
                 tipoContrato.trim(),
+                turno.trim(),
                 salarioValor,
                 vagaId,
                 empresaId
@@ -1644,6 +1676,7 @@ app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) =>
         return res.json({
             mensagem: "Vaga atualizada com sucesso!"
         });
+
     } catch (erro) {
         console.error("Erro ao editar vaga:", erro);
 
@@ -1653,12 +1686,35 @@ app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) =>
     }
 });
 
-// EXCLUIR VAGA DA EMPRESA LOGADA
+
+
+ // EXCLUIR VAGA DA EMPRESA LOGADA
 app.delete("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) => {
     const empresaId = req.session.empresa.id;
     const vagaId = req.params.id;
 
     try {
+        // Confirma que a vaga pertence à empresa logada.
+        const [vagas] = await db.promise().execute(
+            `SELECT id
+             FROM vagas
+             WHERE id = ? AND empresa_id = ?`,
+            [vagaId, empresaId]
+        );
+
+        if (vagas.length === 0) {
+            return res.status(404).json({
+                erro: "Vaga não encontrada ou não pertence à sua empresa."
+            });
+        }
+
+        // Exclui as candidaturas vinculadas à vaga.
+        await db.promise().execute(
+            "DELETE FROM candidaturas WHERE vaga_id = ?",
+            [vagaId]
+        );
+
+        // Exclui a vaga da empresa.
         const [resultado] = await db.promise().execute(
             `DELETE FROM vagas
              WHERE id = ? AND empresa_id = ?`,
@@ -1667,13 +1723,14 @@ app.delete("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res)
 
         if (resultado.affectedRows === 0) {
             return res.status(404).json({
-                erro: "Vaga não encontrada ou não pertence à sua empresa."
+                erro: "A vaga não foi encontrada para exclusão."
             });
         }
 
         return res.json({
             mensagem: "Vaga excluída com sucesso!"
         });
+
     } catch (erro) {
         console.error("Erro ao excluir vaga:", erro);
 
@@ -1683,62 +1740,87 @@ app.delete("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res)
     }
 });
 
+
 // CADASTRAR VAGA DA EMPRESA LOGADA
 app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
-    const empresaId = req.session.empresa.id;
-
-    const {
-        titulo,
-        descricao,
-        requisitos,
-        tipoContrato,
-        salario
-    } = req.body;
-
-    if (
-        !titulo?.trim() ||
-        !descricao?.trim() ||
-        !requisitos?.trim() ||
-        !tipoContrato?.trim()
-    ) {
-        return res.status(400).json({
-            erro: "Preencha o título, a descrição, os requisitos e o tipo de contrato."
-        });
-    }
-
-    if (
-        titulo.trim().length > 100 ||
-        tipoContrato.trim().length > 50
-    ) {
-        return res.status(400).json({
-            erro: "O título deve ter até 100 caracteres e o tipo de contrato até 50."
-        });
-    }
-
-    if (!Number.isFinite(Number(salario)) && salario !== "" && salario != null) {
-        return res.status(400).json({
-            erro: "Informe um salário válido."
-        });
-    }
-
-    const salarioValor =
-        salario === "" || salario == null ? null : Number(salario);
-
-    if (salarioValor !== null && salarioValor < 0) {
-        return res.status(400).json({
-            erro: "O salário não pode ser negativo."
-        });
-    }
-
     try {
+        const empresaId = req.session.empresa.id;
+
+        const {
+            titulo,
+            descricao,
+            requisitos,
+            tipoContrato,
+            turno,
+            salario
+        } = req.body;
+
+        // Validar os campos obrigatórios
+        if (
+            !titulo?.trim() ||
+            !descricao?.trim() ||
+            !requisitos?.trim() ||
+            !tipoContrato?.trim() ||
+            !turno?.trim()
+        ) {
+            return res.status(400).json({
+                erro: "Preencha todos os campos obrigatórios."
+            });
+        }
+
+        // Validar tamanho dos campos
+        if (titulo.trim().length > 100) {
+            return res.status(400).json({
+                erro: "O título deve ter no máximo 100 caracteres."
+            });
+        }
+
+        if (tipoContrato.trim().length > 50) {
+            return res.status(400).json({
+                erro: "O tipo de contrato deve ter no máximo 50 caracteres."
+            });
+        }
+
+        if (turno.trim().length > 50) {
+            return res.status(400).json({
+                erro: "O turno deve ter no máximo 50 caracteres."
+            });
+        }
+
+        // Validar salário
+        const salarioValor =
+            salario === "" || salario == null
+                ? null
+                : Number(salario);
+
+        if (
+            salarioValor !== null &&
+            (!Number.isFinite(salarioValor) || salarioValor < 0)
+        ) {
+            return res.status(400).json({
+                erro: "Informe um salário válido."
+            });
+        }
+
+        // Cadastrar vaga com tipo de contrato e turno separados
         const [resultado] = await db.promise().execute(
             `INSERT INTO vagas
-                (titulo, empresa, turno, descricao, empresa_id, requisitos, salario)
-             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                (
+                    titulo,
+                    empresa,
+                    tipo_contrato,
+                    turno,
+                    descricao,
+                    empresa_id,
+                    requisitos,
+                    salario
+                )
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 titulo.trim(),
                 req.session.empresa.nome,
                 tipoContrato.trim(),
+                turno.trim(),
                 descricao.trim(),
                 empresaId,
                 requisitos.trim(),
@@ -1750,11 +1832,12 @@ app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
             mensagem: "Vaga cadastrada com sucesso!",
             vaga_id: resultado.insertId
         });
+
     } catch (erro) {
         console.error("Erro ao cadastrar vaga:", erro);
 
         return res.status(500).json({
-            erro: "Não foi possível cadastrar a vaga."
+            erro: "Erro interno ao cadastrar a vaga."
         });
     }
 });

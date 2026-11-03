@@ -45,6 +45,7 @@ body {
     padding: 30px 20px;
     background: var(--vinho);
     box-shadow: 4px 0 18px rgba(0, 0, 0, 0.08);
+    overflow-y: auto;
 }
 
 .sidebar h2 {
@@ -72,7 +73,6 @@ body {
     background: var(--branco);
     color: var(--vinho);
 }
-
 
 .logout-form {
     margin: 0;
@@ -279,11 +279,9 @@ body {
 }
 
 /* ========================================
-   MODAIS
+   MODAL DE VAGAS
 ======================================== */
 
-/* Esconde o cadastro e as vagas inicialmente */
-#modal,
 #modalVagas {
     display: none;
 }
@@ -398,6 +396,10 @@ body {
     font-size: 13px;
     line-height: 1.6;
 }
+
+/* ========================================
+   ANIMAÇÕES
+======================================== */
 
 @keyframes aparecer {
     from {
