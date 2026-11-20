@@ -1,49 +1,162 @@
-.hero .container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 30px 24px;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --vinho: #4b0202;
+    --vinho-hover: #800000;
+    --vinho-escuro: #350000;
+    --branco: #ffffff;
+    --fundo: #f4f7fb;
+    --texto: #333333;
+    --texto-secundario: #666666;
+    --borda: #e5e7eb;
+    --borda-vinho: #eadada;
+    --sombra: 0 4px 16px rgba(53, 0, 0, 0.06);
+    --sombra-hover: 0 8px 22px rgba(53, 0, 0, 0.10);
+    --raio: 12px;
+}
+
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
-.hero .section {
-    width: 100%;
-    box-sizing: border-box;
+html {
+    scroll-behavior: smooth;
 }
 
-
-.hero h1 {
-    color: #4b0202;
-    font-size: 30px;
-    margin-bottom: 12px;
-}
-
-.hero h2 {
-    color: #4b0202;
-    margin: 28px 0 12px;
-}
-
-.hero p {
-    color: #333333;
+body {
+    min-height: 100vh;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
     line-height: 1.6;
 }
 
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
 
-#formCadastroVaga {
-    background: #ffffff;
+button,
+select {
+    cursor: pointer;
+}
+
+button:disabled,
+select:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+/* CONTEÚDO PRINCIPAL */
+.conteudo {
+    width: 100%;
+    min-height: 100vh;
+    padding: 35px clamp(20px, 5vw, 70px) 50px;
+}
+
+/* CABEÇALHO */
+.cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 32px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.cabecalho h1 {
+    margin-bottom: 8px;
+    color: var(--vinho);
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.cabecalho p {
+    color: var(--texto-secundario);
+}
+
+.cabecalho strong {
+    color: var(--vinho);
+}
+
+.btn-sair {
+    flex-shrink: 0;
+    padding: 11px 22px;
+    color: var(--branco);
+    background: var(--vinho);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-sair:hover {
+    background: var(--vinho-hover);
+}
+
+.btn-sair:focus-visible {
+    outline: 2px solid var(--vinho-hover);
+    outline-offset: 3px;
+}
+
+/* SEÇÕES */
+.secao {
+    width: 100%;
+    margin-bottom: 32px;
     padding: 28px;
-    margin-top: 20px;
-    border: 1px solid #e2d6d6;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(75, 2, 2, 0.08);
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra);
+}
+
+.secao h2 {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    color: var(--vinho);
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.4;
+    border-bottom: 1px solid var(--borda-vinho);
+}
+
+/* FORMULÁRIO */
+#formCadastroVaga {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 22px;
+    row-gap: 0;
+    width: 100%;
+}
+
+#formCadastroVaga .campo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin-bottom: 18px;
+}
+
+#formCadastroVaga .campo:has(#descricao),
+#formCadastroVaga .campo:has(#requisitos) {
+    grid-column: 1 / -1;
 }
 
 #formCadastroVaga label {
-    display: block;
-    margin: 18px 0 8px;
-    color: #4b0202;
-    font-size: 14px;
-    font-weight: 600;
+    margin-bottom: 8px;
+    color: #3d2020;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 #formCadastroVaga input,
@@ -51,151 +164,276 @@
 #formCadastroVaga select {
     display: block;
     width: 100%;
-    box-sizing: border-box;
-    padding: 12px 14px;
-    margin-bottom: 16px;
-    border: 1px solid #cccccc;
-    border-radius: 7px;
-    background: #ffffff;
-    color: #333333;
+    min-width: 0;
+    min-height: 46px;
+    padding: 12px 13px;
+    color: var(--texto);
+    background: var(--branco);
     font-family: inherit;
-    font-size: 15px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    font-size: 14px;
+    line-height: 1.5;
+    border: 1px solid #d7d7d7;
+    border-radius: 7px;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
 }
 
 #formCadastroVaga textarea {
-    min-height: 110px;
+    min-height: 115px;
     resize: vertical;
+}
+
+#formCadastroVaga #requisitos {
+    min-height: 95px;
+}
+
+#formCadastroVaga input::placeholder,
+#formCadastroVaga textarea::placeholder {
+    color: #999999;
+    opacity: 1;
 }
 
 #formCadastroVaga input:focus,
 #formCadastroVaga textarea:focus,
 #formCadastroVaga select:focus {
     outline: none;
-    border-color: #800000;
-    box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.12);
+    background: var(--branco);
+    border-color: var(--vinho-hover);
+    box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.09);
 }
 
+#formCadastroVaga select:disabled {
+    color: #888888;
+    background: #f1f1f1;
+    border-color: #dedede;
+}
 
+/* BOTÃO CADASTRAR VAGA */
 #formCadastroVaga button[type="submit"] {
-    display: inline-block;
-    padding: 12px 22px;
-    margin-top: 8px;
-    border: none;
-    border-radius: 7px;
-    background: #4b0202;
-    color: #ffffff;
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-height: 46px;
+    margin-top: 4px;
+    padding: 12px 24px;
+    color: var(--branco);
+    background: var(--vinho);
     font-family: inherit;
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
+    border: 1px solid var(--vinho);
+    border-radius: 7px;
     cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 #formCadastroVaga button[type="submit"]:hover {
-    background: #800000;
+    background: var(--vinho-hover);
+    border-color: var(--vinho-hover);
+    box-shadow: 0 4px 12px rgba(75, 2, 2, 0.16);
     transform: translateY(-1px);
 }
 
-
-#listaVagas {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
-    margin-top: 24px;
+#formCadastroVaga button[type="submit"]:focus-visible {
+    outline: 2px solid var(--vinho-hover);
+    outline-offset: 3px;
 }
 
-#listaVagas article {
-    background: #ffffff;
-    border: 1px solid #e2d6d6;
-    border-top: 4px solid #800000;
-    border-radius: 10px;
-    padding: 22px;
-    box-shadow: 0 3px 10px rgba(75, 2, 2, 0.07);
+/* MENSAGEM DO FORMULÁRIO */
+#mensagemVaga {
+    grid-column: 1 / -1;
+    margin-top: 12px;
+    color: var(--texto-secundario);
+    font-size: 13px;
     overflow-wrap: anywhere;
-    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* LISTA DE VAGAS */
+#listaVagas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+#listaVagas > p {
+    grid-column: 1 / -1;
+    padding: 20px;
+    color: var(--texto-secundario);
+    background: var(--fundo);
+    text-align: center;
+    border: 1px dashed #d8c6c6;
+    border-radius: 8px;
+}
+
+/* CARTÕES DE VAGAS */
+#listaVagas article {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 23px;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-top: 4px solid var(--vinho);
+    border-radius: 10px;
+    overflow-wrap: anywhere;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
 #listaVagas article:hover {
+    border-color: var(--borda-vinho);
+    box-shadow: var(--sombra-hover);
     transform: translateY(-3px);
-    box-shadow: 0 7px 18px rgba(75, 2, 2, 0.12);
 }
 
 #listaVagas article h3 {
-    color: #4b0202;
-    font-size: 20px;
-    margin-bottom: 16px;
+    width: 100%;
+    margin-bottom: 14px;
+    color: var(--vinho);
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.4;
 }
 
 #listaVagas article p {
-    color: #444444;
-    font-size: 14px;
-    line-height: 1.6;
-    margin: 10px 0;
+    width: 100%;
+    margin-bottom: 9px;
+    color: var(--texto-secundario);
+    font-size: 13px;
+    line-height: 1.7;
 }
 
-
+/* BOTÕES DOS CARTÕES */
 #listaVagas article button {
-    border: none;
+    min-height: 39px;
+    margin: 15px 7px 0 0;
+    padding: 9px 14px;
+    color: var(--branco);
+    background: var(--vinho-hover);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid transparent;
     border-radius: 6px;
-    padding: 10px 16px;
-    margin: 16px 8px 0 0;
-    font-size: 14px;
-    font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
 }
 
 #listaVagas article button:hover {
-    opacity: 0.85;
+    background: var(--vinho);
     transform: translateY(-1px);
 }
 
-#listaVagas article button:first-of-type {
-    background: #800000;
-    color: #ffffff;
+#listaVagas article button:focus-visible {
+    outline: 2px solid var(--vinho-hover);
+    outline-offset: 3px;
 }
 
 #listaVagas article button:last-of-type {
-    background: #ff0000;
-    color: #ffffff;
+    background: #b42323;
 }
 
-
-#mensagem,
-#mensagemVaga {
-    margin-top: 12px;
-}
-#btnSair{
-    
-    background: #4b0202;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    border-radius: 5px;
-}
-#btnSair:hover {
-    opacity: 0.85;
-    transform: translateY(-1px);
-
+#listaVagas article button:last-of-type:hover {
+    background: #8f1717;
 }
 
-/* Responsividade */
-
-@media (max-width: 600px) {
-    .hero .container {
-        padding: 20px 14px;
+/* TABLETS */
+@media (max-width: 1100px) {
+    .secao {
+        padding: 24px;
     }
 
-    .hero h1 {
-        font-size: 25px;
+    #listaVagas {
+        gap: 16px;
+    }
+}
+
+/* TABLETS PEQUENOS */
+@media (max-width: 760px) {
+    .conteudo {
+        padding: 25px 18px 35px;
+    }
+
+    .cabecalho {
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+    }
+
+    .cabecalho h1 {
+        font-size: 28px;
+    }
+
+    .secao {
+        margin-bottom: 24px;
+        padding: 22px;
+    }
+
+    .secao h2 {
+        margin-bottom: 20px;
+        font-size: 19px;
+    }
+
+    #listaVagas {
+        gap: 14px;
+    }
+}
+
+/* CELULARES */
+@media (max-width: 520px) {
+    .conteudo {
+        padding: 22px 13px 30px;
+    }
+
+    .cabecalho {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .cabecalho h1 {
+        font-size: 24px;
+    }
+
+    .cabecalho p {
+        font-size: 13px;
+    }
+
+    .btn-sair {
+        padding: 9px 14px;
+        font-size: 12px;
+    }
+
+    .secao {
+        padding: 18px 15px;
+        border-radius: 9px;
+    }
+
+    .secao h2 {
+        font-size: 18px;
     }
 
     #formCadastroVaga {
-        padding: 18px;
+        grid-template-columns: minmax(0, 1fr);
+        column-gap: 0;
+    }
+
+    #formCadastroVaga .campo,
+    #formCadastroVaga .campo:has(#descricao),
+    #formCadastroVaga .campo:has(#requisitos) {
+        grid-column: 1;
+    }
+
+    #formCadastroVaga .campo {
+        margin-bottom: 15px;
     }
 
     #formCadastroVaga input,
@@ -204,16 +442,52 @@
         font-size: 16px;
     }
 
+    #formCadastroVaga button[type="submit"] {
+        justify-self: stretch;
+        width: 100%;
+    }
+
     #listaVagas {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 14px;
     }
 
     #listaVagas article {
-        padding: 18px;
+        padding: 19px;
+    }
+
+    #listaVagas article h3 {
+        font-size: 17px;
     }
 
     #listaVagas article button {
         margin-top: 12px;
+    }
+}
+
+/* CELULARES MUITO PEQUENOS */
+@media (max-width: 350px) {
+    .conteudo {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .secao {
+        padding: 15px 12px;
+    }
+
+    #listaVagas article button {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+/* ACESSIBILIDADE */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
     }
 }

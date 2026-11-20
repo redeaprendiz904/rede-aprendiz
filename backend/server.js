@@ -884,18 +884,53 @@ app.get("/oportunidades", verificarLogin, (req, res) => {
 });
 
 
- // LISTAR VAGAS PÚBLICAS
+ // LISTAR E FILTRAR VAGAS PÚBLICAS
 app.get("/vagas", (req, res) => {
-    const sql = `
-        SELECT id, titulo, empresa, turno, descricao,
-               requisitos, salario, empresa_id
+    const { regiao, estado, cidade } = req.query;
+
+    let sql = `
+        SELECT
+            id,
+            titulo,
+            empresa,
+            turno,
+            descricao,
+            requisitos,
+            salario,
+            empresa_id,
+            regiao,
+            estado,
+            cidade
         FROM vagas
-        ORDER BY id DESC
+        WHERE 1 = 1
     `;
 
-    db.query(sql, (err, resultado) => {
+    const parametros = [];
+
+    // Filtrar por região
+    if (typeof regiao === "string" && regiao.trim()) {
+        sql += " AND regiao = ?";
+        parametros.push(regiao.trim());
+    }
+
+    // Filtrar por estado (sigla, exemplo: MA)
+    if (typeof estado === "string" && estado.trim()) {
+        sql += " AND estado = ?";
+        parametros.push(estado.trim().toUpperCase());
+    }
+
+    // Filtrar por cidade
+    if (typeof cidade === "string" && cidade.trim()) {
+        sql += " AND cidade LIKE ?";
+        parametros.push(`%${cidade.trim()}%`);
+    }
+
+    sql += " ORDER BY id DESC";
+
+    db.query(sql, parametros, (err, resultado) => {
         if (err) {
             console.error("Erro ao listar vagas:", err);
+
             return res.status(500).json({
                 erro: "Erro ao listar vagas."
             });
@@ -904,7 +939,6 @@ app.get("/vagas", (req, res) => {
         return res.json(resultado);
     });
 });
-
 
 // LISTAR CANDIDATURAS DO USUÁRIO LOGADO
 app.get("/minhas-candidaturas", (req, res) => {
@@ -1304,13 +1338,23 @@ app.get("/dashboard/resumo", (req, res) => {
     });
 });
 
-// CADASTRAR EMPRESA 
-app.post("/empresas", async (req, res) => {
-    let { nome, descricao, categoria, email, senha } = req.body || {};
 
-    // Validar se todos os campos são textos
+ // CADASTRAR EMPRESA
+app.post("/empresas", async (req, res) => {
+    let {
+        nome,
+        descricao,
+        categoria,
+        regiao,
+        estado,
+        cidade,
+        email,
+        senha
+    } = req.body || {};
+
+    // Validar os campos como textos
     if (
-        ![nome, descricao, categoria, email, senha]
+        ![nome, descricao, categoria, regiao, estado, cidade, email, senha]
             .every((valor) => typeof valor === "string")
     ) {
         return res.status(400).json({
@@ -1322,16 +1366,68 @@ app.post("/empresas", async (req, res) => {
     nome = nome.trim();
     descricao = descricao.trim();
     categoria = categoria.trim();
+    regiao = regiao.trim();
+    estado = estado.trim().toUpperCase();
+    cidade = cidade.trim();
     email = email.trim().toLowerCase();
 
-    // Validar nome, descrição e categoria
+    // Validar campos principais
     if (
         !nome || nome.length > 100 ||
         !descricao || descricao.length > 1000 ||
-        !categoria || categoria.length > 50
+        !categoria || categoria.length > 50 ||
+        !regiao || regiao.length > 30 ||
+        !estado || !cidade || cidade.length > 100
     ) {
         return res.status(400).json({
-            erro: "Confira o nome, a descrição e a categoria."
+            erro: "Confira os campos e a localização informada."
+        });
+    }
+
+    // Validar região e estado
+    const regioesPorEstado = {
+        AC: "Norte",
+        AP: "Norte",
+        AM: "Norte",
+        PA: "Norte",
+        RO: "Norte",
+        RR: "Norte",
+        TO: "Norte",
+
+        AL: "Nordeste",
+        BA: "Nordeste",
+        CE: "Nordeste",
+        MA: "Nordeste",
+        PB: "Nordeste",
+        PE: "Nordeste",
+        PI: "Nordeste",
+        RN: "Nordeste",
+        SE: "Nordeste",
+
+        DF: "Centro-Oeste",
+        GO: "Centro-Oeste",
+        MT: "Centro-Oeste",
+        MS: "Centro-Oeste",
+
+        ES: "Sudeste",
+        MG: "Sudeste",
+        RJ: "Sudeste",
+        SP: "Sudeste",
+
+        PR: "Sul",
+        RS: "Sul",
+        SC: "Sul"
+    };
+
+    if (!/^[A-Z]{2}$/.test(estado) || !regioesPorEstado[estado]) {
+        return res.status(400).json({
+            erro: "Selecione um estado brasileiro válido."
+        });
+    }
+
+    if (regioesPorEstado[estado] !== regiao) {
+        return res.status(400).json({
+            erro: "A região selecionada não corresponde ao estado."
         });
     }
 
@@ -1353,7 +1449,7 @@ app.post("/empresas", async (req, res) => {
     }
 
     try {
-        // Verificar se já existe empresa com esse e-mail
+        // Verificar e-mail duplicado
         const [existentes] = await db.promise().execute(
             "SELECT id FROM empresas WHERE email = ?",
             [email]
@@ -1365,15 +1461,24 @@ app.post("/empresas", async (req, res) => {
             });
         }
 
-        // Proteger a senha com bcrypt
+        // Proteger a senha
         const senhaHash = await bcrypt.hash(senha, 12);
 
-        // Inserir empresa no banco de dados
+        // Inserir empresa com localização
         await db.promise().execute(
             `INSERT INTO empresas
-                (nome, descricao, categoria, email, senha)
-             VALUES (?, ?, ?, ?, ?)`,
-            [nome, descricao, categoria, email, senhaHash]
+                (nome, descricao, categoria, regiao, estado, cidade, email, senha)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                nome,
+                descricao,
+                categoria,
+                regiao,
+                estado,
+                cidade,
+                email,
+                senhaHash
+            ]
         );
 
         return res.status(201).json({
@@ -1381,7 +1486,6 @@ app.post("/empresas", async (req, res) => {
         });
 
     } catch (erro) {
-        // Tratar e-mail duplicado, caso haja cadastro simultâneo
         if (erro.code === "ER_DUP_ENTRY") {
             return res.status(409).json({
                 erro: "Já existe uma empresa cadastrada com esse e-mail."
@@ -1395,8 +1499,6 @@ app.post("/empresas", async (req, res) => {
         });
     }
 });
-
-
 
  // LOGIN EMPRESARIAL
 app.post("/login-empresa", async (req, res) => {
@@ -1560,7 +1662,10 @@ app.get("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
                 requisitos,
                 tipo_contrato,
                 turno,
-                salario
+                salario,
+                regiao,
+                estado,
+                cidade
              FROM vagas
              WHERE empresa_id = ?
              ORDER BY id DESC`,
@@ -1578,11 +1683,10 @@ app.get("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
     }
 });
 
-
 // EDITAR VAGA DA EMPRESA LOGADA
 app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) => {
     const empresaId = req.session.empresa.id;
-    const vagaId = Number(req.params.id);
+    const id = Number(req.params.id);
 
     const {
         titulo,
@@ -1590,53 +1694,117 @@ app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) =>
         requisitos,
         tipoContrato,
         turno,
-        salario
-    } = req.body;
+        salario,
+        regiao,
+        estado,
+        cidade
+    } = req.body || {};
 
-    // Validar ID da vaga
-    if (!Number.isInteger(vagaId) || vagaId <= 0) {
-        return res.status(400).json({
-            erro: "ID da vaga inválido."
-        });
+    if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({ erro: "ID da vaga inválido." });
     }
 
-    // Validar campos obrigatórios
     if (
-        !titulo?.trim() ||
-        !descricao?.trim() ||
-        !requisitos?.trim() ||
-        !tipoContrato?.trim() ||
-        !turno?.trim()
+        typeof titulo !== "string" ||
+        typeof descricao !== "string" ||
+        typeof requisitos !== "string" ||
+        typeof tipoContrato !== "string" ||
+        typeof turno !== "string" ||
+        typeof regiao !== "string" ||
+        typeof estado !== "string" ||
+        typeof cidade !== "string"
     ) {
         return res.status(400).json({
-            erro: "Preencha o título, a descrição, os requisitos, o tipo de contrato e o turno."
+            erro: "Preencha todos os campos obrigatórios."
         });
     }
 
-    // Validar tamanho dos campos
+    const dados = {
+        titulo: titulo.trim(),
+        descricao: descricao.trim(),
+        requisitos: requisitos.trim(),
+        tipoContrato: tipoContrato.trim(),
+        turno: turno.trim(),
+        regiao: regiao.trim(),
+        estado: estado.trim().toUpperCase(),
+        cidade: cidade.trim()
+    };
+
     if (
-        titulo.trim().length > 100 ||
-        tipoContrato.trim().length > 50 ||
-        turno.trim().length > 50
+        !dados.titulo ||
+        !dados.descricao ||
+        !dados.requisitos ||
+        !dados.tipoContrato ||
+        !dados.turno ||
+        !dados.regiao ||
+        !dados.estado ||
+        !dados.cidade
     ) {
         return res.status(400).json({
-            erro: "O título deve ter até 100 caracteres; o tipo de contrato e o turno devem ter até 50 caracteres."
+            erro: "Preencha todos os campos obrigatórios."
         });
     }
 
-    // Validar salário
     if (
-        salario !== "" &&
-        salario != null &&
-        (!Number.isFinite(Number(salario)) || Number(salario) < 0)
+        dados.titulo.length > 100 ||
+        dados.descricao.length > 150 ||
+        dados.requisitos.length > 65535 ||
+        dados.tipoContrato.length > 50 ||
+        dados.turno.length > 50 ||
+        dados.regiao.length > 30 ||
+        dados.cidade.length > 100
     ) {
         return res.status(400).json({
-            erro: "Informe um salário válido e não negativo."
+            erro: "Um ou mais campos ultrapassaram o limite permitido."
         });
     }
 
-    const salarioValor =
-        salario === "" || salario == null ? null : Number(salario);
+    if (!/^[A-Z]{2}$/.test(dados.estado)) {
+        return res.status(400).json({
+            erro: "Informe uma sigla de estado válida, como MA ou SP."
+        });
+    }
+
+    const regioesPorEstado = {
+        AC: "Norte", AP: "Norte", AM: "Norte", PA: "Norte",
+        RO: "Norte", RR: "Norte", TO: "Norte",
+
+        AL: "Nordeste", BA: "Nordeste", CE: "Nordeste",
+        MA: "Nordeste", PB: "Nordeste", PE: "Nordeste",
+        PI: "Nordeste", RN: "Nordeste", SE: "Nordeste",
+
+        DF: "Centro-Oeste", GO: "Centro-Oeste",
+        MT: "Centro-Oeste", MS: "Centro-Oeste",
+
+        ES: "Sudeste", MG: "Sudeste",
+        RJ: "Sudeste", SP: "Sudeste",
+
+        PR: "Sul", RS: "Sul", SC: "Sul"
+    };
+
+    if (!regioesPorEstado[dados.estado]) {
+        return res.status(400).json({
+            erro: "Estado inválido."
+        });
+    }
+
+    if (dados.regiao !== regioesPorEstado[dados.estado]) {
+        return res.status(400).json({
+            erro: "A região selecionada não corresponde ao estado."
+        });
+    }
+
+    let salarioFinal = null;
+
+    if (salario !== null && salario !== undefined && salario !== "") {
+        salarioFinal = Number(salario);
+
+        if (!Number.isFinite(salarioFinal) || salarioFinal < 0) {
+            return res.status(400).json({
+                erro: "Informe um salário válido e não negativo."
+            });
+        }
+    }
 
     try {
         const [resultado] = await db.promise().execute(
@@ -1646,29 +1814,35 @@ app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) =>
                  requisitos = ?,
                  tipo_contrato = ?,
                  turno = ?,
-                 salario = ?
+                 salario = ?,
+                 regiao = ?,
+                 estado = ?,
+                 cidade = ?
              WHERE id = ? AND empresa_id = ?`,
             [
-                titulo.trim(),
-                descricao.trim(),
-                requisitos.trim(),
-                tipoContrato.trim(),
-                turno.trim(),
-                salarioValor,
-                vagaId,
+                dados.titulo,
+                dados.descricao,
+                dados.requisitos,
+                dados.tipoContrato,
+                dados.turno,
+                salarioFinal,
+                dados.regiao,
+                dados.estado,
+                dados.cidade,
+                id,
                 empresaId
             ]
         );
 
         if (resultado.affectedRows === 0) {
-            const [vagas] = await db.promise().execute(
+            const [existentes] = await db.promise().execute(
                 "SELECT id FROM vagas WHERE id = ? AND empresa_id = ?",
-                [vagaId, empresaId]
+                [id, empresaId]
             );
 
-            if (vagas.length === 0) {
+            if (existentes.length === 0) {
                 return res.status(404).json({
-                    erro: "Vaga não encontrada ou não pertence à sua empresa."
+                    erro: "Vaga não encontrada para esta empresa."
                 });
             }
         }
@@ -1676,7 +1850,6 @@ app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) =>
         return res.json({
             mensagem: "Vaga atualizada com sucesso!"
         });
-
     } catch (erro) {
         console.error("Erro ao editar vaga:", erro);
 
@@ -1685,8 +1858,6 @@ app.put("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) =>
         });
     }
 });
-
-
 
  // EXCLUIR VAGA DA EMPRESA LOGADA
 app.delete("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res) => {
@@ -1741,7 +1912,8 @@ app.delete("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res)
 });
 
 
-// CADASTRAR VAGA DA EMPRESA LOGADA
+
+ // CADASTRAR VAGA DA EMPRESA LOGADA
 app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
     try {
         const empresaId = req.session.empresa.id;
@@ -1752,19 +1924,25 @@ app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
             requisitos,
             tipoContrato,
             turno,
-            salario
+            salario,
+            regiao,
+            estado,
+            cidade
         } = req.body;
 
-        // Validar os campos obrigatórios
+        // Validar campos obrigatórios
         if (
             !titulo?.trim() ||
             !descricao?.trim() ||
             !requisitos?.trim() ||
             !tipoContrato?.trim() ||
-            !turno?.trim()
+            !turno?.trim() ||
+            !regiao?.trim() ||
+            !estado?.trim() ||
+            !cidade?.trim()
         ) {
             return res.status(400).json({
-                erro: "Preencha todos os campos obrigatórios."
+                erro: "Preencha todos os campos obrigatórios, incluindo a localização."
             });
         }
 
@@ -1787,6 +1965,30 @@ app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
             });
         }
 
+        if (descricao.trim().length > 150) {
+            return res.status(400).json({
+                erro: "A descrição deve ter no máximo 150 caracteres."
+            });
+        }
+
+        if (regiao.trim().length > 30) {
+            return res.status(400).json({
+                erro: "A região deve ter no máximo 30 caracteres."
+            });
+        }
+
+        if (!/^[A-Za-z]{2}$/.test(estado.trim())) {
+            return res.status(400).json({
+                erro: "Informe uma sigla de estado válida, como MA."
+            });
+        }
+
+        if (cidade.trim().length > 100) {
+            return res.status(400).json({
+                erro: "A cidade deve ter no máximo 100 caracteres."
+            });
+        }
+
         // Validar salário
         const salarioValor =
             salario === "" || salario == null
@@ -1802,20 +2004,55 @@ app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
             });
         }
 
-        // Cadastrar vaga com tipo de contrato e turno separados
+        // Validar região e estado
+        const regioesPorEstado = {
+            AC: "Norte", AP: "Norte", AM: "Norte",
+            PA: "Norte", RO: "Norte", RR: "Norte",
+            TO: "Norte",
+
+            AL: "Nordeste", BA: "Nordeste", CE: "Nordeste",
+            MA: "Nordeste", PB: "Nordeste", PE: "Nordeste",
+            PI: "Nordeste", RN: "Nordeste", SE: "Nordeste",
+
+            DF: "Centro-Oeste", GO: "Centro-Oeste",
+            MT: "Centro-Oeste", MS: "Centro-Oeste",
+
+            ES: "Sudeste", MG: "Sudeste",
+            RJ: "Sudeste", SP: "Sudeste",
+
+            PR: "Sul", RS: "Sul", SC: "Sul"
+        };
+
+        const estadoNormalizado = estado.trim().toUpperCase();
+        const regiaoNormalizada = regiao.trim();
+
+        if (!regioesPorEstado[estadoNormalizado]) {
+            return res.status(400).json({
+                erro: "Estado brasileiro inválido."
+            });
+        }
+
+        if (regioesPorEstado[estadoNormalizado] !== regiaoNormalizada) {
+            return res.status(400).json({
+                erro: "A região informada não corresponde ao estado selecionado."
+            });
+        }
+
+        // Cadastrar vaga
         const [resultado] = await db.promise().execute(
-            `INSERT INTO vagas
-                (
-                    titulo,
-                    empresa,
-                    tipo_contrato,
-                    turno,
-                    descricao,
-                    empresa_id,
-                    requisitos,
-                    salario
-                )
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO vagas (
+                titulo,
+                empresa,
+                tipo_contrato,
+                turno,
+                descricao,
+                empresa_id,
+                requisitos,
+                salario,
+                regiao,
+                estado,
+                cidade
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 titulo.trim(),
                 req.session.empresa.nome,
@@ -1824,7 +2061,10 @@ app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
                 descricao.trim(),
                 empresaId,
                 requisitos.trim(),
-                salarioValor
+                salarioValor,
+                regiaoNormalizada,
+                estadoNormalizado,
+                cidade.trim()
             ]
         );
 

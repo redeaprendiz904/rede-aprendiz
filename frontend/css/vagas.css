@@ -1,3 +1,4 @@
+
 /* ========================================
    REDE APRENDIZ — VAGAS DISPONÍVEIS
 ======================================== */
@@ -45,6 +46,7 @@ body {
     padding: 30px 20px;
     background: var(--vinho);
     box-shadow: 4px 0 18px rgba(0, 0, 0, 0.08);
+    overflow-y: auto;
 }
 
 .sidebar h2 {
@@ -73,7 +75,6 @@ body {
     color: var(--vinho);
 }
 
-
 .logout-form {
     margin: 0;
     padding: 0;
@@ -100,7 +101,6 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
-
 /* ========================================
    ÁREA PRINCIPAL
 ======================================== */
@@ -119,6 +119,7 @@ body {
 
 .section {
     width: 100%;
+    min-width: 0;
 }
 
 .section > h2 {
@@ -129,10 +130,150 @@ body {
 }
 
 .section > p {
-    margin-bottom: 30px;
+    margin-bottom: 26px;
     color: var(--cinza);
     font-size: 15px;
     line-height: 1.8;
+}
+
+/* ========================================
+   FILTROS DE VAGAS
+======================================== */
+
+/* Compatível com diferentes nomes de classes/IDs */
+.filtros,
+.filtros-vagas,
+.form-filtros,
+#formFiltros,
+#filtrosVagas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+    margin-bottom: 30px;
+    padding: 24px;
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    background: var(--branco);
+    box-shadow: var(--sombra);
+}
+
+.filtros h3,
+.filtros-vagas h3,
+.form-filtros h3,
+#formFiltros h3,
+#filtrosVagas h3 {
+    grid-column: 1 / -1;
+    margin-bottom: 2px;
+    color: var(--vinho);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.filtros label,
+.filtros-vagas label,
+.form-filtros label,
+#formFiltros label,
+#filtrosVagas label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--texto);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.filtros input,
+.filtros select,
+.filtros-vagas input,
+.filtros-vagas select,
+.form-filtros input,
+.form-filtros select,
+#formFiltros input,
+#formFiltros select,
+#filtrosVagas input,
+#filtrosVagas select {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 11px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+    color: var(--texto);
+    font-family: inherit;
+    font-size: 13px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filtros input:focus,
+.filtros select:focus,
+.filtros-vagas input:focus,
+.filtros-vagas select:focus,
+.form-filtros input:focus,
+.form-filtros select:focus,
+#formFiltros input:focus,
+#formFiltros select:focus,
+#filtrosVagas input:focus,
+#filtrosVagas select:focus {
+    border-color: var(--vinho);
+    box-shadow: 0 0 0 3px rgba(75, 2, 2, 0.09);
+}
+
+.filtros input::placeholder,
+.filtros-vagas input::placeholder,
+.form-filtros input::placeholder,
+#formFiltros input::placeholder,
+#filtrosVagas input::placeholder {
+    color: #9ca3af;
+}
+
+.filtros button,
+.filtros-vagas button,
+.form-filtros button,
+#formFiltros button,
+#filtrosVagas button {
+    align-self: end;
+    min-height: 44px;
+    padding: 11px 16px;
+    border: none;
+    border-radius: 8px;
+    background: var(--vinho);
+    color: var(--branco);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.filtros button:hover,
+.filtros-vagas button:hover,
+.form-filtros button:hover,
+#formFiltros button:hover,
+#filtrosVagas button:hover {
+    background: var(--vinho-escuro);
+    transform: translateY(-1px);
+}
+
+/* Botão de limpar filtros */
+.btn-limpar-filtros {
+    align-self: end;
+    min-height: 44px;
+    padding: 11px 16px;
+    border: 1px solid var(--vinho);
+    border-radius: 8px;
+    background: var(--branco);
+    color: var(--vinho);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-limpar-filtros:hover {
+    background: #fff0f0;
 }
 
 /* ========================================
@@ -146,7 +287,6 @@ body {
     align-items: stretch;
 }
 
-/* Cards que podem ser criados pelo vagas.js */
 .cards > article,
 .cards > .card,
 .cards > .vaga-card,
@@ -201,7 +341,7 @@ body {
     overflow-wrap: anywhere;
 }
 
-/* Botões dentro dos cards */
+/* Botões dos cards */
 .cards button,
 .cards a.botao,
 .cards .btn-candidatar {
@@ -228,7 +368,14 @@ body {
     transform: translateY(-1px);
 }
 
-/* Caso não existam vagas */
+.cards button:disabled,
+.cards .btn-candidatar:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Mensagem quando não existem vagas */
 .cards > p {
     grid-column: 1 / -1;
     padding: 30px 20px;
@@ -266,6 +413,14 @@ footer {
     .hero {
         padding: 32px 24px;
     }
+
+    .filtros,
+    .filtros-vagas,
+    .form-filtros,
+    #formFiltros,
+    #filtrosVagas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 768px) {
@@ -299,6 +454,24 @@ footer {
         font-size: 14px;
     }
 
+    .filtros,
+    .filtros-vagas,
+    .form-filtros,
+    #formFiltros,
+    #filtrosVagas {
+        grid-template-columns: 1fr;
+        gap: 13px;
+        padding: 18px;
+    }
+
+    .filtros h3,
+    .filtros-vagas h3,
+    .form-filtros h3,
+    #formFiltros h3,
+    #filtrosVagas h3 {
+        font-size: 17px;
+    }
+
     .cards {
         grid-template-columns: 1fr;
         gap: 16px;
@@ -318,10 +491,24 @@ footer {
         font-size: 22px;
     }
 
+    .filtros,
+    .filtros-vagas,
+    .form-filtros,
+    #formFiltros,
+    #filtrosVagas {
+        padding: 15px;
+    }
+
     .cards > article,
     .cards > .card,
     .cards > .vaga-card,
     .cards > div {
         padding: 18px;
+    }
+
+    .cards button,
+    .cards a.botao,
+    .cards .btn-candidatar {
+        width: 100%;
     }
 }

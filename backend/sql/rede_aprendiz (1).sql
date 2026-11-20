@@ -61,7 +61,7 @@ CREATE TABLE `candidaturas` (
   KEY `vaga_id` (`vaga_id`),
   CONSTRAINT `candidaturas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `candidaturas_ibfk_2` FOREIGN KEY (`vaga_id`) REFERENCES `vagas` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +70,7 @@ CREATE TABLE `candidaturas` (
 
 LOCK TABLES `candidaturas` WRITE;
 /*!40000 ALTER TABLE `candidaturas` DISABLE KEYS */;
-INSERT INTO `candidaturas` VALUES (1,1,1,'2026-04-25 17:26:49'),(8,1,4,'2026-10-30 17:57:13'),(11,1,5,'2026-10-31 21:08:13'),(15,1,18,'2026-11-02 21:29:50');
+INSERT INTO `candidaturas` VALUES (1,1,1,'2026-04-25 17:26:49'),(8,1,4,'2026-10-30 17:57:13'),(11,1,5,'2026-10-31 21:08:13'),(15,1,18,'2026-11-02 21:29:50'),(17,1,21,'2026-11-20 13:55:18');
 /*!40000 ALTER TABLE `candidaturas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,6 +89,9 @@ CREATE TABLE `empresas` (
   `data_cadastro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `senha` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `regiao` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `estado` char(2) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cidade` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -99,7 +102,7 @@ CREATE TABLE `empresas` (
 
 LOCK TABLES `empresas` WRITE;
 /*!40000 ALTER TABLE `empresas` DISABLE KEYS */;
-INSERT INTO `empresas` VALUES (2,'Vale','Programa Jovem Aprendiz para estudantes do ensino médio','atendimento','2026-06-22 01:05:46',NULL,NULL),(3,'Alumar','Vagas para suporte e tecnologia','ti','2026-06-22 01:05:46',NULL,NULL),(4,'Mateus','Atendimento ao cliente e reposição','atendimento','2026-06-22 01:05:46',NULL,NULL),(5,'Google','Desenvolvimento de software e aplicativos','ti','2026-06-22 01:05:46',NULL,NULL),(6,'Agência Criativa','Marketing digital e redes sociais','marketing','2026-06-22 01:05:46',NULL,NULL),(8,'ddddd','dddd','marketing','2026-10-31 19:53:12','123abc@gmail.com','$2b$10$SkGc7NV/B1tJpSHZtFvg0.IhWTAjCWQkoZ6MQke6/iuxCKZhUOzTW');
+INSERT INTO `empresas` VALUES (2,'Vale','Programa Jovem Aprendiz para estudantes do ensino médio','atendimento','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(3,'Alumar','Vagas para suporte e tecnologia','ti','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(4,'Mateus','Atendimento ao cliente e reposição','atendimento','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(5,'Google','Desenvolvimento de software e aplicativos','ti','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(6,'Agência Criativa','Marketing digital e redes sociais','marketing','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(8,'ddddd','dddd','marketing','2026-10-31 19:53:12','123abc@gmail.com','$2b$10$SkGc7NV/B1tJpSHZtFvg0.IhWTAjCWQkoZ6MQke6/iuxCKZhUOzTW',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `empresas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -187,8 +190,11 @@ CREATE TABLE `vagas` (
   `requisitos` text COLLATE utf8mb4_general_ci,
   `salario` decimal(10,2) DEFAULT NULL,
   `tipo_contrato` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `regiao` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `estado` char(2) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cidade` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,7 +203,7 @@ CREATE TABLE `vagas` (
 
 LOCK TABLES `vagas` WRITE;
 /*!40000 ALTER TABLE `vagas` DISABLE KEYS */;
-INSERT INTO `vagas` VALUES (1,'Atendente (Meio período)','Mateus','Tarde','Compatível com escola',4,NULL,NULL,NULL),(4,'Auxiliar Administrativo','Agência Criativa','Manhã','Organização de documentos',6,NULL,NULL,NULL),(5,'Suporte de TI','Vale','Tarde','Atendimento técnico',2,NULL,NULL,NULL),(6,'Atendente','Alumar','Noite','Atendimento ao cliente',3,NULL,NULL,NULL),(18,'Jovem Aprendiz','ddddd','Vespertino','vaga teste',8,'18 anos',1250.00,'Jovem Aprendiz');
+INSERT INTO `vagas` VALUES (1,'Atendente (Meio período)','Mateus','Tarde','Compatível com escola',4,NULL,NULL,NULL,NULL,NULL,NULL),(4,'Auxiliar Administrativo','Agência Criativa','Manhã','Organização de documentos',6,NULL,NULL,NULL,NULL,NULL,NULL),(5,'Suporte de TI','Vale','Tarde','Atendimento técnico',2,NULL,NULL,NULL,NULL,NULL,NULL),(6,'Atendente','Alumar','Noite','Atendimento ao cliente',3,NULL,NULL,NULL,NULL,NULL,NULL),(18,'Jovem Aprendiz','ddddd','Vespertino','vaga teste',8,'18 anos',1250.00,'Jovem Aprendiz',NULL,NULL,NULL),(21,'vaga teste 01','ddddd','Matutino','vg de teste',8,'18 anos',1350.00,'CLT','Nordeste','MA','São Luís');
 /*!40000 ALTER TABLE `vagas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -210,4 +216,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-02 22:24:35
+-- Dump completed on 2026-11-20 14:42:09

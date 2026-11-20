@@ -11,23 +11,20 @@
     <script src="../js/area-empresa.js" defer></script>
 </head>
 <body>
-
-    <div class="sidebar">
-        <h2>Rede Aprendiz</h2>
-
-        <nav>
-            <a href="/area-empresa">Painel</a>
-            <a href="/area-empresa">Minhas vagas</a>
-            <a href="#" id="btnSair">Sair</a>
-        </nav>
-    </div>
-
     <main class="conteudo">
+
         <header class="cabecalho">
-            <h1>Área da Empresa</h1>
-            <p>Bem-vindo(a), <strong id="nomeEmpresa">Empresa</strong>!</p>
+            <div>
+                <h1>Área da Empresa</h1>
+                <p>Bem-vindo(a), <strong id="nomeEmpresa">Empresa</strong>!</p>
+            </div>
+
+            <button type="button" id="btnSair" class="btn-sair">
+                Sair
+            </button>
         </header>
 
+        <!-- CADASTRO DE VAGAS -->
         <section class="secao">
             <h2>Cadastrar nova vaga</h2>
 
@@ -50,6 +47,7 @@
                         id="descricao"
                         name="descricao"
                         rows="4"
+                        maxlength="150"
                         required
                     ></textarea>
                 </div>
@@ -66,7 +64,11 @@
 
                 <div class="campo">
                     <label for="tipoContrato">Tipo de contrato</label>
-                    <select id="tipoContrato" name="tipoContrato" required>
+                    <select
+                        id="tipoContrato"
+                        name="tipoContrato"
+                        required
+                    >
                         <option value="">Selecione o tipo de contrato</option>
                         <option value="Jovem Aprendiz">Jovem Aprendiz</option>
                         <option value="Estágio">Estágio</option>
@@ -99,12 +101,46 @@
                     >
                 </div>
 
+                <!-- LOCALIZAÇÃO DA VAGA -->
+                <div class="campo">
+                    <label for="regiao">Região</label>
+                    <select id="regiao" name="regiao" required>
+                        <option value="">Selecione a região</option>
+                        <option value="Norte">Norte</option>
+                        <option value="Nordeste">Nordeste</option>
+                        <option value="Centro-Oeste">Centro-Oeste</option>
+                        <option value="Sudeste">Sudeste</option>
+                        <option value="Sul">Sul</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="estado">Estado</label>
+                    <select id="estado" name="estado" required disabled>
+                        <option value="">Selecione primeiro a região</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="cidade">Cidade</label>
+                    <input
+                        type="text"
+                        id="cidade"
+                        name="cidade"
+                        maxlength="100"
+                        placeholder="Ex.: São Luís"
+                        required
+                    >
+                </div>
+
                 <button type="submit">Cadastrar vaga</button>
 
                 <p id="mensagemVaga" role="status"></p>
+
             </form>
         </section>
 
+        <!-- LISTA DE VAGAS DA EMPRESA -->
         <section class="secao">
             <h2>Minhas vagas cadastradas</h2>
 
@@ -112,13 +148,12 @@
                 <p>Carregando vagas...</p>
             </div>
         </section>
+
     </main>
 
+    <!-- LOGOUT E NOME DA EMPRESA -->
     <script>
-        // ========================================
-        // LOGOUT DA EMPRESA
-        // ========================================
-
+        // Sair da conta empresarial
         const botaoSair = document.getElementById("btnSair");
 
         botaoSair.addEventListener("click", async function (evento) {
@@ -141,7 +176,6 @@
                     );
                 }
 
-                // Impede o retorno à área privada pelo botão Voltar.
                 window.location.replace("/html/login-empresa.html");
 
             } catch (erro) {
@@ -154,10 +188,7 @@
             }
         });
 
-        // ========================================
-        // NOME DA EMPRESA LOGADA
-        // ========================================
-
+        // Carregar nome da empresa logada
         async function carregarNomeEmpresa() {
             try {
                 const resposta = await fetch("/empresa-logada", {
@@ -165,6 +196,10 @@
                 });
 
                 if (!resposta.ok) {
+                    console.error(
+                        "Não foi possível carregar o nome da empresa. Status:",
+                        resposta.status
+                    );
                     return;
                 }
 

@@ -1,8 +1,4 @@
 
- // ========================================
- // REDE APRENDIZ — ÁREA DA EMPRESA
- // ========================================
-
 const form = document.getElementById("formCadastroVaga");
 const mensagem = document.getElementById("mensagemVaga");
 
@@ -44,81 +40,202 @@ function formatarSalario(salario) {
 }
 
 // ========================================
+// REGIÕES E ESTADOS BRASILEIROS
+// ========================================
+
+const estadosPorRegiao = {
+    "Norte": ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
+    "Nordeste": ["AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"],
+    "Centro-Oeste": ["DF", "GO", "MT", "MS"],
+    "Sudeste": ["ES", "MG", "RJ", "SP"],
+    "Sul": ["PR", "RS", "SC"]
+};
+
+const nomesEstados = {
+    AC: "Acre",
+    AL: "Alagoas",
+    AP: "Amapá",
+    AM: "Amazonas",
+    BA: "Bahia",
+    CE: "Ceará",
+    DF: "Distrito Federal",
+    ES: "Espírito Santo",
+    GO: "Goiás",
+    MA: "Maranhão",
+    MT: "Mato Grosso",
+    MS: "Mato Grosso do Sul",
+    MG: "Minas Gerais",
+    PA: "Pará",
+    PB: "Paraíba",
+    PR: "Paraná",
+    PE: "Pernambuco",
+    PI: "Piauí",
+    RJ: "Rio de Janeiro",
+    RN: "Rio Grande do Norte",
+    RS: "Rio Grande do Sul",
+    RO: "Rondônia",
+    RR: "Roraima",
+    SC: "Santa Catarina",
+    SP: "São Paulo",
+    SE: "Sergipe",
+    TO: "Tocantins"
+};
+
+function obterRegiaoDoEstado(estado) {
+    for (const [regiao, estados] of Object.entries(estadosPorRegiao)) {
+        if (estados.includes(estado)) {
+            return regiao;
+        }
+    }
+
+    return "";
+}
+
+// ========================================
+// PREENCHER ESTADOS CONFORME A REGIÃO
+// ========================================
+
+const campoRegiao = document.getElementById("regiao");
+const campoEstado = document.getElementById("estado");
+
+function atualizarEstados() {
+    if (!campoRegiao || !campoEstado) return;
+
+    const regiaoSelecionada = campoRegiao.value;
+    const estados = estadosPorRegiao[regiaoSelecionada] || [];
+
+    campoEstado.replaceChildren();
+
+    const opcaoInicial = document.createElement("option");
+    opcaoInicial.value = "";
+    opcaoInicial.textContent = estados.length
+        ? "Selecione o estado"
+        : "Selecione primeiro a região";
+
+    campoEstado.appendChild(opcaoInicial);
+
+    estados.forEach((sigla) => {
+        const opcao = document.createElement("option");
+        opcao.value = sigla;
+        opcao.textContent = nomesEstados[sigla] || sigla;
+        campoEstado.appendChild(opcao);
+    });
+
+    campoEstado.disabled = estados.length === 0;
+}
+
+if (campoRegiao && campoEstado) {
+    campoRegiao.addEventListener("change", atualizarEstados);
+    atualizarEstados();
+}
+
+// ========================================
 // CADASTRAR NOVA VAGA
 // ========================================
 
-form.addEventListener("submit", async (evento) => {
-    evento.preventDefault();
+if (form) {
+    form.addEventListener("submit", async (evento) => {
+        evento.preventDefault();
 
-    const titulo = document.getElementById("titulo").value.trim();
-    const descricao = document.getElementById("descricao").value.trim();
-    const requisitos = document.getElementById("requisitos").value.trim();
-    const tipoContrato = document.getElementById("tipoContrato").value;
-    const turno = document.getElementById("turno").value;
-    const salarioTexto = document.getElementById("salario").value;
+        const titulo = document.getElementById("titulo").value.trim();
+        const descricao = document.getElementById("descricao").value.trim();
+        const requisitos = document.getElementById("requisitos").value.trim();
+        const tipoContrato = document.getElementById("tipoContrato").value;
+        const turno = document.getElementById("turno").value;
+        const salarioTexto = document.getElementById("salario").value;
+        const regiao = document.getElementById("regiao").value;
+        const estado = document.getElementById("estado").value;
+        const cidade = document.getElementById("cidade").value.trim();
 
-    if (
-        !titulo ||
-        !descricao ||
-        !requisitos ||
-        !tipoContrato ||
-        !turno
-    ) {
-        mensagem.textContent = "Preencha todos os campos obrigatórios.";
-        return;
-    }
-
-    const salario = salarioTexto === ""
-        ? null
-        : Number(salarioTexto);
-
-    if (
-        salario !== null &&
-        (!Number.isFinite(salario) || salario < 0)
-    ) {
-        mensagem.textContent = "Informe um salário válido.";
-        return;
-    }
-
-    mensagem.textContent = "Cadastrando vaga...";
-
-    try {
-        const resposta = await fetch("/empresas/minhas-vagas", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                titulo,
-                descricao,
-                requisitos,
-                tipoContrato,
-                turno,
-                salario
-            })
-        });
-
-        const dados = await obterJson(resposta);
-
-        if (!resposta.ok) {
-            mensagem.textContent =
-                dados.erro || "Não foi possível cadastrar a vaga.";
+        if (
+            !titulo ||
+            !descricao ||
+            !requisitos ||
+            !tipoContrato ||
+            !turno ||
+            !regiao ||
+            !estado ||
+            !cidade
+        ) {
+            if (mensagem) {
+                mensagem.textContent =
+                    "Preencha todos os campos obrigatórios, incluindo a localização.";
+            }
             return;
         }
 
-        mensagem.textContent =
-            dados.mensagem || "Vaga cadastrada com sucesso!";
+        if (obterRegiaoDoEstado(estado) !== regiao) {
+            if (mensagem) {
+                mensagem.textContent =
+                    "A região selecionada não corresponde ao estado.";
+            }
+            return;
+        }
 
-        form.reset();
+        const salario = salarioTexto.trim() === ""
+            ? null
+            : Number(salarioTexto);
 
-        await carregarMinhasVagas();
+        if (
+            salario !== null &&
+            (!Number.isFinite(salario) || salario < 0)
+        ) {
+            if (mensagem) {
+                mensagem.textContent = "Informe um salário válido.";
+            }
+            return;
+        }
 
-    } catch (erro) {
-        console.error("Erro ao cadastrar vaga:", erro);
-        mensagem.textContent = "Erro de conexão com o servidor.";
-    }
-});
+        if (mensagem) mensagem.textContent = "Cadastrando vaga...";
+
+        try {
+            const resposta = await fetch("/empresas/minhas-vagas", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    titulo,
+                    descricao,
+                    requisitos,
+                    tipoContrato,
+                    turno,
+                    salario,
+                    regiao,
+                    estado,
+                    cidade
+                })
+            });
+
+            const dados = await obterJson(resposta);
+
+            if (!resposta.ok) {
+                if (mensagem) {
+                    mensagem.textContent =
+                        dados.erro || "Não foi possível cadastrar a vaga.";
+                }
+                return;
+            }
+
+            if (mensagem) {
+                mensagem.textContent =
+                    dados.mensagem || "Vaga cadastrada com sucesso!";
+            }
+
+            form.reset();
+            atualizarEstados();
+
+            await carregarMinhasVagas();
+
+        } catch (erro) {
+            console.error("Erro ao cadastrar vaga:", erro);
+            if (mensagem) {
+                mensagem.textContent = "Erro de conexão com o servidor.";
+            }
+        }
+    });
+}
 
 // ========================================
 // CARREGAR VAGAS DA EMPRESA LOGADA
@@ -126,6 +243,8 @@ form.addEventListener("submit", async (evento) => {
 
 async function carregarMinhasVagas() {
     const lista = document.getElementById("listaVagas");
+
+    if (!lista) return;
 
     lista.textContent = "Carregando suas vagas...";
 
@@ -172,7 +291,7 @@ async function carregarMinhasVagas() {
             const contrato = document.createElement("p");
             contrato.textContent =
                 "Tipo de contrato: " +
-                (vaga.tipo_contrato || "Não informado");
+                (vaga.tipo_contrato || vaga.tipoContrato || "Não informado");
 
             const turno = document.createElement("p");
             turno.textContent =
@@ -180,6 +299,16 @@ async function carregarMinhasVagas() {
 
             const salario = document.createElement("p");
             salario.textContent = formatarSalario(vaga.salario);
+
+            const localizacao = document.createElement("p");
+
+            if (vaga.cidade && vaga.estado) {
+                localizacao.textContent =
+                    `Localização: ${vaga.cidade} - ${vaga.estado}` +
+                    (vaga.regiao ? ` (${vaga.regiao})` : "");
+            } else {
+                localizacao.textContent = "Localização não informada";
+            }
 
             const botoes = document.createElement("div");
             botoes.className = "acoes-vaga";
@@ -209,6 +338,7 @@ async function carregarMinhasVagas() {
                 contrato,
                 turno,
                 salario,
+                localizacao,
                 botoes
             );
 
@@ -226,60 +356,91 @@ async function carregarMinhasVagas() {
 // ========================================
 
 async function editarVaga(vaga) {
-    const novoTitulo = prompt(
-        "Título da vaga:",
-        vaga.titulo || ""
-    );
-
+    const novoTitulo = prompt("Título da vaga:", vaga.titulo || "");
     if (novoTitulo === null) return;
 
-    const novaDescricao = prompt(
-        "Descrição da vaga:",
-        vaga.descricao || ""
-    );
-
+    const novaDescricao = prompt("Descrição da vaga:", vaga.descricao || "");
     if (novaDescricao === null) return;
 
-    const novosRequisitos = prompt(
-        "Requisitos:",
-        vaga.requisitos || ""
-    );
-
+    const novosRequisitos = prompt("Requisitos:", vaga.requisitos || "");
     if (novosRequisitos === null) return;
-
-    const contratoAtual = vaga.tipo_contrato || "";
 
     const novoContrato = prompt(
         "Tipo de contrato:",
-        contratoAtual
+        vaga.tipo_contrato || vaga.tipoContrato || ""
     );
-
     if (novoContrato === null) return;
 
-    const turnoAtual = vaga.turno || "";
-
-    const novoTurno = prompt(
-        "Turno de trabalho:",
-        turnoAtual
-    );
-
+    const novoTurno = prompt("Turno de trabalho:", vaga.turno || "");
     if (novoTurno === null) return;
 
     const novoSalario = prompt(
         "Salário (deixe vazio se não informado):",
         vaga.salario ?? ""
     );
-
     if (novoSalario === null) return;
 
+    const novaRegiao = prompt(
+        "Região (Norte, Nordeste, Centro-Oeste, Sudeste ou Sul):",
+        vaga.regiao || ""
+    );
+    if (novaRegiao === null) return;
+
+    const novoEstado = prompt(
+        "Sigla do estado (ex.: MA, SP, RJ):",
+        vaga.estado || ""
+    );
+    if (novoEstado === null) return;
+
+    const novaCidade = prompt("Cidade:", vaga.cidade || "");
+    if (novaCidade === null) return;
+
+    const dados = {
+        titulo: novoTitulo.trim(),
+        descricao: novaDescricao.trim(),
+        requisitos: novosRequisitos.trim(),
+        tipoContrato: novoContrato.trim(),
+        turno: novoTurno.trim(),
+        regiao: novaRegiao.trim(),
+        estado: novoEstado.trim().toUpperCase(),
+        cidade: novaCidade.trim()
+    };
+
     if (
-        !novoTitulo.trim() ||
-        !novaDescricao.trim() ||
-        !novosRequisitos.trim() ||
-        !novoContrato.trim() ||
-        !novoTurno.trim()
+        !dados.titulo ||
+        !dados.descricao ||
+        !dados.requisitos ||
+        !dados.tipoContrato ||
+        !dados.turno ||
+        !dados.regiao ||
+        !dados.estado ||
+        !dados.cidade
     ) {
         alert("Preencha todos os campos obrigatórios.");
+        return;
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(estadosPorRegiao, dados.regiao)) {
+        alert(
+            "Região inválida. Use Norte, Nordeste, Centro-Oeste, Sudeste ou Sul."
+        );
+        return;
+    }
+
+    if (!estadosPorRegiao[dados.regiao].includes(dados.estado)) {
+        alert("O estado informado não corresponde à região selecionada.");
+        return;
+    }
+
+    if (
+        dados.titulo.length > 100 ||
+        dados.descricao.length > 150 ||
+        dados.tipoContrato.length > 50 ||
+        dados.turno.length > 50 ||
+        dados.regiao.length > 30 ||
+        dados.cidade.length > 100
+    ) {
+        alert("Um ou mais campos ultrapassaram o limite permitido.");
         return;
     }
 
@@ -295,37 +456,26 @@ async function editarVaga(vaga) {
     }
 
     try {
-        const resposta = await fetch(
-            `/empresas/minhas-vagas/${vaga.id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    titulo: novoTitulo.trim(),
-                    descricao: novaDescricao.trim(),
-                    requisitos: novosRequisitos.trim(),
-                    tipoContrato: novoContrato.trim(),
-                    turno: novoTurno.trim(),
-                    salario
-                })
-            }
-        );
+        const resposta = await fetch(`/empresas/minhas-vagas/${vaga.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                ...dados,
+                salario
+            })
+        });
 
         const resultado = await obterJson(resposta);
 
         if (!resposta.ok) {
-            alert(
-                resultado.erro ||
-                "Não foi possível atualizar a vaga."
-            );
+            alert(resultado.erro || "Não foi possível atualizar a vaga.");
             return;
         }
 
         alert(resultado.mensagem || "Vaga atualizada com sucesso!");
-
         await carregarMinhasVagas();
 
     } catch (erro) {
@@ -339,33 +489,24 @@ async function editarVaga(vaga) {
 // ========================================
 
 async function excluirVaga(vaga) {
-    const confirmar = confirm(
-        `Deseja excluir a vaga "${vaga.titulo}"?`
-    );
+    const confirmar = confirm(`Deseja excluir a vaga "${vaga.titulo}"?`);
 
     if (!confirmar) return;
 
     try {
-        const resposta = await fetch(
-            `/empresas/minhas-vagas/${vaga.id}`,
-            {
-                method: "DELETE",
-                credentials: "include"
-            }
-        );
+        const resposta = await fetch(`/empresas/minhas-vagas/${vaga.id}`, {
+            method: "DELETE",
+            credentials: "include"
+        });
 
         const resultado = await obterJson(resposta);
 
         if (!resposta.ok) {
-            alert(
-                resultado.erro ||
-                "Não foi possível excluir a vaga."
-            );
+            alert(resultado.erro || "Não foi possível excluir a vaga.");
             return;
         }
 
         alert(resultado.mensagem || "Vaga excluída com sucesso!");
-
         await carregarMinhasVagas();
 
     } catch (erro) {
