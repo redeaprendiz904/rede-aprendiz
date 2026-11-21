@@ -1,9 +1,3 @@
-
-/* ========================================
-   REDE APRENDIZ — PÁGINA INICIAL
-   Paleta: vinho, vermelho, branco e cinza
-======================================== */
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
 :root {
@@ -303,91 +297,6 @@ nav.item button.cadastro:hover {
     object-fit: cover;
 }
 
-/* ========================================
-   CONTATO
-======================================== */
-
-.contato-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 45px;
-    padding: 55px max(25px, calc((100% - 1100px) / 2));
-    background: #eee5e5;
-}
-
-.contato-info h2,
-.contato-form h3 {
-    margin-bottom: 20px;
-    color: var(--vinho);
-    font-size: 25px;
-}
-
-.contato-info p {
-    margin-bottom: 12px;
-    color: var(--texto);
-    font-size: 15px;
-    overflow-wrap: anywhere;
-}
-
-.contato-info strong {
-    color: var(--vinho);
-}
-
-.contato-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.contato-form input,
-.contato-form textarea {
-    width: 100%;
-    padding: 13px 14px;
-    border: 1px solid #d0bebe;
-    border-radius: 7px;
-    background: var(--branco);
-    color: var(--texto);
-    font-family: inherit;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.contato-form textarea {
-    min-height: 130px;
-    resize: vertical;
-}
-
-.contato-form input:focus,
-.contato-form textarea:focus {
-    border-color: var(--vermelho-escuro);
-    box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.10);
-}
-
-.contato-form button {
-    align-self: flex-start;
-    min-width: 130px;
-    padding: 12px 22px;
-    border: none;
-    border-radius: 7px;
-    background: var(--vinho);
-    color: var(--branco);
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-}
-
-.contato-form button:hover {
-    background: var(--vermelho-escuro);
-    transform: translateY(-2px);
-}
-
-/* ========================================
-   RODAPÉ
-======================================== */
-
 footer {
     padding: 28px 20px;
     background: var(--vinho);
@@ -401,9 +310,8 @@ footer p {
     line-height: 1.7;
 }
 
-/* ========================================
-   FOCO DE TECLADO
-======================================== */
+
+   /*FOCO DE TECLADO */
 
 a:focus-visible,
 button:focus-visible {
@@ -411,9 +319,6 @@ button:focus-visible {
     outline-offset: 3px;
 }
 
-/* ========================================
-   TABLETS
-======================================== */
 
 @media (max-width: 900px) {
     header {
@@ -435,16 +340,7 @@ button:focus-visible {
         gap: 24px;
         padding: 25px;
     }
-
-    .contato-section {
-        gap: 28px;
-    }
 }
-
-/* ========================================
-   CELULARES
-======================================== */
-
 @media (max-width: 600px) {
     header > a img {
         width: 155px;
@@ -524,21 +420,6 @@ button:focus-visible {
 
     .servicos .card img {
         height: 220px;
-    }
-
-    .contato-section {
-        grid-template-columns: 1fr;
-        gap: 35px;
-        padding: 35px 18px;
-    }
-
-    .contato-info h2,
-    .contato-form h3 {
-        font-size: 22px;
-    }
-
-    .contato-form button {
-        width: 100%;
     }
 
     footer {
