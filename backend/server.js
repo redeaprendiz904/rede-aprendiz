@@ -885,6 +885,7 @@ app.get("/oportunidades", verificarLogin, (req, res) => {
 
 
  // LISTAR E FILTRAR VAGAS PÚBLICAS
+
 app.get("/vagas", (req, res) => {
     const { regiao, estado, cidade } = req.query;
 
@@ -893,6 +894,7 @@ app.get("/vagas", (req, res) => {
             id,
             titulo,
             empresa,
+            tipo_contrato AS tipo_contrato,
             turno,
             descricao,
             requisitos,
@@ -913,7 +915,7 @@ app.get("/vagas", (req, res) => {
         parametros.push(regiao.trim());
     }
 
-    // Filtrar por estado (sigla, exemplo: MA)
+    // Filtrar por estado
     if (typeof estado === "string" && estado.trim()) {
         sql += " AND estado = ?";
         parametros.push(estado.trim().toUpperCase());
@@ -1609,7 +1611,6 @@ app.get("/empresas/listar", (req, res) => {
 
 
  // LISTAR VAGAS PÚBLICAS DE UMA EMPRESA
-
 app.get("/empresas/:id/vagas", (req, res) => {
     const empresaId = Number(req.params.id);
 
@@ -1629,6 +1630,9 @@ app.get("/empresas/:id/vagas", (req, res) => {
             descricao,
             requisitos,
             salario,
+            regiao,
+            estado,
+            cidade,
             empresa_id
         FROM vagas
         WHERE empresa_id = ?
@@ -1647,7 +1651,6 @@ app.get("/empresas/:id/vagas", (req, res) => {
         return res.json(resultado);
     });
 });
-
 
 // LISTAR VAGAS DA EMPRESA LOGADA
 app.get("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {

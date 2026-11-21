@@ -61,7 +61,7 @@ CREATE TABLE `candidaturas` (
   KEY `vaga_id` (`vaga_id`),
   CONSTRAINT `candidaturas_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `candidaturas_ibfk_2` FOREIGN KEY (`vaga_id`) REFERENCES `vagas` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +70,7 @@ CREATE TABLE `candidaturas` (
 
 LOCK TABLES `candidaturas` WRITE;
 /*!40000 ALTER TABLE `candidaturas` DISABLE KEYS */;
-INSERT INTO `candidaturas` VALUES (1,1,1,'2026-04-25 17:26:49'),(8,1,4,'2026-10-30 17:57:13'),(11,1,5,'2026-10-31 21:08:13'),(15,1,18,'2026-11-02 21:29:50'),(17,1,21,'2026-11-20 13:55:18');
+INSERT INTO `candidaturas` VALUES (1,1,1,'2026-04-25 17:26:49'),(8,1,4,'2026-10-30 17:57:13'),(11,1,5,'2026-10-31 21:08:13'),(15,1,18,'2026-11-02 21:29:50'),(17,1,21,'2026-11-20 13:55:18'),(18,1,6,'2026-11-21 13:39:22');
 /*!40000 ALTER TABLE `candidaturas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,7 +93,7 @@ CREATE TABLE `empresas` (
   `estado` char(2) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cidade` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +102,7 @@ CREATE TABLE `empresas` (
 
 LOCK TABLES `empresas` WRITE;
 /*!40000 ALTER TABLE `empresas` DISABLE KEYS */;
-INSERT INTO `empresas` VALUES (2,'Vale','Programa Jovem Aprendiz para estudantes do ensino médio','atendimento','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(3,'Alumar','Vagas para suporte e tecnologia','ti','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(4,'Mateus','Atendimento ao cliente e reposição','atendimento','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(5,'Google','Desenvolvimento de software e aplicativos','ti','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(6,'Agência Criativa','Marketing digital e redes sociais','marketing','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(8,'ddddd','dddd','marketing','2026-10-31 19:53:12','123abc@gmail.com','$2b$10$SkGc7NV/B1tJpSHZtFvg0.IhWTAjCWQkoZ6MQke6/iuxCKZhUOzTW',NULL,NULL,NULL);
+INSERT INTO `empresas` VALUES (2,'Vale','Programa Jovem Aprendiz para estudantes do ensino médio','atendimento','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(3,'Alumar','Vagas para suporte e tecnologia','ti','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(4,'Mateus','Atendimento ao cliente e reposição','atendimento','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(5,'Google','Desenvolvimento de software e aplicativos','ti','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(6,'Agência Criativa','Marketing digital e redes sociais','marketing','2026-06-22 01:05:46',NULL,NULL,NULL,NULL,NULL),(8,'ddddd','dddd','marketing','2026-10-31 19:53:12','123abc@gmail.com','$2b$10$SkGc7NV/B1tJpSHZtFvg0.IhWTAjCWQkoZ6MQke6/iuxCKZhUOzTW',NULL,NULL,NULL),(9,'Empresa Teste','testando empresa','atendimento','2026-11-21 17:28:24','empresateste@gmail.com','$2b$12$U/0tUOXwrJlwGDiSw4vIyeYc655GQFDQOUpMAKb.2yuwdgMf0869q','Nordeste','BA','Salvador');
 /*!40000 ALTER TABLE `empresas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -141,7 +141,7 @@ CREATE TABLE `perfil` (
 
 LOCK TABLES `perfil` WRITE;
 /*!40000 ALTER TABLE `perfil` DISABLE KEYS */;
-INSERT INTO `perfil` VALUES (1,1,'gerson felipe',17,'Manhã','Tarde',NULL,NULL,NULL,NULL,NULL,NULL,0,0,'/uploads/perfis/usuario-1-1793401795966.png'),(11,1,'Gerson',18,'Manhã','Tarde','ifma','2º Ano','TI','x','xx','98988642696',3,4,'/uploads/perfis/usuario-1-1793401795966.png');
+INSERT INTO `perfil` VALUES (1,1,'gerson felipe',17,'Manhã','Tarde',NULL,NULL,NULL,NULL,NULL,NULL,0,0,'/uploads/perfis/usuario-1-1795279349983.png'),(11,1,'Gerson',18,'Manhã','Tarde','ifma','2º Ano','TI','x','xx','98988642696',3,4,'/uploads/perfis/usuario-1-1795279349983.png');
 /*!40000 ALTER TABLE `perfil` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,7 +194,7 @@ CREATE TABLE `vagas` (
   `estado` char(2) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cidade` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,7 +203,7 @@ CREATE TABLE `vagas` (
 
 LOCK TABLES `vagas` WRITE;
 /*!40000 ALTER TABLE `vagas` DISABLE KEYS */;
-INSERT INTO `vagas` VALUES (1,'Atendente (Meio período)','Mateus','Tarde','Compatível com escola',4,NULL,NULL,NULL,NULL,NULL,NULL),(4,'Auxiliar Administrativo','Agência Criativa','Manhã','Organização de documentos',6,NULL,NULL,NULL,NULL,NULL,NULL),(5,'Suporte de TI','Vale','Tarde','Atendimento técnico',2,NULL,NULL,NULL,NULL,NULL,NULL),(6,'Atendente','Alumar','Noite','Atendimento ao cliente',3,NULL,NULL,NULL,NULL,NULL,NULL),(18,'Jovem Aprendiz','ddddd','Vespertino','vaga teste',8,'18 anos',1250.00,'Jovem Aprendiz',NULL,NULL,NULL),(21,'vaga teste 01','ddddd','Matutino','vg de teste',8,'18 anos',1350.00,'CLT','Nordeste','MA','São Luís');
+INSERT INTO `vagas` VALUES (1,'Atendente (Meio período)','Mateus','Tarde','Compatível com escola',4,NULL,NULL,NULL,NULL,NULL,NULL),(4,'Auxiliar Administrativo','Agência Criativa','Manhã','Organização de documentos',6,NULL,NULL,NULL,NULL,NULL,NULL),(5,'Suporte de TI','Vale','Tarde','Atendimento técnico',2,NULL,NULL,NULL,NULL,NULL,NULL),(6,'Atendente','Alumar','Noite','Atendimento ao cliente',3,NULL,NULL,NULL,NULL,NULL,NULL),(18,'Jovem Aprendiz','ddddd','Vespertino','vaga teste',8,'18 anos',1250.00,'Jovem Aprendiz',NULL,NULL,NULL),(21,'vaga teste 01','ddddd','Matutino','vg de teste',8,'18 anos',1350.00,'CLT','Nordeste','MA','São Luís'),(22,'teste02','Empresa Teste','Noturno','tt',9,'nenhum',1275.00,'PJ','Centro-Oeste','DF','Brasília'),(23,'vaga teste 03','Empresa Teste','Integral','vg03',9,'nenhum',1000.00,'Temporário','Centro-Oeste','DF','patinhis');
 /*!40000 ALTER TABLE `vagas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -216,4 +216,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-20 14:42:09
+-- Dump completed on 2026-11-21 14:37:34

@@ -1,3 +1,4 @@
+
 "use strict";
 
 // ========================================
@@ -12,6 +13,7 @@ const noResults = document.getElementById("noResults");
 
 let empresas = [];
 let filtroAtual = "all";
+let vagasCandidatadas = new Set();
 
 // ========================================
 // MODAL DE VAGAS
@@ -126,10 +128,10 @@ function renderizarEmpresas() {
             empresa.descricao || ""
         ).toLowerCase();
 
-        const nomeOk = nome.includes(busca);
-        const descricaoOk = descricao.includes(busca);
-
-        return categoriaOk && (nomeOk || descricaoOk);
+        return (
+            categoriaOk &&
+            (nome.includes(busca) || descricao.includes(busca))
+        );
     });
 
     filtradas.forEach((empresa) => {
@@ -184,7 +186,6 @@ filterButtons.forEach((botao) => {
         });
 
         botao.classList.add("active");
-
         filtroAtual = botao.dataset.filter || "all";
 
         renderizarEmpresas();
@@ -243,6 +244,132 @@ function formatarSalario(salario) {
 }
 
 // ========================================
+// CARREGAR CANDIDATURAS DO USUÁRIO
+// ========================================
+
+async function carregarMinhasCandidaturas() {
+    const resposta = await fetch("/minhas-candidaturas", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+
+    const dados = await resposta.json().catch(() => null);
+
+    if (!resposta.ok) {
+        throw new Error(
+            dados?.erro ||
+            "Não foi possível consultar suas candidaturas."
+        );
+    }
+
+    if (!Array.isArray(dados)) {
+        throw new Error(
+            "A resposta das candidaturas não é uma lista válida."
+        );
+    }
+
+    vagasCandidatadas = new Set(
+        dados
+            .map((item) =>
+                Number(item.vaga_id ?? item.id_vaga ?? item.vagaId)
+            )
+            .filter((id) => Number.isFinite(id) && id > 0)
+    );
+}
+
+// ========================================
+// CANDIDATAR-SE A UMA VAGA
+// ========================================
+
+async function candidatarSe(vagaId, botao) {
+    const id = Number(vagaId);
+
+    if (
+        !Number.isFinite(id) ||
+        id <= 0 ||
+        !botao ||
+        botao.disabled
+    ) {
+        return;
+    }
+
+    if (vagasCandidatadas.has(id)) {
+        botao.textContent = "Candidatura realizada";
+        botao.classList.add("candidatura-realizada");
+        botao.disabled = true;
+        return;
+    }
+
+    const textoOriginal = botao.textContent;
+
+    botao.disabled = true;
+    botao.textContent = "Enviando...";
+
+    try {
+        const resposta = await fetch("/candidatar", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                vaga_id: id
+            })
+        });
+
+        const dados = await resposta.json().catch(() => null);
+
+        // Candidatura criada ou já existente.
+        if (resposta.ok || resposta.status === 409) {
+            vagasCandidatadas.add(id);
+
+            botao.textContent = "Candidatura realizada";
+            botao.classList.add("candidatura-realizada");
+            botao.disabled = true;
+
+            if (resposta.status === 409) {
+                alert(
+                    dados?.erro ||
+                    "Você já se candidatou a esta vaga."
+                );
+            } else {
+                alert(
+                    dados?.mensagem ||
+                    "Candidatura realizada com sucesso!"
+                );
+            }
+
+            return;
+        }
+
+        if (resposta.status === 401 || resposta.status === 403) {
+            throw new Error(
+                dados?.erro ||
+                "Faça login como usuário para se candidatar."
+            );
+        }
+
+        throw new Error(
+            dados?.erro ||
+            dados?.mensagem ||
+            "Não foi possível realizar a candidatura."
+        );
+
+    } catch (erro) {
+        console.error("Erro ao realizar candidatura:", erro);
+
+        alert(erro.message || "Erro ao se candidatar.");
+
+        botao.textContent = textoOriginal || "Candidatar-se";
+        botao.disabled = false;
+    }
+}
+
+// ========================================
 // VER VAGAS DE UMA EMPRESA
 // ========================================
 
@@ -294,6 +421,9 @@ async function verVagas(empresaId) {
             );
         }
 
+        // Carrega as candidaturas já realizadas pelo usuário.
+        await carregarMinhasCandidaturas();
+
         container.replaceChildren();
 
         if (dados.length === 0) {
@@ -310,6 +440,8 @@ async function verVagas(empresaId) {
             titulo.textContent = vaga.titulo || "Vaga sem título";
 
             card.appendChild(titulo);
+
+            // Localização da vaga
 
             adicionarCampoVaga(
                 card,
@@ -335,25 +467,58 @@ async function verVagas(empresaId) {
                 vaga.turno
             );
 
-           adicionarCampoVaga(
+                    adicionarCampoVaga(
+            card,
+            "Região",
+            vaga.regiao
+        );
+
+        adicionarCampoVaga(
+            card,
+            "Estado",
+            vaga.estado
+        );
+
+        adicionarCampoVaga(
+            card,
+            "Cidade",
+            vaga.cidade
+        );
+
+            adicionarCampoVaga(
                 card,
                 "Salário",
                 formatarSalario(vaga.salario)
             );
 
-            // Botão de candidatura
-            const botaoCandidatar = document.createElement("button");
+            // Botão de candidatura.
+            const botaoCandidatar =
+                document.createElement("button");
+
+            const vagaId = Number(vaga.id);
+            const jaCandidatou = vagasCandidatadas.has(vagaId);
 
             botaoCandidatar.type = "button";
-            botaoCandidatar.textContent = "Candidatar-se";
             botaoCandidatar.className = "btn-candidatar";
 
-            botaoCandidatar.addEventListener("click", () => {
-                candidatarSe(vaga.id);
-            });
+            if (jaCandidatou) {
+                botaoCandidatar.textContent =
+                    "Candidatura realizada";
+
+                botaoCandidatar.classList.add(
+                    "candidatura-realizada"
+                );
+
+                botaoCandidatar.disabled = true;
+            } else {
+                botaoCandidatar.textContent = "Candidatar-se";
+
+                botaoCandidatar.addEventListener("click", () => {
+                    candidatarSe(vaga.id, botaoCandidatar);
+                });
+            }
 
             card.appendChild(botaoCandidatar);
-
             container.appendChild(card);
         });
 

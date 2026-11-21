@@ -206,6 +206,7 @@ async function carregarVagas() {
 
             const titulo = document.createElement("h3");
             titulo.textContent = vaga.titulo ?? "Vaga sem título";
+            
 
             const empresa = document.createElement("p");
             empresa.textContent =
@@ -223,6 +224,10 @@ async function carregarVagas() {
             const turno = document.createElement("p");
             turno.textContent =
                 `⏰ ${vaga.turno ?? "Turno não informado"}`;
+
+            const tipoContrato = document.createElement("p");
+            tipoContrato.textContent =
+                `📄 Tipo de contrato: ${vaga.tipo_contrato ?? "Não informado"}`;
 
             const descricao = document.createElement("p");
             descricao.textContent = `✔ ${vaga.descricao ?? ""}`;
@@ -265,6 +270,7 @@ async function carregarVagas() {
                 titulo,
                 empresa,
                 localizacao,
+                tipoContrato,
                 turno,
                 descricao,
                 requisitos,
