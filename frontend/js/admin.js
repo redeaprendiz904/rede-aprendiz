@@ -93,7 +93,7 @@ btnEstudantes.addEventListener("click", async () => {
 
                     alert(dados.mensagem);
 
-                    // Atualiza a lista de estudantes.
+                    
                     btnEstudantes.click();
                 } catch (erro) {
                     console.error("Erro ao excluir estudante:", erro);
@@ -153,7 +153,6 @@ btnEmpresas.addEventListener("click", async () => {
             const id = document.createElement("p");
             id.textContent = `ID: ${empresa.id}`;
 
-            // Botão para excluir a empresa.
             const btnExcluir = document.createElement("button");
             btnExcluir.type = "button";
             btnExcluir.textContent = "Excluir empresa";

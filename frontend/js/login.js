@@ -1,4 +1,3 @@
-
 const formLogin = document.querySelector("form");
 
 if (formLogin) {

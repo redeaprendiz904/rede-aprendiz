@@ -1,8 +1,3 @@
-
-/* ========================================
-   REDE APRENDIZ — LOGIN EMPRESARIAL
-======================================== */
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
 * {
@@ -22,8 +17,6 @@ body {
     color: #333333;
 }
 
-/* Cartão de login */
-
 .container {
     width: 100%;
     max-width: 430px;
@@ -33,8 +26,6 @@ body {
     border-radius: 14px;
     box-shadow: 0 8px 28px rgba(75, 2, 2, 0.12);
 }
-
-/* Título e descrição */
 
 .container h1 {
     margin-bottom: 10px;
@@ -50,8 +41,6 @@ body {
     line-height: 1.6;
     text-align: center;
 }
-
-/* Formulário */
 
 #formLoginEmpresa {
     display: flex;
@@ -83,8 +72,6 @@ body {
     box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.12);
 }
 
-/* Botão Entrar */
-
 #formLoginEmpresa button[type="submit"] {
     width: 100%;
     padding: 13px;
@@ -104,8 +91,6 @@ body {
     transform: translateY(-1px);
 }
 
-/* Mensagem de retorno do login */
-
 #mensagem {
     margin-top: 12px;
     color: #800000;
@@ -113,8 +98,6 @@ body {
     line-height: 1.5;
     text-align: center;
 }
-
-/* Link para login de candidato */
 
 .container a {
     color: #800000;
@@ -127,15 +110,11 @@ body {
     text-decoration: underline;
 }
 
-/* Acessibilidade */
-
 #formLoginEmpresa button:focus-visible,
 .container a:focus-visible {
     outline: 3px solid #ff0000;
     outline-offset: 3px;
 }
-
-/* Responsividade */
 
 @media (max-width: 480px) {
     body {
@@ -150,7 +129,6 @@ body {
         font-size: 24px;
     }
 }
-/* Botão Voltar — Rede Aprendiz */
 .container .btn-voltar-escolha {
     display: block;
     width: 100%;

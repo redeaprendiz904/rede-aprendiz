@@ -37,10 +37,6 @@ a {
     color: inherit;
 }
 
-/* ========================================
-   CABEÇALHO E NAVEGAÇÃO
-======================================== */
-
 header {
     position: relative;
     z-index: 10;
@@ -109,10 +105,6 @@ nav.item button.cadastro:hover {
     transform: translateY(-2px);
 }
 
-/* ========================================
-   IMAGEM PRINCIPAL
-======================================== */
-
 .imghero {
     position: relative;
     width: 100%;
@@ -150,10 +142,6 @@ nav.item button.cadastro:hover {
     background: var(--vermelho-escuro);
     transform: translate(-50%, -3px);
 }
-
-/* ========================================
-   MISSÃO E FUTURO DO TRABALHO
-======================================== */
 
 .flex-content {
     display: flex;
@@ -220,8 +208,6 @@ nav.item button.cadastro:hover {
     grid-row: 1;
 }
 
-/* Botões de chamada para ação */
-
 .botaohpc2 {
     margin-top: 22px;
 }
@@ -245,10 +231,6 @@ nav.item button.cadastro:hover {
     background: var(--vermelho-escuro);
     transform: translateY(-2px);
 }
-
-/* ========================================
-   ÁREA DE SERVIÇOS
-======================================== */
 
 .servicos {
     display: grid;
@@ -310,15 +292,11 @@ footer p {
     line-height: 1.7;
 }
 
-
-   /*FOCO DE TECLADO */
-
 a:focus-visible,
 button:focus-visible {
     outline: 3px solid var(--vermelho);
     outline-offset: 3px;
 }
-
 
 @media (max-width: 900px) {
     header {

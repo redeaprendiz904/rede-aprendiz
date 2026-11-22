@@ -1,9 +1,4 @@
-
 "use strict";
-
-// ========================================
-// REDE APRENDIZ — EMPRESAS
-// ========================================
 
 const cardsContainer = document.getElementById("cardsContainer");
 const searchInput = document.getElementById("searchInput");
@@ -14,10 +9,6 @@ const noResults = document.getElementById("noResults");
 let empresas = [];
 let filtroAtual = "all";
 let vagasCandidatadas = new Set();
-
-// ========================================
-// MODAL DE VAGAS
-// ========================================
 
 function fecharModalVagas() {
     const modal = document.getElementById("modalVagas");
@@ -42,10 +33,6 @@ window.addEventListener("keydown", (evento) => {
         fecharModalVagas();
     }
 });
-
-// ========================================
-// CARREGAR EMPRESAS
-// ========================================
 
 async function carregarEmpresas() {
     if (!cardsContainer || !searchInput || !resultCount) {
@@ -102,10 +89,7 @@ async function carregarEmpresas() {
     }
 }
 
-// ========================================
 // EXIBIR EMPRESAS
-// ========================================
-
 function renderizarEmpresas() {
     if (!cardsContainer || !searchInput || !resultCount) {
         return;
@@ -167,17 +151,9 @@ function renderizarEmpresas() {
     }
 }
 
-// ========================================
-// PESQUISA
-// ========================================
-
 if (searchInput) {
     searchInput.addEventListener("input", renderizarEmpresas);
 }
-
-// ========================================
-// FILTROS
-// ========================================
 
 filterButtons.forEach((botao) => {
     botao.addEventListener("click", () => {
@@ -191,10 +167,6 @@ filterButtons.forEach((botao) => {
         renderizarEmpresas();
     });
 });
-
-// ========================================
-// AUXILIAR: ADICIONAR INFORMAÇÕES À VAGA
-// ========================================
 
 function adicionarCampoVaga(card, rotulo, valor) {
     if (
@@ -218,10 +190,6 @@ function adicionarCampoVaga(card, rotulo, valor) {
     card.appendChild(paragrafo);
 }
 
-// ========================================
-// FORMATAR SALÁRIO
-// ========================================
-
 function formatarSalario(salario) {
     if (
         salario === null ||
@@ -242,10 +210,6 @@ function formatarSalario(salario) {
         currency: "BRL"
     });
 }
-
-// ========================================
-// CARREGAR CANDIDATURAS DO USUÁRIO
-// ========================================
 
 async function carregarMinhasCandidaturas() {
     const resposta = await fetch("/minhas-candidaturas", {
@@ -279,10 +243,6 @@ async function carregarMinhasCandidaturas() {
             .filter((id) => Number.isFinite(id) && id > 0)
     );
 }
-
-// ========================================
-// CANDIDATAR-SE A UMA VAGA
-// ========================================
 
 async function candidatarSe(vagaId, botao) {
     const id = Number(vagaId);
@@ -323,7 +283,6 @@ async function candidatarSe(vagaId, botao) {
 
         const dados = await resposta.json().catch(() => null);
 
-        // Candidatura criada ou já existente.
         if (resposta.ok || resposta.status === 409) {
             vagasCandidatadas.add(id);
 
@@ -368,10 +327,6 @@ async function candidatarSe(vagaId, botao) {
         botao.disabled = false;
     }
 }
-
-// ========================================
-// VER VAGAS DE UMA EMPRESA
-// ========================================
 
 async function verVagas(empresaId) {
     const container = document.getElementById("listaVagasEmpresa");
@@ -421,7 +376,6 @@ async function verVagas(empresaId) {
             );
         }
 
-        // Carrega as candidaturas já realizadas pelo usuário.
         await carregarMinhasCandidaturas();
 
         container.replaceChildren();
@@ -441,7 +395,6 @@ async function verVagas(empresaId) {
 
             card.appendChild(titulo);
 
-            // Localização da vaga
 
             adicionarCampoVaga(
                 card,
@@ -491,7 +444,6 @@ async function verVagas(empresaId) {
                 formatarSalario(vaga.salario)
             );
 
-            // Botão de candidatura.
             const botaoCandidatar =
                 document.createElement("button");
 
@@ -537,9 +489,5 @@ async function verVagas(empresaId) {
         container.appendChild(mensagemErro);
     }
 }
-
-// ========================================
-// INICIALIZAÇÃO
-// ========================================
 
 carregarEmpresas();

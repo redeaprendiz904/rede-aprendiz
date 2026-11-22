@@ -28,10 +28,6 @@ body {
     line-height: 1.7;
 }
 
-/* =========================
-   CABEÇALHO E MENU
-========================= */
-
 header {
     width: 100%;
     min-height: 85px;
@@ -106,10 +102,6 @@ header nav .cadastro:hover {
     transform: translateY(-2px);
 }
 
-/* =========================
-   DESTAQUE PRINCIPAL
-========================= */
-
 .hero {
     width: 100%;
     padding: 75px 8%;
@@ -137,10 +129,6 @@ header nav .cadastro:hover {
     line-height: 1.9;
 }
 
-/* =========================
-   CONTEÚDO GERAL
-========================= */
-
 .container {
     width: 100%;
     max-width: 1200px;
@@ -166,10 +154,6 @@ section > p {
     font-size: 15px;
     line-height: 1.9;
 }
-
-/* =========================
-   NOSSA ESSÊNCIA
-========================= */
 
 .grid-2 {
     display: grid;
@@ -222,10 +206,6 @@ section > p {
     color: var(--vermelho);
 }
 
-/* =========================
-   COMO ATUAMOS - CARDS
-========================= */
-
 .cards {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -261,10 +241,6 @@ section > p {
     font-size: 14px;
     line-height: 1.8;
 }
-
-/* =========================
-   NOSSA EQUIPE
-========================= */
 
 .team-container {
     display: grid;
@@ -313,10 +289,6 @@ section > p {
     font-size: 13px;
 }
 
-/* =========================
-   CHAMADA PARA AÇÃO
-========================= */
-
 .cta-box {
     margin: 20px 0 10px;
     padding: 45px 30px;
@@ -361,19 +333,11 @@ section > p {
     color: var(--branco);
 }
 
-/* =========================
-   ACESSIBILIDADE
-========================= */
-
 a:focus-visible,
 button:focus-visible {
     outline: 3px solid #b86b6b;
     outline-offset: 3px;
 }
-
-/* =========================
-   RESPONSIVIDADE
-========================= */
 
 @media (max-width: 900px) {
     header {

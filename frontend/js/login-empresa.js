@@ -1,4 +1,3 @@
-
 const form = document.getElementById("formLoginEmpresa");
 const mensagem = document.getElementById("mensagem");
 

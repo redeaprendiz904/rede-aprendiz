@@ -223,7 +223,6 @@ app.post("/login", (req, res) => {
     );
 });
 
-
 // LOGIN DE ADMINISTRADOR 
 app.post("/login-admin", (req, res) => {
     let { email, senha } = req.body || {};
@@ -323,7 +322,6 @@ app.post("/login-admin", (req, res) => {
     );
 });
 
-
 // USUÁRIO LOGADO
 app.get("/usuario", (req, res) => {
     if (!req.session.usuario) {
@@ -388,6 +386,7 @@ app.get("/area-empresa", (req, res) => {
         path.join(__dirname, "../frontend/html/area-empresa.html")
     );
 });
+// ÁREA EXCLUSIVA DO ADMIN
 app.get("/admin/estudantes", verificarLoginAdmin, (req, res) => {
     const sql = `
         SELECT id, nome, email, telefone
@@ -427,7 +426,6 @@ app.get("/admin/empresas", verificarLoginAdmin, (req, res) => {
     });
 });
 
-
 app.get("/admin/vagas", verificarLoginAdmin, (req, res) => {
     const sql = `
         SELECT
@@ -455,7 +453,6 @@ app.get("/admin/vagas", verificarLoginAdmin, (req, res) => {
         return res.json(resultados);
     });
 });
-
 
 app.delete(
     "/admin/estudantes/:id",
@@ -596,7 +593,6 @@ app.delete(
                         });
                     }
 
-                    // Exclui candidaturas das vagas vinculadas à empresa.
                     db.query(
                         `DELETE FROM candidaturas
                          WHERE vaga_id IN (
@@ -617,7 +613,6 @@ app.delete(
                                 });
                             }
 
-                            // Depois, exclui as vagas da empresa.
                             db.query(
                                 "DELETE FROM vagas WHERE empresa_id = ?",
                                 [id],
@@ -635,7 +630,6 @@ app.delete(
                                         });
                                     }
 
-                                    // Por último, exclui a empresa.
                                     db.query(
                                         "DELETE FROM empresas WHERE id = ?",
                                         [id],
@@ -885,7 +879,6 @@ app.get("/oportunidades", verificarLogin, (req, res) => {
 
 
  // LISTAR E FILTRAR VAGAS PÚBLICAS
-
 app.get("/vagas", (req, res) => {
     const { regiao, estado, cidade } = req.query;
 
@@ -1354,7 +1347,6 @@ app.post("/empresas", async (req, res) => {
         senha
     } = req.body || {};
 
-    // Validar os campos como textos
     if (
         ![nome, descricao, categoria, regiao, estado, cidade, email, senha]
             .every((valor) => typeof valor === "string")
@@ -1364,7 +1356,6 @@ app.post("/empresas", async (req, res) => {
         });
     }
 
-    // Limpar espaços e padronizar o e-mail
     nome = nome.trim();
     descricao = descricao.trim();
     categoria = categoria.trim();
@@ -1373,7 +1364,6 @@ app.post("/empresas", async (req, res) => {
     cidade = cidade.trim();
     email = email.trim().toLowerCase();
 
-    // Validar campos principais
     if (
         !nome || nome.length > 100 ||
         !descricao || descricao.length > 1000 ||
@@ -1433,7 +1423,6 @@ app.post("/empresas", async (req, res) => {
         });
     }
 
-    // Validar e-mail
     if (
         email.length > 100 ||
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -1443,7 +1432,6 @@ app.post("/empresas", async (req, res) => {
         });
     }
 
-    // Validar senha
     if (senha.length < 8 || senha.length > 72) {
         return res.status(400).json({
             erro: "A senha deve ter entre 8 e 72 caracteres."
@@ -1451,7 +1439,7 @@ app.post("/empresas", async (req, res) => {
     }
 
     try {
-        // Verificar e-mail duplicado
+        // Verifica e-mail duplicado
         const [existentes] = await db.promise().execute(
             "SELECT id FROM empresas WHERE email = ?",
             [email]
@@ -1463,7 +1451,7 @@ app.post("/empresas", async (req, res) => {
             });
         }
 
-        // Proteger a senha
+        // Protege a senha
         const senhaHash = await bcrypt.hash(senha, 12);
 
         // Inserir empresa com localização
@@ -1589,7 +1577,7 @@ app.post("/login-empresa", async (req, res) => {
 });
 
 
-// LISTAR EMPRESAS (SEM EXPOR SENHAS)
+// LISTA EMPRESAS (SEM EXPOR SENHAS)
 app.get("/empresas/listar", (req, res) => {
     const sql = `
         SELECT id, nome, descricao, categoria, email, data_cadastro
@@ -1914,8 +1902,6 @@ app.delete("/empresas/minhas-vagas/:id", verificarLoginEmpresa, async (req, res)
     }
 });
 
-
-
  // CADASTRAR VAGA DA EMPRESA LOGADA
 app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
     try {
@@ -1933,7 +1919,6 @@ app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
             cidade
         } = req.body;
 
-        // Validar campos obrigatórios
         if (
             !titulo?.trim() ||
             !descricao?.trim() ||
@@ -1949,7 +1934,6 @@ app.post("/empresas/minhas-vagas", verificarLoginEmpresa, async (req, res) => {
             });
         }
 
-        // Validar tamanho dos campos
         if (titulo.trim().length > 100) {
             return res.status(400).json({
                 erro: "O título deve ter no máximo 100 caracteres."

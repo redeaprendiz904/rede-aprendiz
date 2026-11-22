@@ -1,4 +1,3 @@
-
 const formPerfil = document.getElementById("formPerfil");
 const btnPerfil = document.getElementById("btnPerfil");
 const mensagemPerfil = document.getElementById("mensagemPerfil");

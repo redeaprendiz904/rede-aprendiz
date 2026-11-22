@@ -4,12 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Empresas | Rede Aprendiz</title>
-
 <link rel="stylesheet" href="../css/empresa.css">
 </head>
-
 <body>
-
 <div class="sidebar">
 
     <h2>Rede Aprendiz</h2>
@@ -40,26 +37,20 @@
 
 </div>
 
-
 <div class="main-content">
-
 
     <h1>
         Empresas Disponíveis
     </h1>
 
-
     <div class="result-count" id="resultCount">
         Total: 0 empresas
     </div>
-
-
 
     <div class="controls">
 
 
         <div class="filters">
-
 
             <button 
                 class="filter-btn active"
@@ -69,7 +60,6 @@
 
             </button>
 
-
             <button 
                 class="filter-btn"
                 data-filter="ti">
@@ -77,7 +67,6 @@
                 TI
 
             </button>
-
 
             <button 
                 class="filter-btn"
@@ -87,7 +76,6 @@
 
             </button>
 
-
             <button 
                 class="filter-btn"
                 data-filter="atendimento">
@@ -95,7 +83,6 @@
                 Atendimento
 
             </button>
-
 
             <button 
                 class="filter-btn"
@@ -105,25 +92,18 @@
 
             </button>
 
-
         </div>
-
-
 
         <div class="search-bar">
 
             <input
                 type="text"
                 id="searchInput"
-                placeholder="Pesquisar empresas..."
-            >
-
+                placeholder="Pesquisar empresas...">
         </div>
 
 
     </div>
-
-
 
     <div 
         class="company-cards"
@@ -132,48 +112,27 @@
 
     </div>
 
-
-
     <div 
         class="no-results"
         id="noResults"
         style="display:none;">
 
-
         Nenhuma empresa encontrada
-
-
     </div>
-
-
-
 </div>
-
-
-
-
-<!-- MODAL DAS VAGAS -->
 
 <div 
     class="modal"
     id="modalVagas">
 
-
     <div class="modal-content">
-
-
         <h2>
             Vagas da Empresa
         </h2>
 
-
-
         <div id="listaVagasEmpresa">
 
-
         </div>
-
-
 
         <button 
             onclick="fecharModalVagas()">
@@ -181,16 +140,9 @@
             Fechar
 
         </button>
-
-
     </div>
-
-
 </div>
 
-
-
 <script src="../js/empresa.js"></script>
-
 </body>
 </html>

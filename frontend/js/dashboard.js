@@ -1,4 +1,3 @@
-
 async function buscarJSON(url) {
     const resposta = await fetch(url, {
         credentials: "include"
@@ -46,7 +45,6 @@ async function carregarDashboard() {
         document.getElementById("cursosGrafico").textContent = cursos;
         document.getElementById("horas").textContent = horas;
 
-        // Busca os dados do perfil para calcular o preenchimento
         const respostaPerfil = await buscarJSON("/perfil/dados");
         const perfil = respostaPerfil.perfil;
 

@@ -1,4 +1,3 @@
-
 const selectAno = document.getElementById("anonascimento");
 const erroIdade = document.getElementById("erroIdade");
 const form = document.querySelector("form");

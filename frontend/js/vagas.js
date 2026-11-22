@@ -1,4 +1,3 @@
-
 const estadosPorRegiao = {
     "Norte": [
         ["AC", "Acre"], ["AP", "Amapá"], ["AM", "Amazonas"],

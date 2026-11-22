@@ -1,7 +1,3 @@
-/* ========================================
-   REDE APRENDIZ — EMPRESAS DISPONÍVEIS
-======================================== */
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
 :root {
@@ -28,10 +24,6 @@ body {
     color: var(--texto);
     font-family: 'Montserrat', sans-serif;
 }
-
-/* ========================================
-   MENU LATERAL
-======================================== */
 
 .sidebar {
     position: fixed;
@@ -100,10 +92,6 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* ========================================
-   CONTEÚDO PRINCIPAL
-======================================== */
-
 .main-content {
     width: calc(100% - 250px);
     max-width: 1600px;
@@ -129,10 +117,6 @@ body {
     font-size: 13px;
     font-weight: 700;
 }
-
-/* ========================================
-   FILTROS E PESQUISA
-======================================== */
 
 .controls {
     display: flex;
@@ -198,10 +182,6 @@ body {
 .search-bar input::placeholder {
     color: #9ca3af;
 }
-
-/* ========================================
-   CARDS DAS EMPRESAS
-======================================== */
 
 .company-cards {
     display: grid;
@@ -277,10 +257,6 @@ body {
     font-size: 14px;
     text-align: center;
 }
-
-/* ========================================
-   MODAL DE VAGAS
-======================================== */
 
 #modalVagas {
     display: none;
@@ -365,10 +341,6 @@ body {
     background: var(--vinho-escuro);
 }
 
-/* ========================================
-   VAGAS DA EMPRESA
-======================================== */
-
 #listaVagasEmpresa {
     display: flex;
     flex-direction: column;
@@ -397,10 +369,6 @@ body {
     line-height: 1.6;
 }
 
-/* ========================================
-   ANIMAÇÕES
-======================================== */
-
 @keyframes aparecer {
     from {
         opacity: 0;
@@ -412,10 +380,6 @@ body {
         transform: translateY(0);
     }
 }
-
-/* ========================================
-   RESPONSIVIDADE
-======================================== */
 
 @media (max-width: 1200px) {
     .company-cards {

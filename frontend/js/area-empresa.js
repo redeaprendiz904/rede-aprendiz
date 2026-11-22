@@ -1,10 +1,5 @@
-
 const form = document.getElementById("formCadastroVaga");
 const mensagem = document.getElementById("mensagemVaga");
-
-// ========================================
-// AUXILIAR: REQUISIÇÕES JSON
-// ========================================
 
 async function obterJson(resposta) {
     try {
@@ -14,10 +9,8 @@ async function obterJson(resposta) {
     }
 }
 
-// ========================================
-// FORMATAR SALÁRIO
-// ========================================
 
+// FORMATAR SALÁRIO
 function formatarSalario(salario) {
     if (
         salario === null ||
@@ -39,10 +32,7 @@ function formatarSalario(salario) {
     });
 }
 
-// ========================================
-// REGIÕES E ESTADOS BRASILEIROS
-// ========================================
-
+// REGIÕES E ESTADOS 
 const estadosPorRegiao = {
     "Norte": ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
     "Nordeste": ["AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"],
@@ -91,10 +81,7 @@ function obterRegiaoDoEstado(estado) {
     return "";
 }
 
-// ========================================
 // PREENCHER ESTADOS CONFORME A REGIÃO
-// ========================================
-
 const campoRegiao = document.getElementById("regiao");
 const campoEstado = document.getElementById("estado");
 
@@ -129,10 +116,7 @@ if (campoRegiao && campoEstado) {
     atualizarEstados();
 }
 
-// ========================================
 // CADASTRAR NOVA VAGA
-// ========================================
-
 if (form) {
     form.addEventListener("submit", async (evento) => {
         evento.preventDefault();
@@ -237,10 +221,7 @@ if (form) {
     });
 }
 
-// ========================================
 // CARREGAR VAGAS DA EMPRESA LOGADA
-// ========================================
-
 async function carregarMinhasVagas() {
     const lista = document.getElementById("listaVagas");
 
@@ -351,10 +332,7 @@ async function carregarMinhasVagas() {
     }
 }
 
-// ========================================
 // EDITAR VAGA
-// ========================================
-
 async function editarVaga(vaga) {
     const novoTitulo = prompt("Título da vaga:", vaga.titulo || "");
     if (novoTitulo === null) return;
@@ -484,10 +462,7 @@ async function editarVaga(vaga) {
     }
 }
 
-// ========================================
 // EXCLUIR VAGA
-// ========================================
-
 async function excluirVaga(vaga) {
     const confirmar = confirm(`Deseja excluir a vaga "${vaga.titulo}"?`);
 
@@ -514,9 +489,5 @@ async function excluirVaga(vaga) {
         alert("Erro de conexão ao tentar excluir a vaga.");
     }
 }
-
-// ========================================
-// INICIALIZAÇÃO
-// ========================================
 
 carregarMinhasVagas();

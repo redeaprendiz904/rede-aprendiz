@@ -13,7 +13,6 @@ form.addEventListener("submit", async (event) => {
     const email = document.getElementById("email").value.trim();
     const senha = document.getElementById("senha").value;
 
-    // Validar os campos obrigatórios
     if (
         !nome ||
         !descricao ||
@@ -62,7 +61,6 @@ form.addEventListener("submit", async (event) => {
 
         form.reset();
 
-        // Limpar e desabilitar o campo de estado após o reset
         const campoEstado = document.getElementById("estado");
 
         campoEstado.innerHTML =
